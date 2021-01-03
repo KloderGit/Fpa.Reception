@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>reception.fitness-pro.ru</name>
+    </assembly>
+    <members>
+        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetByKeys(System.Collections.Generic.IEnumerable{System.Guid})">
+            <summary>
+            Get teacher info by key
+            </summary>
+            <param name="keys">Method takes an array of teachers guids</param>
+            <returns></returns>
+        </member>
+        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetByPersonKey(System.Collections.Generic.IEnumerable{System.Guid})">
+            <summary>
+            Get a teacher for certain person by a guid of person
+            </summary>
+            <param name="keys">Method takes an array of persons guids</param>
+            <returns>Ienumerable string</returns>
+        </member>
+        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetDisciplines(System.Collections.Generic.IEnumerable{System.Guid})">
+            <summary>
+            Get an information which program and discipline teacher involved in
+            </summary>
+            <param name="keys">Method takes an array of disciplines guids</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
