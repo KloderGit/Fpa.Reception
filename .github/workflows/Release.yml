@@ -1,0 +1,70 @@
+name: Create Release
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Define Variables
+      env: 
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'      
+      run: |
+        export REPO_NAME="$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")"
+        echo "::set-env name=RepositoryName::$REPO_NAME"
+        echo "::set-env name=RepositoryNameLowcase::$(echo $REPO_NAME | tr '[:upper:]' '[:lower:]')"
+        export GITHUB_ACTOR_LOWERCASE="$(echo "Fitness-Professional-Association" | tr '[:upper:]' '[:lower:]')"
+        echo "::set-env name=GitHubActorLowercase::$GITHUB_ACTOR_LOWERCASE"
+    - name: Setup Nuget.exe
+      uses: nuget/setup-nuget@v1
+
+    - name: Add Source
+      run: |
+        nuget source Add -Name "KloderGit" -Source "https://nuget.pkg.github.com/KloderGit/index.json" -UserName KloderGit -Password ${{ secrets.KloderGitPackages }}
+        nuget restore 
+    - name: Build with dotnet
+      run: dotnet publish ./${{ env.RepositoryName }}/*.csproj --configuration Release -o ./${{ env.RepositoryName }}/publish  
+
+    - name: APP name
+      env: 
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'      
+      run: echo "::set-env name=ProjectFileName::$(basename $(find ./${{ env.RepositoryName }}/./${{ env.RepositoryName }}.csproj) .csproj)"
+
+    - name: Define Application Version
+      env: 
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'      
+      run: echo "::set-env name=AppVersion::$(monodis --assembly ./${{ env.RepositoryName }}/publish/${{ env.ProjectFileName }}.dll | grep Version | sed 's/\s\+/,/g' | cut -d , -f2)"       
+
+    - name: Ls
+      run: |
+        echo '------------------------------'
+        echo ${{ env.RepositoryName }}
+        echo ${{ env.RepositoryNameLowcase }}
+        echo ${{ env.AppVersion }}
+        echo $GITHUB_ACTOR
+        echo ${{ env.GitHubActorLowercase }}
+        basename $(find ./${{ env.RepositoryName }}/*.csproj) .csproj
+        echo ${{ env.ProjectFileName }}
+       
+    - name: Docker Image
+      run: docker image build -t ${{ env.RepositoryNameLowcase }} -f ./${{ env.RepositoryName }}/Dockerfile ./${{ env.RepositoryName }}
+      
+    - name: Docker Login
+      run: docker login -u Fitness-Professional-Association -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
+      
+    - name: Publish to Registry
+      run: |
+        docker tag ${{ env.RepositoryNameLowcase }} docker.pkg.github.com/${{ env.GitHubActorLowercase }}/${{ env.RepositoryNameLowcase }}/${{ env.RepositoryNameLowcase }}:latest
+        docker push docker.pkg.github.com/${{ env.GitHubActorLowercase }}/${{ env.RepositoryNameLowcase }}/${{ env.RepositoryNameLowcase }}:latest
+        docker tag ${{ env.RepositoryNameLowcase }} docker.pkg.github.com/${{ env.GitHubActorLowercase }}/${{ env.RepositoryNameLowcase }}/${{ env.RepositoryNameLowcase }}:${{ env.AppVersion }}
+        docker push docker.pkg.github.com/${{ env.GitHubActorLowercase }}/${{ env.RepositoryNameLowcase }}/${{ env.RepositoryNameLowcase }}:${{ env.AppVersion }}
+    - name: Message to Telegram
+      run: curl -s -X POST https://api.telegram.org/bot1091654180:AAGsfJljG3blhtDhISNxL46h0tDASueEfoo/sendMessage -d chat_id=-1001434763292 -d text="Сборка ${{ env.RepositoryName }} [ Release ] успешно собрана. Создан образ - ${{ env.RepositoryNameLowcase }}:${{ env.AppVersion }} и загружен в GitHub Packages"
