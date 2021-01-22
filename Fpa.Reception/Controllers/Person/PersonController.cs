@@ -38,7 +38,8 @@ namespace reception.fitnesspro.ru.Controllers.Person
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonViewModel>>> Get()
+        [Route("GetByToken")]
+        public async Task<ActionResult<IEnumerable<PersonViewModel>>> GetByToken()
         {
             var bearerToken = Request.Headers[HeaderNames.Authorization];
             var token = bearerToken.ToString().Replace("Bearer ", "");
