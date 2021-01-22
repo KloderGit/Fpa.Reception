@@ -4,6 +4,11 @@
         <name>reception.fitness-pro.ru</name>
     </assembly>
     <members>
+        <member name="T:reception.fitnesspro.ru.Controllers.Person.PersonController">
+            <summary>
+            Физ лицо 1С
+            </summary>
+        </member>
         <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetByKeys(System.Collections.Generic.IEnumerable{System.Guid})">
             <summary>
             Get teacher info by key

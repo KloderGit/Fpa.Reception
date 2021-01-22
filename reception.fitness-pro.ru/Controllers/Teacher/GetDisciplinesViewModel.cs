@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Application.Employee;
+using Application.Program;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.HttpClient;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -9,10 +12,10 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     {
         public List<TeacherViewModel> Teachers { get; set; } = new List<TeacherViewModel>();
 
-        private TeacherAssignmentDto orders;
+        private IEnumerable<EmployeeDisciplineDto> orders;
         private IEnumerable<ProgramDto> programs;
 
-        public GetDisciplinesViewModel(TeacherAssignmentDto orders, IEnumerable<ProgramDto> programs)
+        public GetDisciplinesViewModel(IEnumerable<EmployeeDisciplineDto> orders, IEnumerable<ProgramDto> programs)
         {
             this.orders = orders;
             this.programs = programs;
@@ -20,7 +23,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
         public GetDisciplinesViewModel Create()
         {
-            foreach (var order in orders.Teachers)
+            foreach (var order in orders)
             {
                 var teacher = new TeacherViewModel
                 {
@@ -58,7 +61,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                                 {
                                     Key = p.Key,
                                     Title = p.Title,
-                                    Education = new EducationViewModel { Key = p.TypeKey },
+                                    Education = new EducationViewModel { Key = p.EducationForm.Key, Title = p.EducationForm.Title},
                                     Disciplines = p.Disciplines.Where(d => d.Key == key)
                                                                .Select(v => new DisciplineViewModel 
                                                                             { 

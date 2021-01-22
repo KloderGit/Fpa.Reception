@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Employee;
+using Application.Program;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using reception.fitnesspro.ru.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Application.Extensions;
+using Application.HttpClient;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -13,6 +16,21 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     [Route("[controller]")]
     public class TeacherController : ControllerBase
     {
+        private EmployeeHttpClient employeeHttpClient;
+        private ProgramHttpClient programHttpClient;
+
+        ProgramMethods programAction;
+        EmployeeMethods employeeAction;
+
+        public TeacherController(EmployeeHttpClient employeeHttpClient, ProgramHttpClient programHttpClient)
+        {
+            this.employeeHttpClient = employeeHttpClient;
+            this.programHttpClient = programHttpClient;
+                
+            programAction = new ProgramMethods(programHttpClient);
+            employeeAction = new EmployeeMethods(employeeHttpClient);
+        }
+
         /// <summary>
         /// Get teacher info by key
         /// </summary>
@@ -76,23 +94,11 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("Disciplines")]
         public async Task<ActionResult<GetDisciplinesViewModel>> GetDisciplines(IEnumerable<Guid> keys)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(@"http://localhost:6400/");
+            var orders = await employeeAction.GetDisciplines(keys);
 
-            var request = await client.GetAsync("/Employee/GetDisciplines", keys);
-            var content = await request.Content.ReadAsStringAsync();            
-            var orders = JsonConvert.DeserializeObject<TeacherAssignmentDto>(content);
-
-            request = await client.GetAsync("/Program/GetByDisciplines", orders.Teachers.SelectMany(x=>x.Disciplines));
-            content = await request.Content.ReadAsStringAsync();
-            var programs = JsonConvert.DeserializeObject<IEnumerable<ProgramDto>>(content);
-
+            var programs = await programAction.GetByDiscipline(orders.SelectMany(x=>x.Disciplines));
 
             var viewModel = new GetDisciplinesViewModel(orders, programs).Create();
-
-
-            //request = await client.GetAsync("/Program/GetByDisciplines", programs.SelectMany(x => x.Disciplines).Select(x=>x.ControlTypeKey));
-            //content = await request.Content.ReadAsStringAsync();
 
             return viewModel;
         }

@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace reception.fitnesspro.ru.Controllers.Teacher
+namespace Application.HttpClient
 {
+    public class BasicEntity
+    {
+        public Guid Key { get; set; }
+        public string Title { get; set; }
+    }
+
     public class ProgramDto
     {
         public Guid Key { get; set; }
         public string Title { get; set; }
         public Guid TypeKey { get; set; }
+        public BasicEntity EducationForm { get; set; }
 
         public IEnumerable<DisciplineInfo> Disciplines { get; set; }
     }
@@ -21,9 +27,6 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         public DisciplineDto Item { get; set; }
     }
 
-    public class DisciplineDto
-    {
-        public Guid Key { get; set; }
-        public string Title { get; set; }
-    }
+    public class DisciplineDto : BasicEntity
+    {}
 }

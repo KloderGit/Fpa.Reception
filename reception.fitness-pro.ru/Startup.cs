@@ -10,7 +10,11 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Application.HttpClient;
+using Microsoft.IdentityModel.Tokens;
+using reception.fitnesspro.ru.Misc;
 
 namespace reception.fitnesspro.ru
 {
@@ -26,7 +30,30 @@ namespace reception.fitnesspro.ru
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            HttpClientLibrary.AddHttpClients(services, Configuration);
+
             services.AddControllers();
+                
+
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://identity.fitness-pro.ru";
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Teacher", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "contacts");
+                });
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -49,9 +76,10 @@ namespace reception.fitnesspro.ru
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseRouting();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
