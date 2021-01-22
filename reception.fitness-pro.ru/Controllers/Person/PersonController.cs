@@ -45,7 +45,7 @@ namespace reception.fitnesspro.ru.Controllers.Person
 
             var user = await identityHttpClient.GetUserInfo(token);
 
-            if (String.IsNullOrEmpty(user.Email) && String.IsNullOrEmpty(user.Phone)) return NotFound("Не заполнены контакты пользователя");
+            if (String.IsNullOrEmpty(user?.Email) && String.IsNullOrEmpty(user?.Phone)) return NotFound("Не заполнены контакты пользователя");
 
             var personGuidArray = await personAction.GetByContacts(new List<string>{user.Phone}, new List<string>{user.Email} );
 
