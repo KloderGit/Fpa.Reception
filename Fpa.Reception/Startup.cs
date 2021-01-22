@@ -58,7 +58,7 @@ namespace reception.fitnesspro.ru
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                c.IncludeXmlComments(GetXmlCommentsPath());
+                c.IncludeXmlComments("swagger.xml");
             });
         }
 
