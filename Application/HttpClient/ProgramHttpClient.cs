@@ -14,11 +14,11 @@ namespace Application.HttpClient
         :base(client: client)
         {}
 
-        public async Task<IEnumerable<ProgramDto>> GetByDiscipline(IEnumerable<Guid> keys)
+        public async Task<IEnumerable<ProgramDto>> FindByDiscipline(IEnumerable<Guid> keys)
         {
             var result = Enumerable.Empty<ProgramDto>();
 
-            var request = await Client.GetAsync("GetByDisciplines", keys);
+            var request = await Client.GetAsync("FindByDiscipline", keys);
 
             if (request.IsSuccessStatusCode)
             {

@@ -24,21 +24,25 @@ namespace reception.fitnesspro.ru.Controllers.Person
     public class PersonController : ControllerBase
     {
         private readonly IdentityHttpClient identityHttpClient;
+        private readonly AssignHttpClient assignHttpClient;
         private readonly PersonMethods personAction;
         private readonly EmployeeMethods employeeAction;
 
         public PersonController(
             PersonHttpClient personHttpClient, 
             EmployeeHttpClient employeeHttpClient,
-            IdentityHttpClient identityHttpClient)
+            IdentityHttpClient identityHttpClient,
+            AssignHttpClient assignHttpClient)
         {
             this.identityHttpClient = identityHttpClient;
+            this.assignHttpClient = assignHttpClient;
             personAction = new PersonMethods(personHttpClient);
-            employeeAction = new EmployeeMethods(employeeHttpClient);
+            employeeAction = new EmployeeMethods(employeeHttpClient,assignHttpClient);
         }
 
         [HttpGet]
         [Route("GetByToken")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<PersonViewModel>>> GetByToken()
         {
             var bearerToken = Request.Headers[HeaderNames.Authorization];

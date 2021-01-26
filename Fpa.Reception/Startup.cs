@@ -76,11 +76,11 @@ namespace reception.fitnesspro.ru
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

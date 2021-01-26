@@ -18,17 +18,22 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     {
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
+        private readonly AssignHttpClient assignHttpClient;
 
         ProgramMethods programAction;
         EmployeeMethods employeeAction;
 
-        public TeacherController(EmployeeHttpClient employeeHttpClient, ProgramHttpClient programHttpClient)
+        public TeacherController(
+            EmployeeHttpClient employeeHttpClient,
+            ProgramHttpClient programHttpClient,
+            AssignHttpClient assignHttpClient)
         {
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
-                
+            this.assignHttpClient = assignHttpClient;
+
             programAction = new ProgramMethods(programHttpClient);
-            employeeAction = new EmployeeMethods(employeeHttpClient);
+            employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
         }
 
         /// <summary>
@@ -73,7 +78,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetByPersonKeys")]
         [Produces("application/json")]
 
-        public async Task<ActionResult<dynamic>> GetByPersonKey([FromBody]IEnumerable<Guid> keys)
+        public async Task<ActionResult<dynamic>> GetByPersonKey([FromBody] IEnumerable<Guid> keys)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(@"http://localhost:6400/");
@@ -85,22 +90,98 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             return result;
         }
 
-        /// <summary>
-        /// Get an information which program and discipline teacher involved in
-        /// </summary>
-        /// <param name="keys">Method takes an array of disciplines guids</param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Get an information which program and discipline teacher involved in
+        ///// </summary>
+        ///// <param name="keys">Method takes an array of emplyee guids</param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("Disciplines")]
+        //public async Task<ActionResult<GetDisciplinesViewModel>> GetDisciplines(IEnumerable<Guid> keys)
+        //{
+        //    var orders = await employeeAction.GetDisciplines(keys);
+
+        //    var programs = await programAction.GetByDiscipline(orders.SelectMany(x=>x.Disciplines));
+
+        //    var viewModel = new GetDisciplinesViewModel(orders, programs).Create();
+
+        //    return viewModel;
+        //}
+
         [HttpGet]
         [Route("Disciplines")]
-        public async Task<ActionResult<GetDisciplinesViewModel>> GetDisciplines(IEnumerable<Guid> keys)
+        public async Task<ActionResult<IEnumerable<TeacherInfoViewModel>>> GetDisciplines(IEnumerable<Guid> keys)
         {
-            var orders = await employeeAction.GetDisciplines(keys);
+            var disciplineKeys = await employeeAction.GetTeacherDisciplines(keys);
 
-            var programs = await programAction.GetByDiscipline(orders.SelectMany(x=>x.Disciplines));
+            var programs = await programAction.GetByDiscipline(disciplineKeys.SelectMany(x => x.Disciplines));
 
-            var viewModel = new GetDisciplinesViewModel(orders, programs).Create();
+            var vm = keys.Select(x =>
+                new TeacherInfoViewModel
+                {
+                    Key = x,
+                    Programs = GetPrograms(disciplineKeys.First(t=>t.TeacherKey==x).Disciplines)
+                }
+            );
 
-            return viewModel;
+            IEnumerable<ProgramInfoViewModel> GetPrograms(IEnumerable<Guid> keys)
+            {
+                var pr = keys.SelectMany(x => GetProgram(x));
+
+                var sddd = pr.GroupBy(x => x.Key);
+
+                var res = sddd.Select(x => new ProgramInfoViewModel
+                {
+                    Key = x.Key,
+                    Form = x.First().Form,
+                    Disciplines = x.SelectMany(d=>d.Disciplines)
+                });
+
+                return res;
+            }
+
+            IEnumerable<ProgramInfoViewModel> GetProgram(Guid key)
+            {
+                var progs = programs.Where(x => 
+                    x.Disciplines.Select(k => k.DisciplineKey)
+                        .Any(i => i == key));
+
+                var vms = progs.Select(x => new ProgramInfoViewModel
+                {
+                    Key = x.Key,
+                    Form = x.EducationFormKey,
+                    Disciplines = x.Disciplines.Where(d=>d.DisciplineKey == key)
+                    .Select(d=>new DisciplineInfoViewModel
+                    {
+                        Key = d.DisciplineKey,
+                        ControlTypeKey = d.ControlTypeKey
+                    })
+                });
+
+                return vms;
+            }
+
+            return vm.ToList();
+        }
+
+        public class TeacherInfoViewModel
+        {
+            public Guid Key { get; set; }
+            public IEnumerable<ProgramInfoViewModel> Programs { get; set; }
+        }
+
+        public class ProgramInfoViewModel
+        {
+            public Guid Key { get; set; }
+            public Guid Form { get; set; }
+
+            public IEnumerable<DisciplineInfoViewModel> Disciplines { get; set; }
+        }
+
+        public class DisciplineInfoViewModel
+        {
+            public Guid Key { get; set; }
+            public Guid ControlTypeKey { get; set; }
         }
     }
 }

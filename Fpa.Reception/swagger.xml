@@ -23,12 +23,5 @@
             <param name="keys">Method takes an array of persons guids</param>
             <returns>Ienumerable string</returns>
         </member>
-        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetDisciplines(System.Collections.Generic.IEnumerable{System.Guid})">
-            <summary>
-            Get an information which program and discipline teacher involved in
-            </summary>
-            <param name="keys">Method takes an array of disciplines guids</param>
-            <returns></returns>
-        </member>
     </members>
 </doc>

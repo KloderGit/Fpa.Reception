@@ -32,6 +32,11 @@ namespace reception.fitnesspro.ru.Misc
             {
                 c.BaseAddress = new Uri(configuration.GetSection("lc:EndPoints:Identity").Value);
             });
+
+            servicesCollection.AddHttpClient<AssignHttpClient>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("lc:EndPoints:Assign").Value);
+            });
         }
     }
 }
