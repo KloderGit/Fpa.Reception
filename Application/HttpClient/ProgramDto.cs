@@ -7,6 +7,7 @@ namespace Application.HttpClient
     public class ProgramDto
     {
         public Guid Key { get; set; }
+        public string Title { get; set; }
         public Guid EducationFormKey { get; set; }
 
         public IEnumerable<DisciplineInfo> Disciplines { get; set; }

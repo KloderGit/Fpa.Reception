@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Application.HttpClient;
+using Domain;
 
 namespace Application.Employee
 {
@@ -21,17 +22,23 @@ namespace Application.Employee
             this.assignHttpClient = assignHttpClient;
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetByPersonKey(IEnumerable<Guid> keys)
+        public async Task<IEnumerable<BaseInfoDto>> GetByKeys(IEnumerable<Guid> keys)
+        {
+            return await employeesHttpClient.GetByKeys(keys);
+        }
+
+        public async Task<IEnumerable<BaseInfoDto>> GetByPersonKey(IEnumerable<Guid> keys)
         {
             return await employeesHttpClient.GetByPersonKey(keys);
         }
 
         public async Task<IEnumerable<EmployeeDisciplineDto>> GetDisciplines(IEnumerable<Guid> keys)
         {
+
             return await employeesHttpClient.GetDisciplines(keys);
         }
 
-        public async Task<IEnumerable<TeacherDiscipline>> GetTeacherDisciplines(IEnumerable<Guid> keys)
+        public async Task<IEnumerable<BaseOneToMany>> GetTeacherDisciplines(IEnumerable<Guid> keys)
         {
             var assignsArray = await assignHttpClient.GetByTeacherKeys(keys);
 
@@ -45,19 +52,30 @@ namespace Application.Employee
                 .GroupBy(x => x.TeacherKey);
 
             var result = groupedByTeacher.Select(x =>
-                new TeacherDiscipline
+                new BaseOneToMany
                 {
-                    TeacherKey = x.Key, 
-                    Disciplines = x.SelectMany(d => d.Disciplines.Select(g => g.DisciplineKey))
+                    Key = x.Key, 
+                    Children = x.SelectMany(d => d.Disciplines.Select(g => g.DisciplineKey))
                 });
 
             return result;
         }
 
-        public class TeacherDiscipline
+        
+        public IEnumerable<BaseOneToMany> GetProgramWithDisciplineKey(IEnumerable<BaseOneToMany> programs, Guid key)
         {
-            public Guid TeacherKey { get; set; }
-            public IEnumerable<Guid> Disciplines { get; set; }
+            var progs = programs
+                .Where(x => x.Children.Any(k => k == key));
+
+            var vms = progs.Select(x => new BaseOneToMany
+            {
+                Key = x.Key,
+                Children = x.Children.Where(d=>d == key).Distinct()
+            });
+
+            return vms;
         }
+
     }
+
 }

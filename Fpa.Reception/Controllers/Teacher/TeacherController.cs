@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Extensions;
 using Application.HttpClient;
+using Domain;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -19,6 +20,9 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
         private readonly AssignHttpClient assignHttpClient;
+        private readonly DisciplineHttpClient disciplineHttpClient;
+        private readonly EducationFormHttpClient educationFormHttpClient;
+        private readonly ControlTypeHttpClient controlTypeHttpClient;
 
         ProgramMethods programAction;
         EmployeeMethods employeeAction;
@@ -26,11 +30,17 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         public TeacherController(
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
-            AssignHttpClient assignHttpClient)
+            AssignHttpClient assignHttpClient,
+            DisciplineHttpClient disciplineHttpClient,
+            EducationFormHttpClient educationFormHttpClient,
+            ControlTypeHttpClient controlTypeHttpClient)
         {
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
             this.assignHttpClient = assignHttpClient;
+            this.disciplineHttpClient = disciplineHttpClient;
+            this.educationFormHttpClient = educationFormHttpClient;
+            this.controlTypeHttpClient = controlTypeHttpClient;
 
             programAction = new ProgramMethods(programHttpClient);
             employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
@@ -108,80 +118,73 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         //    return viewModel;
         //}
 
+
         [HttpGet]
         [Route("Disciplines")]
-        public async Task<ActionResult<IEnumerable<TeacherInfoViewModel>>> GetDisciplines(IEnumerable<Guid> keys)
+        public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetDisciplines(IEnumerable<Guid> keys)
         {
-            var disciplineKeys = await employeeAction.GetTeacherDisciplines(keys);
+            var techerDisciplineKeys = await employeeAction.GetTeacherDisciplines(keys);
 
-            var programs = await programAction.GetByDiscipline(disciplineKeys.SelectMany(x => x.Disciplines));
+            var programs = await programAction.GetByDiscipline(techerDisciplineKeys.SelectMany(x => x.Children));
 
-            var vm = keys.Select(x =>
-                new TeacherInfoViewModel
-                {
-                    Key = x,
-                    Programs = GetPrograms(disciplineKeys.First(t=>t.TeacherKey==x).Disciplines)
-                }
-            );
+            var teachers = await employeeAction.GetByKeys(keys);
 
-            IEnumerable<ProgramInfoViewModel> GetPrograms(IEnumerable<Guid> keys)
-            {
-                var pr = keys.SelectMany(x => GetProgram(x));
+            var disciplineInfo = await disciplineHttpClient.Find(techerDisciplineKeys.SelectMany(x => x.Children));
 
-                var sddd = pr.GroupBy(x => x.Key);
+            var educationForms = await educationFormHttpClient.GetByKeys(programs.Select(e=>e.EducationFormKey).Where(e=>e != default));
 
-                var res = sddd.Select(x => new ProgramInfoViewModel
-                {
-                    Key = x.Key,
-                    Form = x.First().Form,
-                    Disciplines = x.SelectMany(d=>d.Disciplines)
-                });
+            var controlTypes = await controlTypeHttpClient.GetByKeys(programs.SelectMany(d=>d.Disciplines.Select(i=>i.ControlTypeKey)));
 
-                return res;
-            }
+            var res = from info in techerDisciplineKeys
+                      let teacher = teachers.FirstOrDefault(x => x.Key == info.Key)
+                      let discipline = info.Children.Select(d => 
+                          new DisciplineViewModel
+                          {
+                              Key = d, Title = disciplineInfo.FirstOrDefault(x => x.Key == d).Title
+                          })
+                      let programT = info.Children
+                          .SelectMany(x => programs.Where(p => p.Disciplines.Any(d => d.DisciplineKey == x))
+                              .Select(i => 
+                                  new Teacher.ProgramInfoViewModel 
+                                  { 
+                                      Key = i.Key,
+                                      Title = i.Title,
+                                      EducationForm = new EducationFormViewModel
+                                      {
+                                          Key = i.EducationFormKey,
+                                          Title = educationForms.FirstOrDefault(e=>e.Key == i.EducationFormKey)?.Title
+                                      }, 
+                                      Disciplines = 
+                                          new List<DisciplinePlanViewModel> 
+                                          { 
+                                              new DisciplinePlanViewModel
+                                              {
+                                                  Discipline = discipline.First(k => k.Key == x),
+                                                  ControlType = 
+                                                      new ControlTypeViewModel
+                                                      {
+                                                          Key = i.Disciplines.FirstOrDefault(ct=>ct.DisciplineKey == x).ControlTypeKey,
+                                                          Title = controlTypes.FirstOrDefault(ctp=>ctp.Key == i.Disciplines.FirstOrDefault(ct=>ct.DisciplineKey == x).ControlTypeKey)?.Title
+                                                      }
+                                              }
+                                          }
+                                  })
+                          ).GroupBy(g=>g.Key)
+                          .Select(r=>new Teacher.ProgramInfoViewModel
+                          {
+                              Key = r.Key,
+                              Title = r.First().Title,
+                              EducationForm = r.First().EducationForm,
+                              Disciplines = r.SelectMany(d => d.Disciplines)
+                          } )
+                      select new TeacherAssignViewModel
+                      {
+                          Key = teacher.Key,
+                          Title = teacher.Title,
+                          Programs = programT
+                      };
 
-            IEnumerable<ProgramInfoViewModel> GetProgram(Guid key)
-            {
-                var progs = programs.Where(x => 
-                    x.Disciplines.Select(k => k.DisciplineKey)
-                        .Any(i => i == key));
-
-                var vms = progs.Select(x => new ProgramInfoViewModel
-                {
-                    Key = x.Key,
-                    Form = x.EducationFormKey,
-                    Disciplines = x.Disciplines.Where(d=>d.DisciplineKey == key)
-                    .Select(d=>new DisciplineInfoViewModel
-                    {
-                        Key = d.DisciplineKey,
-                        ControlTypeKey = d.ControlTypeKey
-                    })
-                });
-
-                return vms;
-            }
-
-            return vm.ToList();
-        }
-
-        public class TeacherInfoViewModel
-        {
-            public Guid Key { get; set; }
-            public IEnumerable<ProgramInfoViewModel> Programs { get; set; }
-        }
-
-        public class ProgramInfoViewModel
-        {
-            public Guid Key { get; set; }
-            public Guid Form { get; set; }
-
-            public IEnumerable<DisciplineInfoViewModel> Disciplines { get; set; }
-        }
-
-        public class DisciplineInfoViewModel
-        {
-            public Guid Key { get; set; }
-            public Guid ControlTypeKey { get; set; }
+            return res.ToList();
         }
     }
 }
