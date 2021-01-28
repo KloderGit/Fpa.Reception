@@ -135,15 +135,61 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var controlTypes = await controlTypeHttpClient.GetByKeys(programs.SelectMany(d=>d.Disciplines.Select(i=>i.ControlTypeKey)));
 
+            
+            
+            
+             //var res2 = from info in techerDisciplineKeys
+             //         let teacher = teachers.FirstOrDefault(x => x.Key == info.Key)
+             //         let disciplineArray =(
+             //                 from disciplineKey in info.Children
+             //                 let disciplineEntity = disciplineInfo.FirstOrDefault(d=>d.Key == disciplineKey)
+             //                 select new DisciplineViewModel { Key = disciplineKey, Title = disciplineEntity.Title })
+             //         let programsArray = (
+             //                   from programItem in programs
+             //                   from disciplineItem in disciplineArray
+             //                   where programItem.Disciplines.Any(x=>x.DisciplineKey == disciplineItem.Key)
+             //                   let edf = educationForms.FirstOrDefault(x=>x.Key == programItem.EducationFormKey)
+             //                   let dscpInfo = controlTypes.FirstOrDefault(x=>x.Key == programItem.Disciplines.FirstOrDefault(x=>x.DisciplineKey == disciplineItem.Key).ControlTypeKey)
+             //                   select new ProgramInfoViewModel
+             //                   {
+             //                       Key = programItem.Key,
+             //                       Title = programItem.Title,
+             //                       EducationForm = new EducationFormViewModel{Key = edf.Key, Title = edf.Title},
+             //                       Disciplines = new List<DisciplinePlanViewModel>
+             //                           { new DisciplinePlanViewModel
+             //                           {
+             //                               Discipline = disciplineItem,
+             //                               ControlType = new ControlTypeViewModel{Key = dscpInfo.Key, Title = dscpInfo.Title}
+             //                           }}
+             //                   }
+             //                 )
+             //         select new TeacherAssignViewModel
+             //         {
+             //             Key = teacher.Key,
+             //             Title = teacher.Title,
+             //             Programs = programsArray
+             //         };
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             var res = from info in techerDisciplineKeys
                       let teacher = teachers.FirstOrDefault(x => x.Key == info.Key)
-                      let discipline = info.Children.Select(d => 
-                          new DisciplineViewModel
-                          {
-                              Key = d, Title = disciplineInfo.FirstOrDefault(x => x.Key == d).Title
-                          })
+                      let discipline =(
+                              from disciplineKey in info.Children
+                              let disciplineEntity = disciplineInfo.FirstOrDefault(d=>d.Key == disciplineKey)
+                              select new DisciplineViewModel { Key = disciplineKey, Title = disciplineEntity.Title })
                       let programT = info.Children
-                          .SelectMany(x => programs.Where(p => p.Disciplines.Any(d => d.DisciplineKey == x))
+                              .SelectMany(x => programs.Where(p => p.Disciplines.Any(d => d.DisciplineKey == x))
                               .Select(i => 
                                   new Teacher.ProgramInfoViewModel 
                                   { 
