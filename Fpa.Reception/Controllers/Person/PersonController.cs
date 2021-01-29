@@ -60,7 +60,7 @@ namespace reception.fitnesspro.ru.Controllers.Person
 
             var viewModel = personGuidArray.Select(p=> new PersonViewModel{ 
                 PersonKey = p, 
-                EmployeeKey = employees.Any(x=>x.Key == p) ? employees.First(x=>x.Key == p).Key : Guid.Empty
+                EmployeeKey = employees.Any(x=>x.PersonKey == p) ? employees.First(x=>x.PersonKey == p).Key : Guid.Empty
             });
 
             return viewModel.ToList();

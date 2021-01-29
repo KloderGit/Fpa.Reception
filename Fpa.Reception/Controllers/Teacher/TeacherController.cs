@@ -136,17 +136,14 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var controlTypes = await controlTypeHttpClient.GetByKeys(programs.SelectMany(d=>d.Disciplines.Select(i=>i.ControlTypeKey)));
 
-            ;
-
             var res = from info in techerDisciplineKeys
                       let teacher = teachers.FirstOrDefault(x => x.Key == info.Key)
-                      let discipline = info.Children.Select(d => 
-                          new DisciplineViewModel
-                          {
-                              Key = d, Title = disciplineInfo.FirstOrDefault(x => x.Key == d).Title
-                          })
+                      let discipline =(
+                              from disciplineKey in info.Children
+                              let disciplineEntity = disciplineInfo.FirstOrDefault(d=>d.Key == disciplineKey)
+                              select new DisciplineViewModel { Key = disciplineKey, Title = disciplineEntity.Title })
                       let programT = info.Children
-                          .SelectMany(x => programs.Where(p => p.Disciplines.Any(d => d.DisciplineKey == x))
+                              .SelectMany(x => programs.Where(p => p.Disciplines.Any(d => d.DisciplineKey == x))
                               .Select(i => 
                                   new Teacher.ProgramInfoViewModel 
                                   { 

@@ -27,7 +27,7 @@ namespace Application.Employee
             return await employeesHttpClient.GetByKeys(keys);
         }
 
-        public async Task<IEnumerable<BaseInfoDto>> GetByPersonKey(IEnumerable<Guid> keys)
+        public async Task<IEnumerable<EmployeeDto>> GetByPersonKey(IEnumerable<Guid> keys)
         {
             return await employeesHttpClient.GetByPersonKey(keys);
         }

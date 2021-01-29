@@ -30,15 +30,15 @@ namespace Application.HttpClient
             return result;
         }
 
-        public async Task<IEnumerable<BaseInfoDto>> GetByPersonKey(IEnumerable<Guid> keys)
+        public async Task<IEnumerable<EmployeeDto>> GetByPersonKey(IEnumerable<Guid> keys)
         {
-            var result = Enumerable.Empty<BaseInfoDto>();
+            var result = Enumerable.Empty<EmployeeDto>();
 
             var request = await Client.GetAsync("FindByPerson", keys);
 
             if (request.IsSuccessStatusCode)
             {
-                result = await request.GetResultAsync<IEnumerable<BaseInfoDto>>();
+                result = await request.GetResultAsync<IEnumerable<EmployeeDto>>();
             }
 
             return result;
