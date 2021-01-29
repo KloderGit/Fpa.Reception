@@ -120,6 +120,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
 
         [HttpGet]
+        //[Route("Prototype")]
         [Route("Disciplines")]
         public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetDisciplines(IEnumerable<Guid> keys)
         {
@@ -134,6 +135,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             var educationForms = await educationFormHttpClient.GetByKeys(programs.Select(e=>e.EducationFormKey).Where(e=>e != default));
 
             var controlTypes = await controlTypeHttpClient.GetByKeys(programs.SelectMany(d=>d.Disciplines.Select(i=>i.ControlTypeKey)));
+
+            ;
 
             var res = from info in techerDisciplineKeys
                       let teacher = teachers.FirstOrDefault(x => x.Key == info.Key)

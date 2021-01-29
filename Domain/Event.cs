@@ -11,7 +11,7 @@ namespace Domain
 
         public EventLimit Limit { get; set; } = new EventLimit();
 
-        public ResultType ResultType { get; set; }
+        //public ResultType ResultType { get; set; }
     }
 
     public class EventLimit

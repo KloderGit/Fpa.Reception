@@ -15,4 +15,13 @@ namespace Domain
         public List<Position> Positions { get; set; } = new List<Position>();
         public List<History> Histories { get; set; } = new List<History>();
     }
+
+    public class Payload
+    {
+        public Guid ProgramKey { get; set; }
+        public Guid DisciplineKey { get; set; }
+        public Constraint Constraints { get; set; }
+    }
+
+
 }

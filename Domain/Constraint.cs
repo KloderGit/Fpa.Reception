@@ -6,7 +6,6 @@ namespace Domain
 {
     public class Constraint
     {
-        public List<Guid> ProgramKeys { get; set; } = new List<Guid>();
         public List<Guid> GroupKeys { get; set; } = new List<Guid>();
         public List<Guid> SubGroupKeys { get; set; } = new List<Guid>();
         public DateTime SubscribeBefore { get; set; } = default;
