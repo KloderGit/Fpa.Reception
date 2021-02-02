@@ -6,15 +6,15 @@ namespace Domain
 {
     public class ReceptionLimit
     {
-        public LimitType Type {get; private set;}
+        public PositionType Type {get; private set;}
         public int Quantity { get; private set; }
 
-        public ReceptionLimit(LimitType type)
+        public ReceptionLimit(PositionType type)
         {
             Type = type;
         }
-        public ReceptionLimit(LimitType type, int quantity)
-            :this(LimitType.Number)
+        public ReceptionLimit(PositionType type, int quantity)
+            :this(PositionType.Number)
         {
             Quantity = quantity;
         }
@@ -25,10 +25,4 @@ namespace Domain
         }
     }
 
-    public enum LimitType
-    {
-        Seating,
-        Number,
-        Free
-    }
 }

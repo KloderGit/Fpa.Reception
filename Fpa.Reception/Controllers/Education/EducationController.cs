@@ -114,5 +114,13 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             return res.ToList();
         }
+
+        //[HttpGet]
+        //[Route("Program")]
+        //public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetPrograms()
+        //{
+        //    var programs = await programAction.GetByDiscipline(techerDisciplineKeys.SelectMany(x => x.Children));
+
+        //}
     }
 }

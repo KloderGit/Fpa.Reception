@@ -27,5 +27,19 @@ namespace Application.HttpClient
 
             return result.ToList();
         }
+
+        public async Task<IEnumerable<ProgramDto>> GetAllPrograms()
+        {
+            var result = Enumerable.Empty<ProgramDto>();
+
+            var request = await Client.GetAsync("/");
+
+            if (request.IsSuccessStatusCode)
+            {
+                result = await request.GetResultAsync<IEnumerable<ProgramDto>>();
+            }
+
+            return result.ToList();
+        }
     }
 }

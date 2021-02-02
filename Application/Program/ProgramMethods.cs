@@ -18,5 +18,10 @@ namespace Application.Program
         {
             return await http.FindByDiscipline(keys);
         }
+
+        //public async Task<IEnumerable<ProgramDto>> GetPrograms(IEnumerable<Guid> keys)
+        //{
+        //    return await http.Client.GetAsync("/");
+        //}
     }
 }
