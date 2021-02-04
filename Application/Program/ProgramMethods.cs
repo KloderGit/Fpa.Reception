@@ -19,9 +19,9 @@ namespace Application.Program
             return await http.FindByDiscipline(keys);
         }
 
-        //public async Task<IEnumerable<ProgramDto>> GetPrograms(IEnumerable<Guid> keys)
-        //{
-        //    return await http.Client.GetAsync("/");
-        //}
+        public async Task<IEnumerable<ProgramDto>> Find(IEnumerable<Guid> keys)
+        {
+            return await http.Find(keys);
+        }
     }
 }

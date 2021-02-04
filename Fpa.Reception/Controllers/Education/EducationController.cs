@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Application.Employee;
 using Application.HttpClient;
 using Application.Program;
+using lc.fitnesspro.library;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Teacher;
+using Service.lC;
 
 namespace reception.fitnesspro.ru.Controllers.Education
 {
@@ -46,13 +48,16 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
         [HttpPost]
         [Route("Prototype")]
-        public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetPrototype([FromBody]IEnumerable<Guid> keys)
+        public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetPrototype([FromBody] IEnumerable<Guid> keys)
         {
             var techerDisciplineKeys = await employeeAction.GetTeacherDisciplines(keys);
 
+
             var programs = await programAction.GetByDiscipline(techerDisciplineKeys.SelectMany(x => x.Children));
 
-            var teachers = await employeeAction.GetByKeys(keys);
+            var teacherKeys = techerDisciplineKeys.Select(x => x.Key);
+
+            var teachers = await employeeAction.GetByKeys(teacherKeys);
 
             var disciplineInfo = await disciplineHttpClient.Find(techerDisciplineKeys.SelectMany(x => x.Children));
 
@@ -115,12 +120,86 @@ namespace reception.fitnesspro.ru.Controllers.Education
             return res.ToList();
         }
 
-        //[HttpGet]
-        //[Route("Program")]
-        //public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetPrograms()
-        //{
-        //    var programs = await programAction.GetByDiscipline(techerDisciplineKeys.SelectMany(x => x.Children));
+        [HttpGet]
+        [Route("Program/FindByEmployee")]
+        public async Task<ActionResult<IEnumerable<EducationInfoViewModel>>> FindByEmployee(Guid key)
+        {
+            var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-        //}
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
+            // get programs with teacher
+            var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
+
+            var client2 = new EducationProgram(new Manager("Kloder", "Kaligula2"));
+
+            var teacherProgramSource = await client2.Find(teacherProgramKeys).ConfigureAwait(false);
+
+            var teacherPrograms = teacherProgramSource.Select(x =>
+                new ProgramDto
+                {
+                    Key = x.Key,
+                    Title = x.Title,
+                    EducationFormKey = x.EducationFormKey,
+                    Teachers = x.Teachers.Select(x=>x.TeacherKey),
+                    Disciplines = x.Disciplines.Select(d => new DisciplineInfo
+                    {
+                        DisciplineKey = d.DisciplineKey,
+                        ControlTypeKey = d.ControlTypeKey
+                    })
+                }
+            );
+
+            // get program disciplines
+            var disciplineInfo = await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d=>d.DisciplineKey));
+
+            // get teachers
+            var teacherKeys = teacherPrograms.SelectMany(x => x.Teachers);
+            var teachers = await employeeAction.GetByKeys(teacherKeys);
+
+            // get controltypes
+            var controlTypeKeys = teacherPrograms.SelectMany(x => x.Disciplines).Select(x => x.ControlTypeKey).Where(x => x != default);
+            var controlTypes = await controlTypeHttpClient.GetByKeys(controlTypeKeys);
+
+            // get program education forms
+            var educationFormKeys = teacherPrograms.Select(x => x.EducationFormKey).Where(e => e != default);
+            var educationForms = await educationFormHttpClient.GetByKeys(educationFormKeys);
+
+
+            var result = teacherPrograms?.Select(x=>
+                new EducationInfoViewModel(x)
+                    .AddEducation(educationForms)
+                    .AddTeachers(teachers)
+                    .AddDisciplines(disciplineInfo, controlTypes)
+            );
+
+
+            // get program groups
+            // get group subgroup
+            // get limits
+
+            return result.ToList();
+        }
+
+
+
+        [HttpPost]
+        [Route("Limit/Create")]
+        public async Task<ActionResult> CreateLimit([FromBody] LimitViewModel model)
+        {
+            return Ok();
+        }
+
+        public class LimitViewModel
+        {
+            public Guid ProgramKey { get; set; }
+            public Guid DisciplineKey { get; set; }
+            public IEnumerable<Guid> DependsOnOtherDiscipline { get; set; } = new List<Guid>();
+            public int AllowedAttempCount { get; set; }
+        }
     }
 }

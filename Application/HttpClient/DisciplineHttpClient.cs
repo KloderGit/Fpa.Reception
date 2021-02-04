@@ -10,18 +10,25 @@ namespace Application.HttpClient
     public class DisciplineHttpClient : CommonHttpClient
     {
         public DisciplineHttpClient(System.Net.Http.HttpClient client)
-        :base(client: client)
-        {}
+        : base(client: client)
+        { }
 
         public async Task<IEnumerable<BaseInfo>> Find(IEnumerable<Guid> keys)
         {
             var result = Enumerable.Empty<BaseInfo>();
 
-            var request = await Client.GetAsync("Find", keys);
+            var array = keys.Select((s, i) => keys.Skip(i * 50).Take(50)).Where(a => a.Any());
 
-            if (request.IsSuccessStatusCode)
+            foreach (var part in array)
             {
-                result = await request.GetResultAsync<IEnumerable<BaseInfo>>();
+                var request = await Client.GetAsync("Find", part);
+
+                if (request.IsSuccessStatusCode)
+                {
+                    var query = await request.GetResultAsync<IEnumerable<BaseInfo>>();
+
+                    result = result.Concat(query);
+                }
             }
 
             return result;

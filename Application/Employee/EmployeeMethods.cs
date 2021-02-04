@@ -42,6 +42,9 @@ namespace Application.Employee
         {
             var assignsArray = await assignHttpClient.GetByTeacherKeys(keys);
 
+            if (assignsArray.IsNullOrEmpty())
+                assignsArray = await assignHttpClient.GetAll();
+
             var groupedByTeacher = assignsArray
                 .Select(x =>
                     x.Teachers.GroupJoin(x.Disciplines,

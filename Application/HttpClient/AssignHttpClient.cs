@@ -14,6 +14,21 @@ namespace Application.HttpClient
         :base(client: client)
         {}
 
+        public async Task<IEnumerable<AssignDisciplineDto>> GetAll()
+        {
+            var result = Enumerable.Empty<AssignDisciplineDto>();
+
+            var request = await Client.GetAsync("");
+
+            if (request.IsSuccessStatusCode)
+            {
+                var query = await request.GetResultAsync<IEnumerable<AssignDisciplineDto>>();
+                result = query ?? result;
+            }
+
+            return result.ToList();
+        }
+
         public async Task<IEnumerable<AssignDisciplineDto>> GetByTeacherKeys(IEnumerable<Guid> keys)
         {
             var result = Enumerable.Empty<AssignDisciplineDto>();
@@ -22,7 +37,8 @@ namespace Application.HttpClient
 
             if (request.IsSuccessStatusCode)
             {
-                result = await request.GetResultAsync<IEnumerable<AssignDisciplineDto>>();
+                var query = await request.GetResultAsync<IEnumerable<AssignDisciplineDto>>();
+                result = query ?? result;
             }
 
             return result.ToList();

@@ -9,7 +9,7 @@ namespace Application.HttpClient
         public Guid Key { get; set; }
         public string Title { get; set; }
         public Guid EducationFormKey { get; set; }
-        public IEnumerable<DisciplineInfo> Teachers { get; set; }
+        public IEnumerable<Guid> Teachers { get; set; }
         public IEnumerable<DisciplineInfo> Disciplines { get; set; }
     }
 
