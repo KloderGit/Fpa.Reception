@@ -186,6 +186,25 @@ namespace reception.fitnesspro.ru.Controllers.Education
         }
 
 
+        [HttpGet]
+        [Route("Program/FindSiblings")]
+        public async Task<ActionResult<EducationStructureViewModel>> FindProgramsWithDisciplineKey(Guid key)
+        {
+            var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
+
+            var programs = await client.FindSiblings(key);
+            if (programs == null || programs.Any() == false) return NoContent();
+
+            var groups = await client.FindProgramGroup(programs.Select(x=>x.Key));
+
+            var subGroups = await client.FindSubgroups(groups.Select(x=>x.Key));
+
+            var viewModel = new EducationStructureViewModel(programs, groups, subGroups);
+
+            return viewModel;
+        }
+
+
 
         [HttpPost]
         [Route("Limit/Create")]
@@ -201,5 +220,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
             public IEnumerable<Guid> DependsOnOtherDiscipline { get; set; } = new List<Guid>();
             public int AllowedAttempCount { get; set; }
         }
+
+
+        
     }
 }
