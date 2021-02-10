@@ -8,7 +8,7 @@ namespace Domain
     {
         public Guid Key { get; set; }
         public bool IsActive { get; set; }
-        public (int, int) Time { get; set; }
+        public DateTime Time { get; set; }
         public PositionPayload Payload { get; set; }
         public List<History> Histories { get; set; } = new List<History>();
     }
@@ -18,7 +18,6 @@ namespace Domain
         public Guid StudentKey { get; set; }
         public Guid ProgramKey { get; set; }
         public Guid DisciplineKey { get; set; }
-        //public ScoreType ScoreType { get; set; }
         public PositionPayloadResult Result { get; set; }
     }
 

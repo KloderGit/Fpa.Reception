@@ -8,19 +8,34 @@ namespace Domain
         public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
-        public IEnumerable<Payload> Payload { get; set; } = new List<Payload>();
         public PositionManager PositionManager { get; set; }
+
+        public List<ReceptionPayload> Events { get; set; } = new List<ReceptionPayload>();
+
         public List<History> Histories { get; set; } = new List<History>();
+
+        public TConverted ConvertToType<TConverted>(Func<Reception, TConverted> function )
+        {
+            var result = function(this);
+
+            return result;
+        }
+
+        public Reception ConvertFromType<TConverted>(Func<TConverted, Reception> function, TConverted item)
+        {
+            var result = function(item);
+
+            return result;
+        }
     }
 
     public class PositionManager
     {
-        PositionType limitType;
-        public PositionManager(PositionType limitType)
+        public PositionType LimitType;
+        public PositionManager()
         {
-            this.limitType = limitType;
         }
-        public IEnumerable<Position> Positions { get; set; } = new List<Position>();
+        public List<Position> Positions { get; set; } = new List<Position>();
     }
 
     public enum PositionType
@@ -31,15 +46,15 @@ namespace Domain
     }
 
 
-    public class Payload
+    public class ReceptionPayload
     {
-        public IEnumerable<BaseInfo> Teachers { get; set; } = new List<BaseInfo>();
+        public List<BaseInfo> Teachers { get; set; } = new List<BaseInfo>();
         public BaseInfo Discipline { get; set; }
-        public IEnumerable<PayloadBound> Bound { get; set; } = new List<PayloadBound>();
-        public PayloadConstrait Constrait { get; set; }
+        public List<PayloadConstraints> Constraints { get; set; } = new List<PayloadConstraints>();
+        public PayloadRequirement Requirement { get; set; }
     }
 
-    public class PayloadConstrait
+    public class PayloadRequirement
     {
         public DateTime SubscribeBefore { get; set; } = default;
         public DateTime UnsubscribeBefore { get; set; } = default;
@@ -48,16 +63,16 @@ namespace Domain
         public int AllowedAttempCount { get; set; }
     }
 
-    public class PayloadBound
+    public class PayloadConstraints
     {
         public Guid Program { get; set; }
         public Guid Group { get; set; }
         public Guid SubGroup { get; set; }
 
-        public PayloadRules Rules { get; set; }
+        public PayloadOptions Options { get; set; }
     }
 
-    public class PayloadRules
+    public class PayloadOptions
     {
         public bool CheckContractExpired { get; set; } = true;
         public bool CheckDependings { get; set; } = true;

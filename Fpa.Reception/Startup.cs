@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Application.HttpClient;
 using Microsoft.IdentityModel.Tokens;
 using reception.fitnesspro.ru.Misc;
+using MongoDB.Serializer.ValueTuple;
 
 namespace reception.fitnesspro.ru
 {
@@ -33,7 +34,9 @@ namespace reception.fitnesspro.ru
             HttpClientLibrary.AddHttpClients(services, Configuration);
 
             services.AddControllers();
-                
+
+            ValueTupleSerializerRegistry.Register();
+
 
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
