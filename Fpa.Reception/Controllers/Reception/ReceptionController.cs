@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Application.ReceptionComponent;
 using Domain;
-using Mapster;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Reception.Converter;
 using reception.fitnesspro.ru.Controllers.Reception.ViewModel;
 using reception.fitnesspro.ru.ViewModel;
+using Service.MongoDB;
+using Service.MongoDB.Model;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace reception.fitnesspro.ru.Controllers.Reception
 {
@@ -16,13 +16,24 @@ namespace reception.fitnesspro.ru.Controllers.Reception
     [ApiController]
     public class ReceptionController : ControllerBase
     {
+        IMongoRepository<ReceptionDto> database;
+
+        ReceptionComponent receptionComponent;
+
+        public ReceptionController(IMongoRepository<ReceptionDto> mongodb)
+        {
+            this.database = mongodb;
+            this.receptionComponent = new ReceptionComponent(database);
+        }
 
         [HttpPost]
         public async Task<ActionResult> Post(CreateReceptionViewModel model)
         {
             if (ModelState.IsValid == false) return BadRequest(model);
 
-            var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.CreatedViewModelToDomain, model);
+            var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
+
+            receptionComponent.StoreReception(item);
 
             return Ok(item);
         }
@@ -57,8 +68,8 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                                 SubscribeBefore = DateTime.Now,
                                 UnsubscribeBefore = DateTime.Now + TimeSpan.FromDays(2)
                             },
-                            Constraints = new List<ConstraintViewModel>{
-                                 new ConstraintViewModel{
+                            Restrictions = new List<RestrictionViewModel>{
+                                 new RestrictionViewModel{
                                      Program = Guid.NewGuid(),
                                       Group = Guid.NewGuid(),
                                        SubGroup = Guid.NewGuid(),

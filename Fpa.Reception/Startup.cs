@@ -16,6 +16,8 @@ using Application.HttpClient;
 using Microsoft.IdentityModel.Tokens;
 using reception.fitnesspro.ru.Misc;
 using MongoDB.Serializer.ValueTuple;
+using Service.MongoDB;
+using Microsoft.Extensions.Options;
 
 namespace reception.fitnesspro.ru
 {
@@ -33,9 +35,13 @@ namespace reception.fitnesspro.ru
         {
             HttpClientLibrary.AddHttpClients(services, Configuration);
 
-            services.AddControllers();
+            services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
+            services.AddSingleton<IMongoDbSettings>(serviceProvider =>
+                serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
-            ValueTupleSerializerRegistry.Register();
+            services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+
+            services.AddControllers();
 
 
             services.AddAuthentication("Bearer")

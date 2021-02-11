@@ -2,7 +2,7 @@
 
 namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
 {
-    public class ConstraintViewModel
+    public class RestrictionViewModel
     {
         public Guid Program { get; set; }
         public Guid Group { get; set; }

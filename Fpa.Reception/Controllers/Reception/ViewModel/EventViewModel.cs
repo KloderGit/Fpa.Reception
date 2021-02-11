@@ -10,7 +10,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
         public IEnumerable<BaseInfoViewModel> Teachers { get; set; } = new List<BaseInfoViewModel>();
         [Required]
         public BaseInfoViewModel Discipline { get; set; }
-        public IEnumerable<ConstraintViewModel> Constraints { get; set; } = new List<ConstraintViewModel>();
+        public IEnumerable<RestrictionViewModel> Restrictions { get; set; } = new List<RestrictionViewModel>();
         public RequirementViewModel Requirement { get; set; }
     }
 }

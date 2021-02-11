@@ -55,18 +55,18 @@ namespace Application.Program
                          new ReceptionPayload {
                           Teachers = new List<BaseInfo>{ new BaseInfo { Key = Guid.NewGuid(), Title = "Меркурьев" }, new BaseInfo { Key = Guid.NewGuid(), Title = "Калашников" } },
                            Discipline =  new BaseInfo { Key = Guid.NewGuid(), Title = "Anatomy" },
-                             Constraints = new List<PayloadConstraints>{ new PayloadConstraints { Program = Guid.NewGuid(), Group = Guid.NewGuid(), SubGroup = Guid.NewGuid(),
-                                 Options = new PayloadOptions{
+                             Restrictions = new List<PayloadRestriction>{ new PayloadRestriction { Program = Guid.NewGuid(), Group = Guid.NewGuid(), SubGroup = Guid.NewGuid(),
+                                 Option = new PayloadOption{
                                      CheckAttemps = true,
                                       CheckContractExpired = true,
                                        CheckDependings = false
                                  }
                              } },
                               Requirement = new PayloadRequirement{
-                               AllowedAttempCount = 10,
+                               AllowedAttemptCount = 10,
                                 SubscribeBefore = DateTime.UtcNow,
                                  UnsubscribeBefore = DateTime.Now,
-                                  DependsOnOtherDiscipline = new List<Guid>{
+                                  DependsOnOtherDisciplines = new List<Guid>{
                                    Guid.NewGuid()
                                   }
                               }
@@ -110,13 +110,5 @@ namespace Application.Program
             var ettt = item.ConvertFromType( Convert.ConvertFromMongoDto, people.First());
 
         }
-    }
-
-    [BsonIgnoreExtraElements]
-    [BsonCollection("Receptions")]
-    public class ReceptionDto1 : Reception, IDocument
-    {
-        public ObjectId Id { get; set; }
-        public DateTime CreatedAt { get; }
     }
 }

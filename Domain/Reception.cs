@@ -50,7 +50,7 @@ namespace Domain
     {
         public List<BaseInfo> Teachers { get; set; } = new List<BaseInfo>();
         public BaseInfo Discipline { get; set; }
-        public List<PayloadConstraints> Constraints { get; set; } = new List<PayloadConstraints>();
+        public List<PayloadRestriction> Restrictions { get; set; } = new List<PayloadRestriction>();
         public PayloadRequirement Requirement { get; set; }
     }
 
@@ -59,20 +59,20 @@ namespace Domain
         public DateTime SubscribeBefore { get; set; } = default;
         public DateTime UnsubscribeBefore { get; set; } = default;
 
-        public IEnumerable<Guid> DependsOnOtherDiscipline { get; set; } = new List<Guid>();
-        public int AllowedAttempCount { get; set; }
+        public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; } = new List<Guid>();
+        public int AllowedAttemptCount { get; set; }
     }
 
-    public class PayloadConstraints
+    public class PayloadRestriction
     {
         public Guid Program { get; set; }
         public Guid Group { get; set; }
         public Guid SubGroup { get; set; }
 
-        public PayloadOptions Options { get; set; }
+        public PayloadOption Option { get; set; }
     }
 
-    public class PayloadOptions
+    public class PayloadOption
     {
         public bool CheckContractExpired { get; set; } = true;
         public bool CheckDependings { get; set; } = true;

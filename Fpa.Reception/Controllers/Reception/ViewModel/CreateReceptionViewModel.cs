@@ -24,10 +24,10 @@ namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
         {
             List<ValidationResult> errors = new List<ValidationResult>();
 
-            if ( (this.PositionType == PositionType.Seating || PositionType == PositionType.Number) && (Times == null || Times.Any() == false))
+            if ( (PositionType != PositionType.Free) && (Times == null || Times.Any() == false) )
                 errors.Add(new ValidationResult("Временные промежутки для этого типа записи не заполнены", new[] { nameof(PositionType), nameof(Times) }));
 
-            throw new NotImplementedException();
+            return errors;
         }
     }
 }

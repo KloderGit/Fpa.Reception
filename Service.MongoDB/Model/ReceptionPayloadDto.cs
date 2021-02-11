@@ -6,7 +6,7 @@ namespace Service.MongoDB.Model
     {
         public IEnumerable<BaseInfoDto> Teachers { get; set; } = new List<BaseInfoDto>();
         public BaseInfoDto Discipline { get; set; }
-        public IEnumerable<PayloadConstraintDto> Constraints { get; set; } = new List<PayloadConstraintDto>();
+        public IEnumerable<PayloadRestrictionDto> Restrictions { get; set; } = new List<PayloadRestrictionDto>();
         public PayloadRequirementDto Requirement { get; set; }
     }
 }

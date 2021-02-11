@@ -1,7 +1,5 @@
 ﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using Service.MongoDB.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,16 +15,6 @@ namespace Service.MongoDB
 
         public MongoRepository(IMongoDbSettings settings)
         {
-            var typeSerializer = new SystemTypeSerializer();
-            BsonSerializer.RegisterSerializer(typeof(Type), typeSerializer);
-            BsonSerializer.RegisterSerializer(Type.GetType("System.RuntimeType"), typeSerializer);
-
-            //BsonClassMap.RegisterClassMap<Person>(cm =>
-            //{
-            //    cm.AutoMap();
-            //    cm.MapCreator(p => new Person(p.FirstName, p.LastName));
-            //});
-
             var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
         }

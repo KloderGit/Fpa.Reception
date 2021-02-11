@@ -9,7 +9,7 @@ namespace Application.Program
 {
     public static class Convert
     {
-        public static ReceptionDto ConvertToMongoDto(Reception reception)
+        public static ReceptionDto ConvertToMongoDto(Domain.Reception reception)
         {
             var item = new ReceptionDto
             {
@@ -24,23 +24,23 @@ namespace Application.Program
                            new BaseInfoDto { Key = t.Key, Title = t.Title }
                          ),
                         Discipline = new BaseInfoDto { Key = x.Discipline.Key, Title = x.Discipline.Title },
-                        Constraints = x.Constraints.Select(b =>
-                             new PayloadConstraintDto
+                        Restrictions = x.Restrictions.Select(b =>
+                             new PayloadRestrictionDto
                              {
                                  Group = b.Group,
                                  Program = b.Program,
                                  SubGroup = b.SubGroup,
                                  Options = new PayloadOptionDto
                                  {
-                                     CheckAttemps = b.Options.CheckAttemps,
-                                     CheckContractExpired = b.Options.CheckContractExpired,
-                                     CheckDependings = b.Options.CheckDependings
+                                     CheckAttemps = b.Option.CheckAttemps,
+                                     CheckContractExpired = b.Option.CheckContractExpired,
+                                     CheckDependings = b.Option.CheckDependings
                                  }
                              }),
                         Requirement = new PayloadRequirementDto
                         {
-                            AllowedAttempCount = x.Requirement.AllowedAttempCount,
-                            DependsOnOtherDiscipline = x.Requirement.DependsOnOtherDiscipline,
+                            AllowedAttempCount = x.Requirement.AllowedAttemptCount,
+                            DependsOnOtherDiscipline = x.Requirement.DependsOnOtherDisciplines,
                             SubscribeBefore = x.Requirement.SubscribeBefore,
                             UnsubscribeBefore = x.Requirement.UnsubscribeBefore
                         }
@@ -78,9 +78,9 @@ namespace Application.Program
             return item;
         }
 
-        public static Reception ConvertFromMongoDto(ReceptionDto reception)
+        public static Domain.Reception ConvertFromMongoDto(ReceptionDto reception)
         {
-            var item = new Reception
+            var item = new Domain.Reception
             {
                 Date = reception.Date,
                 IsActive = reception.IsActive,
@@ -93,13 +93,13 @@ namespace Application.Program
                            new BaseInfo { Key = t.Key, Title = t.Title }
                          ).ToList(),
                         Discipline = new BaseInfo { Key = x.Discipline.Key, Title = x.Discipline.Title },
-                        Constraints = x.Constraints.Select(b =>
-                             new PayloadConstraints
+                        Restrictions = x.Restrictions.Select(b =>
+                             new PayloadRestriction
                              {
                                  Group = b.Group,
                                  Program = b.Program,
                                  SubGroup = b.SubGroup,
-                                 Options = new PayloadOptions
+                                 Option = new PayloadOption
                                  {
                                      CheckAttemps = b.Options.CheckAttemps,
                                      CheckContractExpired = b.Options.CheckContractExpired,
@@ -108,8 +108,8 @@ namespace Application.Program
                              }).ToList(),
                         Requirement = new PayloadRequirement
                         {
-                            AllowedAttempCount = x.Requirement.AllowedAttempCount,
-                            DependsOnOtherDiscipline = x.Requirement.DependsOnOtherDiscipline,
+                            AllowedAttemptCount = x.Requirement.AllowedAttempCount,
+                            DependsOnOtherDisciplines = x.Requirement.DependsOnOtherDiscipline,
                             SubscribeBefore = x.Requirement.SubscribeBefore,
                             UnsubscribeBefore = x.Requirement.UnsubscribeBefore
                         }

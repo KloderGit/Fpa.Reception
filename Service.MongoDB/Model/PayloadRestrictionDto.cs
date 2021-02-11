@@ -2,7 +2,7 @@
 
 namespace Service.MongoDB.Model
 {
-    public class PayloadConstraintDto
+    public class PayloadRestrictionDto
     {
         public Guid Program { get; set; }
         public Guid Group { get; set; }
