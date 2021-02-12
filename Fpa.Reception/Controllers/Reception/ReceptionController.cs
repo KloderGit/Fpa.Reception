@@ -1,5 +1,6 @@
 ﻿using Application.ReceptionComponent;
 using Domain;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Reception.Converter;
 using reception.fitnesspro.ru.Controllers.Reception.ViewModel;
@@ -8,6 +9,7 @@ using Service.MongoDB;
 using Service.MongoDB.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace reception.fitnesspro.ru.Controllers.Reception
@@ -26,6 +28,15 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             this.receptionComponent = new ReceptionComponent(database);
         }
 
+
+        [HttpGet]
+        public async Task<ActionResult> Get()
+        {
+            var result = receptionComponent.GetAll();
+
+            return Ok(result.Adapt<IEnumerable<Domain.Reception>>());
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(CreateReceptionViewModel model)
         {
@@ -39,51 +50,23 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         }
 
 
-
-
-
-
-
         [HttpGet]
-        public async Task<ActionResult<CreateReceptionViewModel>> Get()
+        [Route("FindByDiscipline")]
+        public async Task<ActionResult> FindByDiscipline(Guid key)
         {
-            var viewModel = new CreateReceptionViewModel
-            {
-                Date = DateTime.UtcNow,
-                PositionType = PositionType.Seating,               
-                Times = new List<DateTime> {
-                    DateTime.Now,
-                    DateTime.Now
-                },
-                Events = new List<EventViewModel> {
-                    new EventViewModel{
-                            Teachers = new List<BaseInfoViewModel>{
-                                new BaseInfoViewModel{ Key = Guid.NewGuid(), Title = "Kalashnikov" },
-                                new BaseInfoViewModel{ Key = Guid.NewGuid(), Title = "Merkuriev" },
-                             },
-                            Discipline = new BaseInfoViewModel { Key = Guid.NewGuid(), Title = "ResultingExam" },
-                            Requirement = new RequirementViewModel {
-                                AllowedAttemptCount = 20,
-                                DependsOnOtherDisciplines = new List<Guid> { Guid.NewGuid() },
-                                SubscribeBefore = DateTime.Now,
-                                UnsubscribeBefore = DateTime.Now + TimeSpan.FromDays(2)
-                            },
-                            Restrictions = new List<RestrictionViewModel>{
-                                 new RestrictionViewModel{
-                                     Program = Guid.NewGuid(),
-                                      Group = Guid.NewGuid(),
-                                       SubGroup = Guid.NewGuid(),
-                                       Options = new OptionViewModel()
-                                 }
-                             },
-                      } 
-                }
-            };
+            var result = receptionComponent.GetReceptionByDisciplineKey(key);
 
-            return viewModel;
+            return Ok(result.Adapt<IEnumerable<Domain.Reception>>());
         }
 
+        [HttpGet]
+        [Route("FindByTeacher")]
+        public async Task<ActionResult> FindByTeacher(Guid key)
+        {
+            var result = receptionComponent.GetReceptionByTeacherKey(key);
 
+            return Ok(result.Adapt<IEnumerable<Domain.Reception>>());
+        }
     }
 
 }

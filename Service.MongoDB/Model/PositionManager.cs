@@ -2,10 +2,10 @@
 
 namespace Service.MongoDB.Model
 {
-    public class PositionManagerDto
+    public class PositionManager
     {
         public PositionTypeDto LimitType;
-        public IEnumerable<PositionDto> Positions { get; set; } = new List<PositionDto>();
+        public IEnumerable<Position> Positions { get; set; } = new List<Position>();
     }
 
     public enum PositionTypeDto

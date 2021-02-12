@@ -15,9 +15,9 @@ using System.Threading.Tasks;
 using Application.HttpClient;
 using Microsoft.IdentityModel.Tokens;
 using reception.fitnesspro.ru.Misc;
-using MongoDB.Serializer.ValueTuple;
 using Service.MongoDB;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 
 namespace reception.fitnesspro.ru
 {
@@ -34,6 +34,8 @@ namespace reception.fitnesspro.ru
         public void ConfigureServices(IServiceCollection services)
         {
             HttpClientLibrary.AddHttpClients(services, Configuration);
+
+            BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
 
             services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>

@@ -1,6 +1,6 @@
 ﻿namespace Service.MongoDB.Model
 {
-    public class PayloadOptionDto
+    public class Option
     {
         public bool CheckContractExpired { get; set; } = true;
         public bool CheckDependings { get; set; } = true;

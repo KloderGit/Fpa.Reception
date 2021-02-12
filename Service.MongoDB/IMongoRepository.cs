@@ -18,6 +18,8 @@ namespace Service.MongoDB
             Expression<Func<TDocument, bool>> filterExpression,
             Expression<Func<TDocument, TProjected>> projectionExpression);
 
+        IEnumerable<TDocument> FilterByPath(string str, Guid guid);
+
         TDocument FindOne(Expression<Func<TDocument, bool>> filterExpression);
 
         Task<TDocument> FindOneAsync(Expression<Func<TDocument, bool>> filterExpression);

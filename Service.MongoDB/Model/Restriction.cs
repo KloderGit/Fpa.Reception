@@ -2,11 +2,11 @@
 
 namespace Service.MongoDB.Model
 {
-    public class PayloadRestrictionDto
+    public class Restriction
     {
         public Guid Program { get; set; }
         public Guid Group { get; set; }
         public Guid SubGroup { get; set; }
-        public PayloadOptionDto Options { get; set; }
+        public Option Options { get; set; }
     }
 }

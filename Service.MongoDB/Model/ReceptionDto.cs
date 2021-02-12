@@ -14,9 +14,9 @@ namespace Service.MongoDB.Model
         public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
-        public IEnumerable<ReceptionPayloadDto> Events { get; set; } = new List<ReceptionPayloadDto>();
-        public PositionManagerDto PositionManager { get; set; }
-        public IEnumerable<HistoryDto> Histories { get; set; } = new List<HistoryDto>();
+        public IEnumerable<Event> Events { get; set; } = new List<Event>();
+        public PositionManager PositionManager { get; set; }
+        public IEnumerable<History> Histories { get; set; } = new List<History>();
         public DateTime CreatedAt { get; }
     }
 }

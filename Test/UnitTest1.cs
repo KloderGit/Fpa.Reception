@@ -28,8 +28,8 @@ namespace Test
                 IsActive = true,
                 Key = Guid.NewGuid(),
                 Histories = new List<History> { new History { Object = Guid.NewGuid(), Action = " создал ", Subject = Guid.NewGuid(), DateTime = DateTime.UtcNow } },
-                Events = new List<ReceptionPayload> {
-                         new ReceptionPayload {
+                Events = new List<Event> {
+                         new Event {
                           Teachers = new List<BaseInfo>{ new BaseInfo { Key = Guid.NewGuid(), Title = "Меркурьев" }, new BaseInfo { Key = Guid.NewGuid(), Title = "Калашников" } },
                            Discipline =  new BaseInfo { Key = Guid.NewGuid(), Title = "Anatomy" },
                              Restrictions = new List<PayloadRestriction>{ new PayloadRestriction { Program = Guid.NewGuid(), Group = Guid.NewGuid(), SubGroup = Guid.NewGuid(),
@@ -56,11 +56,11 @@ namespace Test
                      Key = Guid.NewGuid(),
                       IsActive = true,
                        Time = DateTime.Now,
-                        Payload = new PositionPayload{
+                        Payload = new Record{
                              DisciplineKey = Guid.NewGuid(),
                               ProgramKey = Guid.NewGuid(),
                                StudentKey = Guid.NewGuid(),
-                                 Result = new PositionPayloadResult{
+                                 Result = new Result{
                                      TeacherKey = Guid.NewGuid(),
                                       Comment = "Rate comment",
                                        Score = new Hundred(45)

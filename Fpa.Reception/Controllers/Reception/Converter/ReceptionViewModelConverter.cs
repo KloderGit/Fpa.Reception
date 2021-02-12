@@ -16,7 +16,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception.Converter
                 Date = viewModel.Date,
                 IsActive = true,
                 Key = Guid.NewGuid(),
-                Events = viewModel.Events?.Adapt<IEnumerable<ReceptionPayload>>().ToList(),
+                Events = viewModel.Events?.Adapt<IEnumerable<Event>>().ToList(),
                 PositionManager = new PositionManager
                 {
                     LimitType = viewModel.PositionType,

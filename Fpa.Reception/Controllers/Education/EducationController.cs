@@ -221,10 +221,6 @@ namespace reception.fitnesspro.ru.Controllers.Education
         {
 
 
-            await programAction.InsertMongo();
-
-
-
             return Ok();
         }
 

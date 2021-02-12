@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Service.MongoDB.Model
 {
-    public class BaseInfoDto
+    public class BaseInfo
     {
         public Guid Key { get; set; }
         public string Title { get; set; }

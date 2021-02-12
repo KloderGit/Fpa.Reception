@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Service.MongoDB.Model
 {
-    public class PayloadRequirementDto
+    public class Requirement
     {
         public DateTime SubscribeBefore { get; set; } = default;
         public DateTime UnsubscribeBefore { get; set; } = default;

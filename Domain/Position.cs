@@ -9,19 +9,19 @@ namespace Domain
         public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Time { get; set; }
-        public PositionPayload Payload { get; set; }
+        public Record Payload { get; set; }
         public List<History> Histories { get; set; } = new List<History>();
     }
 
-    public class PositionPayload
+    public class Record
     {
         public Guid StudentKey { get; set; }
         public Guid ProgramKey { get; set; }
         public Guid DisciplineKey { get; set; }
-        public PositionPayloadResult Result { get; set; }
+        public Result Result { get; set; }
     }
 
-    public class PositionPayloadResult
+    public class Result
     {
         public Guid TeacherKey { get; set; }
         public Score Score { get; set; }

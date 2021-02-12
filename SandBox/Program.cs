@@ -26,7 +26,7 @@ namespace SandBox
                 Active = true,
                 Enum = Tps.three,
                 Tuple = new Tuple<int, int>(10,30),
-                MyProperty = typeof(ScoreDto)
+                MyProperty = typeof(Score)
             };
 
 

@@ -2,7 +2,7 @@
 
 namespace Service.MongoDB.Model
 {
-    public class HistoryDto
+    public class History
     {
         public Guid Object { get; set; }
         public string Action { get; set; }

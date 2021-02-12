@@ -10,7 +10,7 @@ namespace Domain
         public DateTime Date { get; set; }
         public PositionManager PositionManager { get; set; }
 
-        public List<ReceptionPayload> Events { get; set; } = new List<ReceptionPayload>();
+        public List<Event> Events { get; set; } = new List<Event>();
 
         public List<History> Histories { get; set; } = new List<History>();
 
@@ -46,7 +46,7 @@ namespace Domain
     }
 
 
-    public class ReceptionPayload
+    public class Event
     {
         public List<BaseInfo> Teachers { get; set; } = new List<BaseInfo>();
         public BaseInfo Discipline { get; set; }

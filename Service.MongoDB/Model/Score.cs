@@ -4,13 +4,13 @@ using System;
 namespace Service.MongoDB.Model
 {
 
-    public class ScoreDto
+    public class Score
     {
-        public ScoreTypeDto Type { get; set; } = ScoreTypeDto.NoResult;
+        public ScoreType Type { get; set; } = ScoreType.NoResult;
         public Tuple<string, Object> Value { get; set; }
     }
 
-    public enum ScoreTypeDto
+    public enum ScoreType
     {
         NoResult,
         Five,
