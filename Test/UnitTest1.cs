@@ -56,7 +56,7 @@ namespace Test
                      Key = Guid.NewGuid(),
                       IsActive = true,
                        Time = DateTime.Now,
-                        Payload = new Record{
+                        Record = new Record{
                              DisciplineKey = Guid.NewGuid(),
                               ProgramKey = Guid.NewGuid(),
                                StudentKey = Guid.NewGuid(),

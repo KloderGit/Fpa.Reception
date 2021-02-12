@@ -10,14 +10,14 @@ namespace Application.ReceptionComponent
 {
     public class ReceptionComponent
     {
-        private readonly IMongoRepository<ReceptionDto> database;
+        private readonly IMongoRepository<Reception> database;
 
-        public ReceptionComponent(IMongoRepository<ReceptionDto> database)
+        public ReceptionComponent(IMongoRepository<Reception> database)
         {
             this.database = database;
         }
 
-        public IEnumerable<ReceptionDto> GetReceptionByDisciplineKey(Guid key)
+        public IEnumerable<Reception> GetReceptionByDisciplineKey(Guid key)
         {
             var dto = database.FilterByPath("Events.Discipline.Key", key);
 
@@ -26,12 +26,12 @@ namespace Application.ReceptionComponent
 
         public void StoreReception(Domain.Reception reception)
         {
-            var dto = reception.ConvertToType<ReceptionDto>(ReceptionConverter.ConvertToMongoDto);
+            var dto = reception.ConvertToType<Reception>(ReceptionConverter.ConvertToMongoDto);
 
             database.InsertOne(dto);
         }
 
-        public IEnumerable<ReceptionDto> GetAll()
+        public IEnumerable<Reception> GetAll()
         {
             var dto = database.AsQueryable();
 

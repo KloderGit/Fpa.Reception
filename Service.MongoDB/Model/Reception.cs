@@ -8,7 +8,7 @@ namespace Service.MongoDB.Model
 {
     [BsonIgnoreExtraElements]
     [BsonCollection("Receptions")]
-    public class ReceptionDto : IDocument
+    public class Reception : IDocument
     {
         public ObjectId Id { get; set; }
         public Guid Key { get; set; }

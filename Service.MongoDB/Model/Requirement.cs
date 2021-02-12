@@ -7,7 +7,7 @@ namespace Service.MongoDB.Model
     {
         public DateTime SubscribeBefore { get; set; } = default;
         public DateTime UnsubscribeBefore { get; set; } = default;
-        public IEnumerable<Guid> DependsOnOtherDiscipline { get; set; } = new List<Guid>();
-        public int AllowedAttempCount { get; set; }
+        public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; } = new List<Guid>();
+        public int AllowedAttemptCount { get; set; }
     }
 }

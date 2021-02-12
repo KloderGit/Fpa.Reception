@@ -8,6 +8,6 @@ namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
         public Guid Group { get; set; }
         public Guid SubGroup { get; set; }
 
-        public OptionViewModel Options { get; set; }
+        public OptionViewModel Option { get; set; }
     }
 }

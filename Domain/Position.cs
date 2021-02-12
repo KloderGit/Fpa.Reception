@@ -9,7 +9,7 @@ namespace Domain
         public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Time { get; set; }
-        public Record Payload { get; set; }
+        public Record Record { get; set; }
         public List<History> Histories { get; set; } = new List<History>();
     }
 

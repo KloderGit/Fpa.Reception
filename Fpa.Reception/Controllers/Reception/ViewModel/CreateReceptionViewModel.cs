@@ -1,4 +1,5 @@
 ﻿using Domain;
+using reception.fitnesspro.ru.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,28 +7,19 @@ using System.Linq;
 
 namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
 {
-
-    public class CreateReceptionViewModel : IValidatableObject
+    [CreateReceptionViewModelValidateAttribute]
+    public class CreateReceptionViewModel 
     {
         [Required]
+        [Range(typeof(DateTime), "01/01/1900", "01/01/2100")]        
         public DateTime Date { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Мероприятие не определенно")]
         public IEnumerable<EventViewModel> Events { get; set; }
 
-        [Required]
-        public PositionType PositionType { get; set; }
+        [Required(ErrorMessage = "Вариант записи не определен")]
+        public PositionType Type { get; set; }
 
         public IEnumerable<DateTime> Times { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            List<ValidationResult> errors = new List<ValidationResult>();
-
-            if ( (PositionType != PositionType.Free) && (Times == null || Times.Any() == false) )
-                errors.Add(new ValidationResult("Временные промежутки для этого типа записи не заполнены", new[] { nameof(PositionType), nameof(Times) }));
-
-            return errors;
-        }
     }
 }
