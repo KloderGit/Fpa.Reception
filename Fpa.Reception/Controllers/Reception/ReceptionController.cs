@@ -49,7 +49,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
             var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            receptionComponent.StoreReception(CreateReception());
+            receptionComponent.StoreReception(item);
 
             return Ok(item);
         }
