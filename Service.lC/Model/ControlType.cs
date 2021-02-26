@@ -1,7 +1,6 @@
-using Domain;
 
-namespace Application.Model
+namespace Service.lC.Model
 {
-    public class ControlType : BaseInfo
+    public class ControlType : Base
     {}
 }

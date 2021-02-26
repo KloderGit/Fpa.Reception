@@ -1,4 +1,10 @@
-$HEADER$namespace $NAMESPACE$
+using System;
+
+namespace Service.lC.Model
 {
-  public class $CLASS$ {$END$}
+    public class Base
+    {
+        public Guid Key { get; set; }
+        public string Title { get; set; }
+    }
 }

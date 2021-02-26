@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Extensions;
-using Domain.Interface;
+using Service.lC.Extensions;
+using Service.lC.Interface;
 
-namespace Application.Repository
+namespace Service.lC.Repository
 {
     public class CommonRepository<T> : IRepositoryAsync<T>
     {

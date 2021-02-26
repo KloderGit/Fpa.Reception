@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Model\**" />
-    <EmbeddedResource Remove="Model\**" />
-    <None Remove="Model\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="lc.fitness-pro.library" Version="1.5.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -25,6 +19,12 @@
 
   <ItemGroup>
     <Folder Include="Connected Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Model\Base.cs" />
+    <Compile Include="Model\EducationForm.cs" />
+    <Compile Include="Model\Program.cs" />
   </ItemGroup>
 
 </Project>

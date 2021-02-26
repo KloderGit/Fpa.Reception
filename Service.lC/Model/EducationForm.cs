@@ -1,4 +1,5 @@
-$HEADER$namespace $NAMESPACE$
+namespace Service.lC.Model
 {
-  public class $CLASS$ {$END$}
+    public class EducationForm : Base
+    {}
 }

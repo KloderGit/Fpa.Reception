@@ -1,7 +1,7 @@
-using Domain;
 
-namespace Application.Model
+namespace Service.lC.Model
 {
-    public class Discipline : BaseInfo
-    { }
+    public class Discipline : Base
+    {
+    }
 }
