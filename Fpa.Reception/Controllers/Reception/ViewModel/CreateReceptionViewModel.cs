@@ -3,7 +3,6 @@ using reception.fitnesspro.ru.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
 {
