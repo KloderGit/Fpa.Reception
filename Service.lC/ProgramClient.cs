@@ -1,8 +1,4 @@
-﻿using lc.fitnesspro.library.Model;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 
 namespace Service.lC
 {

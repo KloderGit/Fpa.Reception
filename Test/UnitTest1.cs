@@ -1,15 +1,39 @@
 using Domain;
+using lc.fitnesspro.library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
+using Service.lC;
+using Service.lC.Manager;
+using Service.lC.Provider;
 using Service.MongoDB;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Test
 {
+
     [TestClass]
     public class UnitTest1
     {
+        [TestMethod]
+        public void TestMethod2()
+        {
+            var lcManager = new Manager("kloder", "Kaligula2");
+
+            var http = new HttpClient();
+            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+            var baseHttp = new BaseHttpClient(http);
+
+            var providerDepository = new ProviderDepository(baseHttp);
+            var eduManager = new EducationManager(providerDepository, lcManager);
+
+            var res = eduManager.GetTeacherPrograms(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+        }
+
+
+
+
         [TestMethod]
         public void TestMethod1()
         {

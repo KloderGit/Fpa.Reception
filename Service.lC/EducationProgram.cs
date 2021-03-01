@@ -106,7 +106,7 @@ namespace Service.lC
                 Key = x.Key, 
                 Title = x.Title, 
                 ProgramKey = x.ProgramKey, 
-                Start = x.Start, 
+                Start = x.Start,
                 Finish = x.Finish });
 
             return groups ?? Enumerable.Empty<GroupDto>();

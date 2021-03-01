@@ -1,26 +1,28 @@
+using Service.lC.Extensions;
+using Service.lC.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Service.lC.Extensions;
-using Service.lC.Interface;
 
 namespace Service.lC.Repository
 {
-    public class CommonRepository<T> : IRepositoryAsync<T>
+    public class GenericRepository<T> : IRepositoryAsync<T>
     {
-        private readonly System.Net.Http.HttpClient http;
+        private readonly BaseHttpClient http;
+        private readonly string endpoint;
 
-        public CommonRepository(System.Net.Http.HttpClient httpClient)
+        public GenericRepository(BaseHttpClient httpClient, string endpoint)
         {
             this.http = httpClient;
+            this.endpoint = endpoint;
         }
     
         public async Task<IEnumerable<T>> GetAsync()
         {
             var result = Enumerable.Empty<T>();
 
-            var request = await http.GetAsync("/");
+            var request = await http.Client.GetAsync(endpoint + "/");
 
             if (request.IsSuccessStatusCode)
             {
@@ -35,7 +37,7 @@ namespace Service.lC.Repository
         {
             T result = default;
 
-            var request = await http.GetAsync("/", key.ToString());
+            var request = await http.Client.GetAsync(endpoint + "/", key.ToString());
 
             if (request.IsSuccessStatusCode)
             {
@@ -50,7 +52,7 @@ namespace Service.lC.Repository
         {
             var result = Enumerable.Empty<T>();
 
-            var request = await http.GetAsync("Find", keys);
+            var request = await http.Client.GetAsync(endpoint + "/" + "Find", keys);
 
             if (request.IsSuccessStatusCode)
             {

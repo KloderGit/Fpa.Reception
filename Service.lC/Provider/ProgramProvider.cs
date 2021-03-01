@@ -1,51 +1,29 @@
-using System;
+using Service.lC.Dto;
+using Service.lC.Interface;
+using Service.lC.Model;
+using Service.lC.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using lc.fitnesspro.library;
-using Service.lC.Interface;
-using Service.lC.Model;
 
 namespace Service.lC.Provider
 {
-    public class ProgramProvider : IRepositoryAsync<Program>
+    public class ProgramProvider: GenericProvider<Program>
     {
-        private readonly IRepositoryAsync<Program> programRepository;
-        private readonly IRepositoryAsync<EducationForm> educationFormRepository;
+        private readonly IRepositoryAsync<Base> educationFormRepository;
         private readonly IRepositoryAsync<Base> emploeeRepository;
-        private readonly IRepositoryAsync<Discipline> disciplineRepository;
-        private readonly IRepositoryAsync<ControlType> controlTypeRepository;
+        private readonly IRepositoryAsync<Base> disciplineRepository;
+        private readonly IRepositoryAsync<Base> controlTypeRepository;
 
-        public ProgramProvider(
-            IRepositoryAsync<Program> programRepository,
-            IRepositoryAsync<EducationForm> educationFormRepository,
-            IRepositoryAsync<Base> emploeeRepository,
-            IRepositoryAsync<Discipline> disciplineRepository,
-            IRepositoryAsync<ControlType> controlTypeRepository
-            )
+        public ProgramProvider (RepositoryDepository depository)
+            : base(depository.Program, depository)
         {
-            this.programRepository = programRepository;
-            this.educationFormRepository = educationFormRepository;
-            this.emploeeRepository = emploeeRepository;
-            this.disciplineRepository = disciplineRepository;
-            this.controlTypeRepository = controlTypeRepository;
+            this.educationFormRepository = depository.EducationForm;
+            this.emploeeRepository = depository.Employee;
+            this.disciplineRepository = depository.Discipline;
+            this.controlTypeRepository = depository.ControlType;
         }
         
-        public async Task<IEnumerable<Program>> GetAsync()
-        {
-            return await programRepository.GetAsync();
-        }
-
-        public async Task<Program> GetAsync(Guid key)
-        {
-            return await programRepository.GetAsync(key);
-        }
-
-        public async Task<IEnumerable<Program>> GetAsync(IEnumerable<Guid> keys)
-        {
-            return await programRepository.GetAsync(keys);
-        }
-
         public async Task<Program> IncludeEducationForm(Program program)
         {
             var key = program.EducationForm.Key;
@@ -56,7 +34,22 @@ namespace Service.lC.Provider
 
             return program;
         }
-        
+
+        public async Task<IEnumerable<Program>> IncludeEducationForm(IEnumerable<Program> programs)
+        {
+            var keys = programs.Select(x=>x.EducationForm.Key);
+
+            var educationForms = await educationFormRepository.GetAsync(keys);
+
+            foreach (var program in programs)
+            {
+                var key = program.EducationForm.Key;
+                program.EducationForm = educationForms.FirstOrDefault(x => x.Key == key);
+            }
+
+            return programs;
+        }
+
         public async Task<Program> IncludeTeachers(Program program)
         {
             var keys = program.Teachers?.Select(x=>x.Key);
@@ -67,7 +60,25 @@ namespace Service.lC.Provider
 
             return program;
         }
-        
+
+        public async Task<IEnumerable<Program>> IncludeTeachers(IEnumerable<Program> programs)
+        {
+            var keys = programs.SelectMany(x => x.Teachers.Select(k=>k.Key));
+
+            var teachers = await emploeeRepository.GetAsync(keys);
+
+            foreach (var program in programs)
+            {
+                var teacherKeys = program.Teachers.Select(x => x.Key);
+
+                var programTeachers = teachers.Where(x => teacherKeys.Contains(x.Key));
+
+                program.Teachers = programTeachers;
+            }
+
+            return programs;
+        }
+
         public async Task<Program> IncludeEducations(Program program)
         {
             var disciplineKeys = program.Educations?.Select(x=>x.Discipline.Key);
@@ -89,6 +100,28 @@ namespace Service.lC.Provider
             program.Educations = educations;
 
             return program;
+        }
+
+        public async Task<IEnumerable<Program>> IncludeEducations(IEnumerable<Program> programs)
+        {
+            var disciplineKeys = programs.SelectMany(x => x.Educations.Select(d => d.Discipline.Key));
+            var controlTypeKeys = programs.SelectMany(x => x.Educations.Select(d => d.ControlType.Key));
+
+            var disciplines = await disciplineRepository.GetAsync(disciplineKeys);
+            var controlTypes = await controlTypeRepository.GetAsync(controlTypeKeys);
+
+            foreach (var program in programs)
+            {
+                var educations = program.Educations.Select(
+                        x=> new Education { 
+                            Discipline = disciplines.FirstOrDefault(d=>d.Key == x.Discipline.Key), 
+                            ControlType = controlTypes.FirstOrDefault(c=>c.Key == x.ControlType.Key) }
+                    );
+
+                program.Educations = educations;
+            }
+
+            return programs;
         }
     }
 }
