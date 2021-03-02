@@ -39,7 +39,7 @@ namespace Service.lC.Provider
         {
             var array = programs.ToArray();
 
-            var keys = array.Select(x=>x.EducationForm.Key);
+            var keys = array.Select(x=>x.EducationForm.Key).Distinct();
 
             var educationForms = await educationFormRepository.GetAsync(keys);
 
@@ -67,7 +67,7 @@ namespace Service.lC.Provider
         {
             var array = programs.ToArray();
 
-            var keys = programs.SelectMany(x => x.Teachers.Select(k=>k.Key));
+            var keys = programs.SelectMany(x => x.Teachers.Select(k=>k.Key)).Distinct();
 
             var teachers = await emploeeRepository.GetAsync(keys);
 
@@ -108,8 +108,8 @@ namespace Service.lC.Provider
 
         public async Task<IEnumerable<Program>> IncludeEducations(IEnumerable<Program> programs)
         {
-            var disciplineKeys = programs.SelectMany(x => x.Educations.Select(d => d.Discipline.Key));
-            var controlTypeKeys = programs.SelectMany(x => x.Educations.Select(d => d.ControlType.Key));
+            var disciplineKeys = programs.SelectMany(x => x.Educations.Select(d => d.Discipline.Key)).Distinct();
+            var controlTypeKeys = programs.SelectMany(x => x.Educations.Select(d => d.ControlType.Key)).Distinct();
 
             var disciplines = await disciplineRepository.GetAsync(disciplineKeys);
             var controlTypes = await controlTypeRepository.GetAsync(controlTypeKeys);
@@ -118,6 +118,7 @@ namespace Service.lC.Provider
             {
                 var educations = program.Educations.Select(
                         x=> new Education { 
+                            Order = x.Order,
                             Discipline = disciplines.FirstOrDefault(d=>d.Key == x.Discipline.Key), 
                             ControlType = controlTypes.FirstOrDefault(c=>c.Key == x.ControlType.Key) }
                     );

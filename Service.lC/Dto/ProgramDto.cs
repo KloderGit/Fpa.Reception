@@ -34,6 +34,7 @@ namespace Service.lC.Dto
                 Educations = dto.Disciplines?.Select(
                          d => new Education
                          {
+                             Order = d.LineNumber,
                              Discipline = new Base { Key = d.DisciplineKey },
                              ControlType = new Base { Key = d.ControlTypeKey }
                          })
@@ -45,6 +46,7 @@ namespace Service.lC.Dto
 
     public class DisciplineInfoDto
     {
+        public int LineNumber { get; set; }
         public Guid DisciplineKey { get; set; }
         public Guid ControlTypeKey { get; set; }
     }

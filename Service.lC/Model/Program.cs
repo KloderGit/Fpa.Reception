@@ -20,6 +20,7 @@ namespace Service.lC.Model
 
     public class Education
     {
+        public int Order { get; set; }
         public Base Discipline { get; set; }
         public Base ControlType { get; set; }
     }
