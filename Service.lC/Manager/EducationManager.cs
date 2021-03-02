@@ -1,4 +1,5 @@
 ﻿using lc.fitnesspro.library.Interface;
+using Service.lC.Dto;
 using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Provider;
@@ -12,12 +13,12 @@ namespace Service.lC.Manager
     public partial class EducationManager
     {
         private readonly ProgramProvider programProvider;
-        private readonly IProvider<Base> educationFormProvider;
-        private readonly IProvider<Base> disciplinesProvider;
-        private readonly IProvider<Base> controlTypeProvider;
-        private readonly IProvider<Base> employeeProvider;
-        private readonly IProvider<Base> groupProvider;
-        private readonly IProvider<Base> subGroupProvider;
+        private readonly IProvider<Base, BaseDto> educationFormProvider;
+        private readonly IProvider<Base, BaseDto> disciplinesProvider;
+        private readonly IProvider<Base, BaseDto> controlTypeProvider;
+        private readonly IProvider<Base, BaseDto> employeeProvider;
+        private readonly IProvider<Base, BaseDto> groupProvider;
+        private readonly IProvider<Base, BaseDto> subGroupProvider;
 
         private readonly IManager lcManager;
 

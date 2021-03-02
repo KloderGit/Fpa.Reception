@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace Service.lC.Interface
 {
-    public interface IRepositoryAsync<T>
+    public interface IRepositoryAsync<TDomen, TDto>
     {
-        Task<IEnumerable<T>> GetAsync();
-        Task<T> GetAsync(Guid key);
-        Task<IEnumerable<T>> GetAsync(IEnumerable<Guid> keys);
+        Task<IEnumerable<TDomen>> GetAsync();
+        Task<TDomen> GetAsync(Guid key);
+        Task<IEnumerable<TDomen>> GetAsync(IEnumerable<Guid> keys);
     }
 }

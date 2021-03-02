@@ -1,7 +1,4 @@
-﻿using lc.fitnesspro.library.Interface;
-using Service.lC.Interface;
-using Service.lC.Model;
-using Service.lC.Provider;
+﻿using Service.lC.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

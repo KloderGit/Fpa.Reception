@@ -1,4 +1,5 @@
-﻿using Service.lC.Interface;
+﻿using Service.lC.Dto;
+using Service.lC.Interface;
 using Service.lC.Model;
 
 namespace Service.lC.Repository
@@ -7,26 +8,26 @@ namespace Service.lC.Repository
     {
         private readonly BaseHttpClient client;
 
-        private IRepositoryAsync<Program> program;
-        private IRepositoryAsync<Base> discipline;
-        private IRepositoryAsync<Base> educationForm;
-        private IRepositoryAsync<Base> controlType;
-        private IRepositoryAsync<Base> employee;
-        private IRepositoryAsync<Base> group;
-        private IRepositoryAsync<Base> subGroup;
+        private IRepositoryAsync<Program, ProgramDto> program;
+        private IRepositoryAsync<Base, BaseDto> discipline;
+        private IRepositoryAsync<Base, BaseDto> educationForm;
+        private IRepositoryAsync<Base, BaseDto> controlType;
+        private IRepositoryAsync<Base, BaseDto> employee;
+        private IRepositoryAsync<Base, BaseDto> group;
+        private IRepositoryAsync<Base, BaseDto> subGroup;
 
         public RepositoryDepository(BaseHttpClient client)
         {
             this.client = client;
         }
 
-        public IRepositoryAsync<Program> Program => program ?? (program = new GenericRepository<Program>(client, "lc/Program"));
-        public IRepositoryAsync<Base> Discipline => discipline ?? (discipline = new GenericRepository<Base>(client, "Discipline"));
-        public IRepositoryAsync<Base> EducationForm => educationForm ?? (educationForm = new GenericRepository<Base>(client, "EducationForm"));
-        public IRepositoryAsync<Base> ControlType => controlType ?? (controlType = new GenericRepository<Base>(client, "Control"));
-        public IRepositoryAsync<Base> Employee => employee ?? (employee = new GenericRepository<Base>(client, "Employee"));
-        public IRepositoryAsync<Base> Group => group ?? (group = new GenericRepository<Base>(client, "Group"));
-        public IRepositoryAsync<Base> SubGroup => subGroup ?? (subGroup = new GenericRepository<Base>(client, "SubGroup"));
+        public IRepositoryAsync<Program, ProgramDto> Program => program ?? (program = new GenericRepository<Program, ProgramDto>(client, "lc/Program"));
+        public IRepositoryAsync<Base, BaseDto> Discipline => discipline ?? (discipline = new GenericRepository<Base, BaseDto>(client, "lc/Discipline"));
+        public IRepositoryAsync<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericRepository<Base, BaseDto>(client, "lc/EducationForm"));
+        public IRepositoryAsync<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericRepository<Base, BaseDto>(client, "lc/Control"));
+        public IRepositoryAsync<Base, BaseDto> Employee => employee ?? (employee = new GenericRepository<Base, BaseDto>(client, "lc/Employee"));
+        public IRepositoryAsync<Base, BaseDto> Group => group ?? (group = new GenericRepository<Base, BaseDto>(client, "lc/Group"));
+        public IRepositoryAsync<Base, BaseDto> SubGroup => subGroup ?? (subGroup = new GenericRepository<Base, BaseDto>(client, "lc/SubGroup"));
 
         //public IRepositoryAsync<T> GetRepository<T>()
         //{

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Service.lC.Provider
 {
-    public class ProgramProvider: GenericProvider<Program>
+    public class ProgramProvider: GenericProvider<Program, ProgramDto>
     {
-        private readonly IRepositoryAsync<Base> educationFormRepository;
-        private readonly IRepositoryAsync<Base> emploeeRepository;
-        private readonly IRepositoryAsync<Base> disciplineRepository;
-        private readonly IRepositoryAsync<Base> controlTypeRepository;
+        private readonly IRepositoryAsync<Base,BaseDto> educationFormRepository;
+        private readonly IRepositoryAsync<Base, BaseDto> emploeeRepository;
+        private readonly IRepositoryAsync<Base, BaseDto> disciplineRepository;
+        private readonly IRepositoryAsync<Base, BaseDto> controlTypeRepository;
 
         public ProgramProvider (RepositoryDepository depository)
             : base(depository.Program, depository)
@@ -37,17 +37,19 @@ namespace Service.lC.Provider
 
         public async Task<IEnumerable<Program>> IncludeEducationForm(IEnumerable<Program> programs)
         {
-            var keys = programs.Select(x=>x.EducationForm.Key);
+            var array = programs.ToArray();
+
+            var keys = array.Select(x=>x.EducationForm.Key);
 
             var educationForms = await educationFormRepository.GetAsync(keys);
 
-            foreach (var program in programs)
+            for (int i=0; i < array.Count(); i++)
             {
-                var key = program.EducationForm.Key;
-                program.EducationForm = educationForms.FirstOrDefault(x => x.Key == key);
+                var key = array[i].EducationForm.Key;
+                array[i].EducationForm = educationForms.FirstOrDefault(x => x.Key == key);
             }
 
-            return programs;
+            return array;
         }
 
         public async Task<Program> IncludeTeachers(Program program)
@@ -63,17 +65,19 @@ namespace Service.lC.Provider
 
         public async Task<IEnumerable<Program>> IncludeTeachers(IEnumerable<Program> programs)
         {
+            var array = programs.ToArray();
+
             var keys = programs.SelectMany(x => x.Teachers.Select(k=>k.Key));
 
             var teachers = await emploeeRepository.GetAsync(keys);
 
-            foreach (var program in programs)
+            for (int i = 0; i < array.Count(); i++)
             {
-                var teacherKeys = program.Teachers.Select(x => x.Key);
+                var teacherKeys = array[i].Teachers.Select(x => x.Key);
 
                 var programTeachers = teachers.Where(x => teacherKeys.Contains(x.Key));
 
-                program.Teachers = programTeachers;
+                array[i].Teachers = programTeachers;
             }
 
             return programs;

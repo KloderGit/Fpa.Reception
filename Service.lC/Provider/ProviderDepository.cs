@@ -1,9 +1,7 @@
-﻿using Service.lC.Interface;
+﻿using Service.lC.Dto;
+using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Service.lC.Provider
 {
@@ -13,12 +11,12 @@ namespace Service.lC.Provider
         private readonly RepositoryDepository depository;
 
         private ProgramProvider program;
-        private IProvider<Base> discipline;
-        private IProvider<Base> educationForm;
-        private IProvider<Base> controlType;
-        private IProvider<Base> employee;
-        private IProvider<Base> group;
-        private IProvider<Base> subGroup;
+        private IProvider<Base, BaseDto> discipline;
+        private IProvider<Base, BaseDto> educationForm;
+        private IProvider<Base, BaseDto> controlType;
+        private IProvider<Base, BaseDto> employee;
+        private IProvider<Base, BaseDto> group;
+        private IProvider<Base, BaseDto> subGroup;
 
         public ProviderDepository(BaseHttpClient client)
         {
@@ -27,11 +25,11 @@ namespace Service.lC.Provider
         }
 
         public ProgramProvider Program => program ?? (program = new ProgramProvider(depository));
-        public IProvider<Base> Discipline => discipline ?? (discipline = new GenericProvider<Base>(depository.Discipline, depository));
-        public IProvider<Base> EducationForm => educationForm ?? (educationForm = new GenericProvider<Base>(depository.EducationForm, depository));
-        public IProvider<Base> ControlType => controlType ?? (controlType = new GenericProvider<Base>(depository.ControlType, depository));
-        public IProvider<Base> Employee => employee ?? (employee = new GenericProvider<Base>(depository.Employee, depository));
-        public IProvider<Base> Group => group ?? (group = new GenericProvider<Base>(depository.Group, depository));
-        public IProvider<Base> SubGroup => subGroup ?? (subGroup = new GenericProvider<Base>(depository.SubGroup, depository));
+        public IProvider<Base, BaseDto> Discipline => discipline ?? (discipline = new GenericProvider<Base, BaseDto>(depository.Discipline, depository));
+        public IProvider<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericProvider<Base, BaseDto>(depository.EducationForm, depository));
+        public IProvider<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericProvider<Base, BaseDto>(depository.ControlType, depository));
+        public IProvider<Base, BaseDto> Employee => employee ?? (employee = new GenericProvider<Base, BaseDto>(depository.Employee, depository));
+        public IProvider<Base, BaseDto> Group => group ?? (group = new GenericProvider<Base, BaseDto>(depository.Group, depository));
+        public IProvider<Base, BaseDto> SubGroup => subGroup ?? (subGroup = new GenericProvider<Base, BaseDto>(depository.SubGroup, depository));
     }
 }

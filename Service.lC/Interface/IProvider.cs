@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Service.lC.Interface
 {
-    public interface IProvider<T>
+    public interface IProvider<T, TDto>
     {
-        IRepositoryAsync<T> Repository { get; }
+        IRepositoryAsync<T,TDto> Repository { get; }
     }
 }

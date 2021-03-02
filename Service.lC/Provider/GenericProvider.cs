@@ -4,14 +4,14 @@ using Service.lC.Repository;
 
 namespace Service.lC.Provider
 {
-    public class GenericProvider<T> : IProvider<T> where T : Base
+    public class GenericProvider<T, TDto> : IProvider<T, TDto> where T : Base
     {
         private readonly RepositoryDepository depository;
-        public IRepositoryAsync<T> Repository { get; private set; }
+        public IRepositoryAsync<T, TDto> Repository { get; private set; }
 
         public GenericProvider(
-            IRepositoryAsync<T> repository,
-            RepositoryDepository depository
+                IRepositoryAsync<T, TDto> repository,
+                RepositoryDepository depository
             )
         {
             this.Repository = repository;

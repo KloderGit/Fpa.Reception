@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Service.lC.Repository
 {
-    public class GenericRepository<T> : IRepositoryAsync<T>
+    public class GenericRepository<TDomen, TDto> : IRepositoryAsync<TDomen, TDto> where TDto : IConvert<TDto>, new() where TDomen : new()
     {
         private readonly BaseHttpClient http;
         private readonly string endpoint;
+
+        private readonly Func<TDto, TDomen> converter = Converter.GetConverter<TDto,TDomen>();
 
         public GenericRepository(BaseHttpClient httpClient, string endpoint)
         {
@@ -18,48 +20,58 @@ namespace Service.lC.Repository
             this.endpoint = endpoint;
         }
     
-        public async Task<IEnumerable<T>> GetAsync()
+        public async Task<IEnumerable<TDomen>> GetAsync()
         {
-            var result = Enumerable.Empty<T>();
+            var result = Enumerable.Empty<TDomen>();
 
             var request = await http.Client.GetAsync(endpoint + "/");
 
             if (request.IsSuccessStatusCode)
             {
-                var query = await request.GetResultAsync<IEnumerable<T>>();
-                result = query ?? result;
-            }
+                var dto = await request.GetResultAsync<IEnumerable<TDto>>();
 
-            return result.ToList();
-        }
+                var domain = dto.Select(x => x.ConvertTo<TDomen>(converter));
 
-        public async Task<T> GetAsync(Guid key)
-        {
-            T result = default;
-
-            var request = await http.Client.GetAsync(endpoint + "/", key.ToString());
-
-            if (request.IsSuccessStatusCode)
-            {
-                var query = await request.GetResultAsync<T>();
-                result = query ?? result;
+                result = domain ?? result;
             }
 
             return result;
         }
 
-        public async Task<IEnumerable<T>> GetAsync(IEnumerable<Guid> keys)
+        public async Task<TDomen> GetAsync(Guid key)
         {
-            var result = Enumerable.Empty<T>();
+            TDomen result = default;
+
+            var request = await http.Client.GetAsync(endpoint + "/", key.ToString());
+
+            if (request.IsSuccessStatusCode)
+            {
+                var dto = await request.GetResultAsync<TDto>();
+
+                var domain = dto.ConvertTo<TDomen>(converter);
+
+                result = domain ?? result;
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<TDomen>> GetAsync(IEnumerable<Guid> keys)
+        {
+            var result = Enumerable.Empty<TDomen>();
 
             var request = await http.Client.GetAsync(endpoint + "/" + "Find", keys);
 
             if (request.IsSuccessStatusCode)
             {
-                result = await request.GetResultAsync<IEnumerable<T>>();
+                var dto = await request.GetResultAsync<IEnumerable<TDto>>();
+
+                var domain = dto.Select(x => x.ConvertTo<TDomen>(converter));
+
+                result = domain ?? result;
             }
 
-            return result.ToList();
+            return result;
         }
     }
 }
