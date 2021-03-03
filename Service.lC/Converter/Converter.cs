@@ -17,15 +17,26 @@ namespace Service.lC
 
         public static Func<TSource, TResult> GetConverter<TSource, TResult>() where TSource : new() where TResult : new()
         {
-            //Init Type static constructor
-            var source = new TSource();
-            var destination = new TResult();
 
             var sourceType = typeof(TSource);
             var destinationType = typeof(TResult);
+
             var key = new Tuple<Type, Type>(sourceType, destinationType);
 
-            var value = dictionary[key];
+            object value = null;
+
+            try
+            {
+                value = dictionary[key];
+            }
+            catch (KeyNotFoundException ex)
+            {
+                //Init Type static constructor (Register converter)
+                var source = new TSource();
+                var destination = new TResult();
+
+                value = dictionary[key];
+            }           
 
             var func = value as Func<TSource, TResult>;
 
