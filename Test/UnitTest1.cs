@@ -1,3 +1,4 @@
+using Application.Component;
 using Domain;
 using lc.fitnesspro.library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,12 +26,16 @@ namespace Test
             http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
             var baseHttp = new BaseHttpClient(http);
 
-            var providerDepository = new ProviderDepository(baseHttp);
+            var providerDepository = new ProviderDepository(baseHttp, lcManager);
             var eduManager = new EducationManager(providerDepository, lcManager);
 
-            var res = eduManager.GetTeacherPrograms(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+            //var res = eduManager.GetTeacherPrograms(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
 
-            var res1 = eduManager.GetDisciplinePrograms(new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc")).Result;
+            //var res1 = eduManager.GetDisciplinePrograms(new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc")).Result;
+
+            var component = new EducationComponent(providerDepository);
+
+            var progs = component.GetProgramByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
         }
 
 

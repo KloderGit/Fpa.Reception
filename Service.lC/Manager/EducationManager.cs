@@ -35,14 +35,14 @@ namespace Service.lC.Manager
             this.lcManager = lcManager;
         }
 
-        public async Task<IEnumerable<Program>> GetTeacherPrograms(Guid teacherKey)
-        {
-            var foundedProgramKeys = await FindTeacherPrograms(teacherKey);
+        //public async Task<IEnumerable<Program>> GetTeacherPrograms(Guid teacherKey)
+        //{
+        //    var foundedProgramKeys = await FindTeacherPrograms(teacherKey);
 
-            var programs = await GetPrograms(foundedProgramKeys);
+        //    var programs = await GetPrograms(foundedProgramKeys);
 
-            return programs;
-        }
+        //    return programs;
+        //}
 
         public async Task<IEnumerable<Program>> GetDisciplinePrograms(Guid disciplineKey)
         {

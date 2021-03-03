@@ -1,4 +1,5 @@
-﻿using Service.lC.Dto;
+﻿using lc.fitnesspro.library.Interface;
+using Service.lC.Dto;
 using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Repository;
@@ -8,6 +9,7 @@ namespace Service.lC.Provider
     public class ProviderDepository
     {
         private readonly BaseHttpClient client;
+        private readonly IManager manager;
         private readonly RepositoryDepository depository;
 
         private ProgramProvider program;
@@ -18,13 +20,14 @@ namespace Service.lC.Provider
         private IProvider<Base, BaseDto> group;
         private IProvider<Base, BaseDto> subGroup;
 
-        public ProviderDepository(BaseHttpClient client)
+        public ProviderDepository(BaseHttpClient client, IManager manager)
         {
             this.client = client;
+            this.manager = manager;
             this.depository = new RepositoryDepository(client);
         }
 
-        public ProgramProvider Program => program ?? (program = new ProgramProvider(depository));
+        public ProgramProvider Program => program ?? (program = new ProgramProvider(depository, manager));
         public IProvider<Base, BaseDto> Discipline => discipline ?? (discipline = new GenericProvider<Base, BaseDto>(depository.Discipline, depository));
         public IProvider<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericProvider<Base, BaseDto>(depository.EducationForm, depository));
         public IProvider<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericProvider<Base, BaseDto>(depository.ControlType, depository));

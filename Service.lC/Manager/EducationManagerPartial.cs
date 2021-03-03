@@ -8,19 +8,7 @@ namespace Service.lC.Manager
 {
     public partial class EducationManager
     {
-        private async Task<IEnumerable<Guid>> FindTeacherPrograms(Guid teacherKey)
-        {
-            var query = await lcManager.Program
-                .Filter(x => x.DeletionMark == false).And()
-                .Filter(x => x.Status == "Активный").And()
-                .Filter(x => x.Teachers.Any(t => t.TeacherKey == teacherKey))
-                .Select(x => x.Key)
-                .GetByFilter().ConfigureAwait(false);
 
-            var result = query == null ? Enumerable.Empty<Guid>() : query.Select(x => x.Key);
-
-            return result;
-        }
 
         private async Task<IEnumerable<Guid>> FindDisciplinePrograms(Guid disciplineKey)
         {

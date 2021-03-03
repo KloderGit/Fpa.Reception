@@ -1,10 +1,13 @@
+using lc.fitnesspro.library.Interface;
 using Service.lC.Dto;
 using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Librarylc = lc.fitnesspro.library;
 
 namespace Service.lC.Provider
 {
@@ -14,16 +17,39 @@ namespace Service.lC.Provider
         private readonly IRepositoryAsync<Base, BaseDto> emploeeRepository;
         private readonly IRepositoryAsync<Base, BaseDto> disciplineRepository;
         private readonly IRepositoryAsync<Base, BaseDto> controlTypeRepository;
+        private readonly IManager manager;
 
-        public ProgramProvider (RepositoryDepository depository)
+        public ProgramProvider (RepositoryDepository depository, IManager manager)
             : base(depository.Program, depository)
         {
             this.educationFormRepository = depository.EducationForm;
             this.emploeeRepository = depository.Employee;
             this.disciplineRepository = depository.Discipline;
             this.controlTypeRepository = depository.ControlType;
+            this.manager = manager;
         }
-        
+
+        public async Task<IEnumerable<Guid>> FindTeacherPrograms(Guid teacherKey)
+        {
+            var query = await manager.Program
+                .Filter(x => x.DeletionMark == false).And()
+                .Filter(x => x.Status == "Активный").And()
+                .Filter(x => x.Teachers.Any(t => t.TeacherKey == teacherKey))
+                .Select(x => x.Key)
+                .GetByFilter().ConfigureAwait(false);
+
+            var result = query == null ? Enumerable.Empty<Guid>() : query.Select(x => x.Key);
+
+            return result;
+        }
+
+
+
+
+
+
+
+
         public async Task<Program> IncludeEducationForm(Program program)
         {
             var key = program.EducationForm.Key;
