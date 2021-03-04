@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Application.Component;
 using Application.Employee;
 using Application.HttpClient;
 using Application.Program;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Teacher;
 using Service.lC;
+using Service.lC.Provider;
 using Service.MongoDB;
 
 namespace reception.fitnesspro.ru.Controllers.Education
@@ -185,6 +188,28 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             return result.ToList();
         }
+
+        [HttpGet]
+        [Route("Program/FindByEmployee2")]
+        public async Task<ActionResult<dynamic>> FindByEmployee2(Guid key)
+        {
+            var lcManager = new Manager("kloder", "Kaligula2");
+
+            var http = new HttpClient();
+            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+            var baseHttp = new BaseHttpClient(http);
+
+            var providerDepository = new ProviderDepository(baseHttp, lcManager);
+
+            var component = new EducationComponent(providerDepository);
+
+            var programs = await component.GetProgramByTeacher(key);
+
+
+
+            return programs.ToList();
+        }
+
 
 
         [HttpGet]

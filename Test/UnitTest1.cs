@@ -9,6 +9,7 @@ using Service.lC.Provider;
 using Service.MongoDB;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 
 namespace Test
@@ -18,24 +19,32 @@ namespace Test
     public class UnitTest1
     {
         [TestMethod]
+        public void TestMethod3()
+        {
+            var cal = new CalendarGenerator(2021, 2);
+            cal.Generate();
+
+        }
+
+        [TestMethod]
         public void TestMethod2()
         {
-            var lcManager = new Manager("kloder", "Kaligula2");
+            //var lcManager = new Manager("kloder", "Kaligula2");
 
-            var http = new HttpClient();
-            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
-            var baseHttp = new BaseHttpClient(http);
+            //var http = new HttpClient();
+            //http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+            //var baseHttp = new BaseHttpClient(http);
 
-            var providerDepository = new ProviderDepository(baseHttp, lcManager);
-            var eduManager = new EducationManager(providerDepository, lcManager);
+            //var providerDepository = new ProviderDepository(baseHttp, lcManager);
+            //var eduManager = new EducationManager(providerDepository, lcManager);
 
-            //var res = eduManager.GetTeacherPrograms(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+            ////var res = eduManager.GetTeacherPrograms(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
 
-            //var res1 = eduManager.GetDisciplinePrograms(new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc")).Result;
+            ////var res1 = eduManager.GetDisciplinePrograms(new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc")).Result;
 
-            var component = new EducationComponent(providerDepository);
+            //var component = new EducationComponent(providerDepository);
 
-            var progs = component.GetProgramByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+            //var progs = component.GetProgramByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
         }
 
 
@@ -112,5 +121,53 @@ namespace Test
             ObjectId IDocument.Id { get; set; }
             DateTime IDocument.CreatedAt { get; }
         }
+
+
+
+        public class CalendarGenerator
+        {
+            private readonly DateTime date;
+            private LinkedList<DateTime> dates = new LinkedList<DateTime>();
+
+            public CalendarGenerator(int year, int month)
+            {
+                this.date = new DateTime(year, month, 1);
+            }
+
+            public void Generate()
+            {
+                var monthDayCount = 32 - date.AddDays(31).Day;
+
+                var weekDay = (int)date.DayOfWeek == 0 ? 7 : (int)date.DayOfWeek;
+
+                var startCalendarDay = date;
+
+                startCalendarDay = startCalendarDay.AddDays(-(weekDay - 1));
+
+                for (var i = 0; i < weekDay - 1; i++)
+                {
+                    dates.AddLast(new LinkedListNode<DateTime>(new DateTime(startCalendarDay.AddDays(i).Ticks)));
+                }
+
+                for (var i = 0; i < monthDayCount; i++)
+                {
+                    dates.AddLast(new LinkedListNode<DateTime>(new DateTime(date.AddDays(i).Ticks)));
+                }
+
+                var lastDayWeekDay = (int)date.AddDays(monthDayCount-1).DayOfWeek;
+
+                var lastDate = date.AddDays(monthDayCount - 1);
+
+                for (var i = 1; i <= 7 - lastDayWeekDay; i++)
+                {
+                    dates.AddLast(new LinkedListNode<DateTime>(new DateTime(lastDate.AddDays(i).Ticks)));
+                }
+            }
+
+
+        }
+
+
+
     }
 }

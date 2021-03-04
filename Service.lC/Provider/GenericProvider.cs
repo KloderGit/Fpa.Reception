@@ -6,7 +6,7 @@ namespace Service.lC.Provider
 {
     public class GenericProvider<T, TDto> : IProvider<T, TDto> where T : Base
     {
-        private readonly RepositoryDepository depository;
+        protected readonly RepositoryDepository depository;
         public IRepositoryAsync<T, TDto> Repository { get; private set; }
 
         public GenericProvider(

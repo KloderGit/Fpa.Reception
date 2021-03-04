@@ -8,8 +8,8 @@ namespace Service.lC.Model
     public class Program : Base, IConvert<Program>
     {
         public Base EducationForm { get; set; }
-        public IEnumerable<Base> Teachers { get; set; }
-        public IEnumerable<Education> Educations { get; set; }
+        public IEnumerable<Base> Teachers { get; set; } = new List<Base>();
+        public IEnumerable<Education> Educations { get; set; } = new List<Education>();
 
         public TResult ConvertTo<TResult>(Func<Program, TResult> converter)
         {
