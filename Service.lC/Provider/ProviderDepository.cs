@@ -8,7 +8,6 @@ namespace Service.lC.Provider
 {
     public class ProviderDepository
     {
-        private readonly BaseHttpClient client;
         private readonly IManager manager;
         private readonly RepositoryDepository depository;
 
@@ -17,12 +16,11 @@ namespace Service.lC.Provider
         private IProvider<Base, BaseDto> educationForm;
         private IProvider<Base, BaseDto> controlType;
         private IProvider<Base, BaseDto> employee;
-        private IProvider<Base, BaseDto> group;
+        private GroupProvider group;
         private IProvider<Base, BaseDto> subGroup;
 
         public ProviderDepository(BaseHttpClient client, IManager manager)
         {
-            this.client = client;
             this.manager = manager;
             this.depository = new RepositoryDepository(client);
         }
@@ -32,7 +30,7 @@ namespace Service.lC.Provider
         public IProvider<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericProvider<Base, BaseDto>(depository.EducationForm, depository));
         public IProvider<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericProvider<Base, BaseDto>(depository.ControlType, depository));
         public IProvider<Base, BaseDto> Employee => employee ?? (employee = new GenericProvider<Base, BaseDto>(depository.Employee, depository));
-        public IProvider<Base, BaseDto> Group => group ?? (group = new GenericProvider<Base, BaseDto>(depository.Group, depository));
+        public GroupProvider Group => group ?? (group = new GroupProvider(depository, manager));
         public IProvider<Base, BaseDto> SubGroup => subGroup ?? (subGroup = new GenericProvider<Base, BaseDto>(depository.SubGroup, depository));
     }
 }

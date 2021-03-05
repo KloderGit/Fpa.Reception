@@ -1,5 +1,6 @@
 ﻿using reception.fitnesspro.ru.ViewModel;
 using Service.lC;
+using Service.lC.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;

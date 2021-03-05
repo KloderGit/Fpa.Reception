@@ -34,5 +34,21 @@ namespace Service.lC.Provider
 
             return programs;
         }
+
+        public async Task<IEnumerable<Program>> FilterByDiscipline(Guid disciplineKey)
+        {
+            var query = await manager.Program
+                    .Filter(x => x.DeletionMark == false).And()
+                    .Filter(x => x.Status == "Активный").And()
+                    .Filter(x => x.Disciplines.Any(t => t.DisciplineKey == disciplineKey))
+                    .Select(x => x.Key)
+                    .GetByFilter();
+
+            var keys = query?.Select(x => x.Key) ?? Enumerable.Empty<Guid>();
+
+            var programs = await Repository.GetAsync(keys);
+
+            return programs;
+        }
     }
 }

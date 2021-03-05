@@ -13,7 +13,7 @@ namespace Service.lC.Repository
         private IRepositoryAsync<Base, BaseDto> educationForm;
         private IRepositoryAsync<Base, BaseDto> controlType;
         private IRepositoryAsync<Base, BaseDto> employee;
-        private IRepositoryAsync<Base, BaseDto> group;
+        private IRepositoryAsync<Group, GroupDto> group;
         private IRepositoryAsync<Base, BaseDto> subGroup;
 
         public RepositoryDepository(BaseHttpClient client)
@@ -26,7 +26,7 @@ namespace Service.lC.Repository
         public IRepositoryAsync<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericRepository<Base, BaseDto>(client, "lc/EducationForm"));
         public IRepositoryAsync<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericRepository<Base, BaseDto>(client, "lc/Control"));
         public IRepositoryAsync<Base, BaseDto> Employee => employee ?? (employee = new GenericRepository<Base, BaseDto>(client, "lc/Employee"));
-        public IRepositoryAsync<Base, BaseDto> Group => group ?? (group = new GenericRepository<Base, BaseDto>(client, "lc/Group"));
+        public IRepositoryAsync<Group, GroupDto> Group => group ?? (group = new GenericRepository<Group, GroupDto>(client, "lc/Group"));
         public IRepositoryAsync<Base, BaseDto> SubGroup => subGroup ?? (subGroup = new GenericRepository<Base, BaseDto>(client, "lc/SubGroup"));
 
         //public IRepositoryAsync<T> GetRepository<T>()

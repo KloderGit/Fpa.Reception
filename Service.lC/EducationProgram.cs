@@ -1,5 +1,6 @@
 ﻿using lc.fitnesspro.library.Interface;
 using lc.fitnesspro.library.Model;
+using Service.lC.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,14 +147,7 @@ namespace Service.lC
         public string Title { get; set; }
     }
 
-    public class GroupDto
-    {
-        public Guid Key { get; set; }
-        public string Title { get; set; }
-        public Guid ProgramKey { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime Finish { get; set; }
-    }
+
 
     public class SubGroupDto
     {

@@ -199,7 +199,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
             var baseHttp = new BaseHttpClient(http);
 
-            var providerDepository = new ProviderDepository(baseHttp, lcManager);
+                var providerDepository = new ProviderDepository(baseHttp, lcManager);
 
             var component = new EducationComponent(providerDepository);
 
@@ -221,7 +221,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             var programs = await client.FindSiblings(key);
             if (programs == null || programs.Any() == false) return NoContent();
 
-            var groups = await client.FindProgramGroup(programs.Select(x=>x.Key));
+            var groups = await client.FindProgramGroup(programs.Select(x => x.Key));
 
             var subGroups = await client.FindSubgroups(groups.Select(x=>x.Key));
 
@@ -230,6 +230,24 @@ namespace reception.fitnesspro.ru.Controllers.Education
             return viewModel;
         }
 
+        [HttpGet]
+        [Route("Program/FindSiblings2")]
+        public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
+        {
+            var lcManager = new Manager("kloder", "Kaligula2");
+
+            var http = new HttpClient();
+            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+            var baseHttp = new BaseHttpClient(http);
+
+            var providerDepository = new ProviderDepository(baseHttp, lcManager);
+
+            var component = new EducationComponent(providerDepository);
+
+            var programs = await component.GetProgramByDiscipline(key);
+
+            return programs.ToList();
+        }
 
 
         [HttpPost]
