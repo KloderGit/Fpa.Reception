@@ -54,7 +54,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
         private IEnumerable<SubgroupViewModel> FindSubgroup(Guid key)
         {
-            var array = subgroupDtos.Where(x => x.GroupKey == key)
+            var array = subgroupDtos.Where(x => x.OwnerKey == key)
                               .Select(x =>
                                 new SubgroupViewModel
                                 {

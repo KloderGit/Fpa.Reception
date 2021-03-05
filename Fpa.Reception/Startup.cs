@@ -1,3 +1,5 @@
+using lc.fitnesspro.library;
+using lc.fitnesspro.library.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
 using reception.fitnesspro.ru.Misc;
+using Service.lC;
 using Service.MongoDB;
 using System;
 
@@ -34,6 +37,14 @@ namespace reception.fitnesspro.ru
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
             services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+
+            services.AddHttpClient<BaseHttpClient>(c =>
+            {
+                c.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+            });
+            services.AddScoped<IManager>(_ => new Manager("Kloder", "Kaligula2"));
+            services.AddScoped<Context>();
+
 
             services.AddControllers();
 

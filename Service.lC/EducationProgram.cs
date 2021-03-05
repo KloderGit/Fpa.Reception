@@ -103,12 +103,14 @@ namespace Service.lC
 
             if (result == null || result.Any() == false) return Enumerable.Empty<GroupDto>();
 
-            var groups = result.Select(x => new GroupDto { 
-                Key = x.Key, 
-                Title = x.Title, 
-                ProgramKey = x.ProgramKey, 
+            var groups = result.Select(x => new GroupDto
+            {
+                Key = x.Key,
+                Title = x.Title,
+                ProgramKey = x.ProgramKey,
                 Start = x.Start,
-                Finish = x.Finish });
+                Finish = x.Finish
+            });
 
             return groups ?? Enumerable.Empty<GroupDto>();
         }
@@ -134,7 +136,7 @@ namespace Service.lC
             {
                 Key = x.Key,
                 Title = x.Title,
-                GroupKey = x.GroupKey
+                OwnerKey = x.GroupKey
             });
 
             return subGroups ?? Enumerable.Empty<SubGroupDto>();
@@ -149,10 +151,10 @@ namespace Service.lC
 
 
 
-    public class SubGroupDto
-    {
-        public Guid Key { get; set; }
-        public string Title { get; set; }
-        public Guid GroupKey { get; set; }
-    }
+    //public class SubGroupDto
+    //{
+    //    public Guid Key { get; set; }
+    //    public string Title { get; set; }
+    //    public Guid GroupKey { get; set; }
+    //}
 }

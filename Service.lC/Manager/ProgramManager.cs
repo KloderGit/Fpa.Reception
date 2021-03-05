@@ -1,33 +1,50 @@
-﻿using lc.fitnesspro.library.Interface;
+﻿using Service.lC.Dto;
+using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Service.lC.Manager
 {
     public class ProgramManager
     {
-        private readonly ProviderDepository depository;
+        private readonly ProgramProvider programProvider;
+        private readonly IProvider<Base, BaseDto> disciplineProvider;
+        private readonly IProvider<Base, BaseDto> controltypeProvider;
+        private readonly IProvider<Base, BaseDto> educationFormProvider;
+        private readonly IProvider<Base, BaseDto> employeeProvider;
+        private readonly GroupProvider groupProvider;
 
-        public ProgramManager(ProviderDepository depository)
+        public ProgramManager(
+            ProgramProvider programProvider,
+            IProvider<Base, BaseDto> disciplineProvider,
+            IProvider<Base, BaseDto> controltypeProvider,
+            IProvider<Base, BaseDto> educationFormProvider,
+            IProvider<Base, BaseDto> employeeProvider,
+            GroupProvider groupProvider
+            )
         {
-            this.depository = depository;
+            this.programProvider = programProvider;
+            this.disciplineProvider = disciplineProvider;
+            this.controltypeProvider = controltypeProvider;
+            this.educationFormProvider = educationFormProvider;
+            this.employeeProvider = employeeProvider;
+            this.groupProvider = groupProvider;
         }
 
         public async Task<IEnumerable<Program>> FilterByTeacher(Guid teacherKey)
         {
-            var programs = await depository.Program.FilterByTeacher(teacherKey);
+            var programs = await programProvider.FilterByTeacher(teacherKey);
 
             return programs;
         }
 
         public async Task<IEnumerable<Program>> FilterByDiscipline(Guid disciplineKey)
         {
-            var programs = await depository.Program.FilterByDiscipline(disciplineKey);
+            var programs = await programProvider.FilterByDiscipline(disciplineKey);
 
             return programs;
         }
@@ -37,10 +54,10 @@ namespace Service.lC.Manager
             var array = programs.ToList();
 
             var disciplineKeys = ReduceArray(array.SelectMany(p => p.Educations.Select(d => d.Discipline.Key)));
-            var disciplines = await depository.Discipline.Repository.GetAsync(disciplineKeys);
+            var disciplines = await disciplineProvider.Repository.GetAsync(disciplineKeys);
 
             var controlTypeKeys = ReduceArray(array.SelectMany(p => p.Educations.Select(d => d.ControlType.Key)));
-            var controlTypes = await depository.ControlType.Repository.GetAsync(controlTypeKeys);
+            var controlTypes = await controltypeProvider.Repository.GetAsync(controlTypeKeys);
 
             array.ForEach(p =>
             {
@@ -61,7 +78,7 @@ namespace Service.lC.Manager
             var array = programs.ToList();
 
             var educationFormKeys = ReduceArray(array.Select(x => x.EducationForm.Key));
-            var educationForms = await depository.EducationForm.Repository.GetAsync(educationFormKeys);
+            var educationForms = await educationFormProvider.Repository.GetAsync(educationFormKeys);
             array.ForEach(x => x.EducationForm = educationForms.FirstOrDefault(e => e.Key == x.EducationForm.Key));
 
             return array;
@@ -71,7 +88,7 @@ namespace Service.lC.Manager
         {
             var teacherKeys = ReduceArray( programs.SelectMany(x => x.Teachers.Select(t => t.Key)) );
 
-            var teachers = await depository.Employee.Repository.GetAsync(teacherKeys);
+            var teachers = await employeeProvider.Repository.GetAsync(teacherKeys);
 
             programs.ToList()
                 .ForEach(x => x.Teachers = teachers.Where(x => teacherKeys.Contains(x.Key)));
@@ -83,7 +100,7 @@ namespace Service.lC.Manager
         {
             var programsKeys = ReduceArray(programs.SelectMany(x => x.Teachers.Select(t => t.Key)));
 
-            var groups = await depository.Group.FilterByProgram(programsKeys);
+            var groups = await groupProvider.FilterByProgram(programsKeys);
 
             programs.ToList()
                 .ForEach(x => x.Groups = groups.Where(g => g.Owner == x.Key));

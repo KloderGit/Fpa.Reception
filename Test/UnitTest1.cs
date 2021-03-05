@@ -29,22 +29,19 @@ namespace Test
         [TestMethod]
         public void TestMethod2()
         {
-            //var lcManager = new Manager("kloder", "Kaligula2");
+            var lcManager = new Manager("kloder", "Kaligula2");
 
-            //var http = new HttpClient();
-            //http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
-            //var baseHttp = new BaseHttpClient(http);
+            var http = new HttpClient();
+            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+            var baseHttp = new BaseHttpClient(http);
 
-            //var providerDepository = new ProviderDepository(baseHttp, lcManager);
-            //var eduManager = new EducationManager(providerDepository, lcManager);
+            var context = new Context(baseHttp, lcManager, null);
 
-            ////var res = eduManager.GetTeacherPrograms(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
-
-            ////var res1 = eduManager.GetDisciplinePrograms(new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc")).Result;
-
-            //var component = new EducationComponent(providerDepository);
-
-            //var progs = component.GetProgramByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+            var progs = context.Program.FilterByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+                progs = context.Program.IncludeDisciplines(progs).Result;
+                progs = context.Program.IncludeEducationForm(progs).Result;
+                progs = context.Program.IncludeTeachers(progs).Result;
+                progs = context.Program.IncludeGroups(progs).Result;
         }
 
 

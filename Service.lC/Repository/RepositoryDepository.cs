@@ -1,4 +1,5 @@
-﻿using Service.lC.Dto;
+﻿using Microsoft.Extensions.Configuration;
+using Service.lC.Dto;
 using Service.lC.Interface;
 using Service.lC.Model;
 
@@ -7,6 +8,7 @@ namespace Service.lC.Repository
     public class RepositoryDepository
     {
         private readonly BaseHttpClient client;
+        private readonly IConfiguration configuration;
 
         private IRepositoryAsync<Program, ProgramDto> program;
         private IRepositoryAsync<Base, BaseDto> discipline;
@@ -16,9 +18,10 @@ namespace Service.lC.Repository
         private IRepositoryAsync<Group, GroupDto> group;
         private IRepositoryAsync<Base, BaseDto> subGroup;
 
-        public RepositoryDepository(BaseHttpClient client)
+        public RepositoryDepository(BaseHttpClient client, IConfiguration configuration)
         {
             this.client = client;
+            this.configuration = configuration;
         }
 
         public IRepositoryAsync<Program, ProgramDto> Program => program ?? (program = new GenericRepository<Program, ProgramDto>(client, "lc/Program"));

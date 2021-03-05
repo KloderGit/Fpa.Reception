@@ -1,40 +1,46 @@
 ﻿using lc.fitnesspro.library.Interface;
 using Microsoft.Extensions.Configuration;
-using Service.lC.Dto;
 using Service.lC.Manager;
-using Service.lC.Model;
 using Service.lC.Provider;
 using Service.lC.Repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Service.lC
 {
     public class Context
     {
+        private readonly RepositoryDepository repositories;
+        private readonly ProviderDepository providers;
+
         private readonly BaseHttpClient client;
         private readonly IManager lcManager;
+        private readonly IConfiguration configuration;
 
-        private readonly ProgramManager program;
+        private ProgramManager program;
+        private GroupManager group;
 
         public Context(
-            BaseHttpClient client, 
-            IManager lcManager, 
+            BaseHttpClient httpClient,
+            IManager lcManager,
             IConfiguration configuration)
         {
-            this.client = client;
-            this.lcManager = lcManager;
+            this.client = httpClient ?? throw new System.ArgumentNullException(nameof(httpClient));
+            this.lcManager = lcManager ?? throw new System.ArgumentNullException(nameof(lcManager));
+            //this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+
+            repositories = new RepositoryDepository(client, configuration);
+            providers = new ProviderDepository(repositories, lcManager);
         }
 
-        //public ProgramManager Program
-        //{ 
-        //    get {
-        //        var repository = new GenericRepository<Program, ProgramDto>(client, "lc/Program");
-        //        var provider = new ProgramProvider();
-        //        program = new ProgramManager(provider);
-        //    }
-        //};
+        public ProgramManager Program => program ?? (
+                program = new ProgramManager(
+                    providers.Program, 
+                    providers.Discipline, 
+                    providers.ControlType, 
+                    providers.EducationForm, 
+                    providers.Employee, 
+                    providers.Group));
+
+        public GroupManager Group => group ?? (group = new GroupManager(providers.SubGroup));
 
     }
 

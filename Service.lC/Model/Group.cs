@@ -9,5 +9,7 @@ namespace Service.lC.Model
         public Guid Owner { get; set; }
         public DateTime Start { get; set; }
         public DateTime Finish { get; set; }
+
+        public IEnumerable<SubGroup> SubGroups { get; set; }
     }
 }

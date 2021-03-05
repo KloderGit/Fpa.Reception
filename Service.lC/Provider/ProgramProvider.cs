@@ -1,5 +1,6 @@
 using lc.fitnesspro.library.Interface;
 using Service.lC.Dto;
+using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Repository;
 using System;
@@ -13,8 +14,10 @@ namespace Service.lC.Provider
     {
         private readonly IManager manager;
 
-        public ProgramProvider (RepositoryDepository depository, IManager manager)
-            : base(depository.Program, depository)
+        public ProgramProvider (
+            IRepositoryAsync<Program, ProgramDto> repository, 
+            IManager manager)
+            : base(repository)
         {
             this.manager = manager;
         }

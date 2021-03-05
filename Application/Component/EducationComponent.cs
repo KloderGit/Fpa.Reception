@@ -1,9 +1,6 @@
-﻿using Service.lC.Manager;
-using Service.lC.Model;
-using Service.lC.Provider;
+﻿using Service.lC;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using lcService = Service.lC;
 
@@ -11,35 +8,35 @@ namespace Application.Component
 {
     public class EducationComponent
     {
-        private readonly ProviderDepository providerDepository;
+        private readonly Context lcService;
 
-        public EducationComponent(ProviderDepository providerDepository)
+        public EducationComponent(Context lcService)
         {
-            this.providerDepository = providerDepository;
+            this.lcService = lcService;
         }
 
-        public async Task<IEnumerable<lcService.Model.Program>> GetProgramByTeacher(Guid teacherKey)
+        public async Task<IEnumerable<lcService.Model.Program>> FindProgramByTeacher(Guid teacherKey)
         {
-            var manager = new ProgramManager(providerDepository);
+            var manager = lcService.Program;
 
-            var progs = await manager.FilterByTeacher(teacherKey);
-                progs = await manager.IncludeDisciplines(progs);
-                progs = await manager.IncludeEducationForm(progs);
-                progs = await manager.IncludeTeachers(progs);
-                progs = await manager.IncludeGroups(progs);
+            var programs = await manager.FilterByTeacher(teacherKey);
+                programs = await manager.IncludeDisciplines(programs);
+                programs = await manager.IncludeEducationForm(programs);
+                programs = await manager.IncludeTeachers(programs);
+                programs = await manager.IncludeGroups(programs);
 
-            return progs;
+            return programs;
         }
 
-        public async Task<IEnumerable<lcService.Model.Program>> GetProgramByDiscipline(Guid disciplineKey)
+        public async Task<IEnumerable<lcService.Model.Program>> FindProgramByDiscipline(Guid disciplineKey)
         {
-            var manager = new ProgramManager(providerDepository);
+            var manager = lcService.Program;
 
-            var progs = await manager.FilterByTeacher(disciplineKey);
-                progs = await manager.IncludeEducationForm(progs);
-                progs = await manager.IncludeTeachers(progs);
+            var programs = await manager.FilterByTeacher(disciplineKey);
+                programs = await manager.IncludeTeachers(programs);
+                programs = await manager.IncludeGroups(programs);
 
-            return progs;
+            return programs;
         }
     }
 }

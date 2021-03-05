@@ -21,6 +21,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
     [ApiController]
     public class EducationController : ControllerBase
     {
+        private readonly Context context;
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
         private readonly AssignHttpClient assignHttpClient;
@@ -31,7 +32,10 @@ namespace reception.fitnesspro.ru.Controllers.Education
         ProgramMethods programAction;
         EmployeeMethods employeeAction;
 
+        EducationComponent EducationLogic;
+
         public EducationController(
+            Context context,
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
             AssignHttpClient assignHttpClient,
@@ -39,6 +43,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             EducationFormHttpClient educationFormHttpClient,
             ControlTypeHttpClient controlTypeHttpClient)
         {
+            this.context = context;
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
             this.assignHttpClient = assignHttpClient;
@@ -48,6 +53,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             programAction = new ProgramMethods(programHttpClient);
             employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
+
+            EducationLogic = new EducationComponent(context);
         }
 
         [HttpPost]
@@ -193,19 +200,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
         [Route("Program/FindByEmployee2")]
         public async Task<ActionResult<dynamic>> FindByEmployee2(Guid key)
         {
-            var lcManager = new Manager("kloder", "Kaligula2");
 
-            var http = new HttpClient();
-            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
-            var baseHttp = new BaseHttpClient(http);
-
-                var providerDepository = new ProviderDepository(baseHttp, lcManager);
-
-            var component = new EducationComponent(providerDepository);
-
-            var programs = await component.GetProgramByTeacher(key);
-
-
+            var programs = await EducationLogic.FindProgramByDiscipline(key);
 
             return programs.ToList();
         }
@@ -230,24 +226,24 @@ namespace reception.fitnesspro.ru.Controllers.Education
             return viewModel;
         }
 
-        [HttpGet]
-        [Route("Program/FindSiblings2")]
-        public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
-        {
-            var lcManager = new Manager("kloder", "Kaligula2");
+        //[HttpGet]
+        //[Route("Program/FindSiblings2")]
+        //public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
+        //{
+        //    var lcManager = new Manager("kloder", "Kaligula2");
 
-            var http = new HttpClient();
-            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
-            var baseHttp = new BaseHttpClient(http);
+        //    var http = new HttpClient();
+        //    http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+        //    var baseHttp = new BaseHttpClient(http);
 
-            var providerDepository = new ProviderDepository(baseHttp, lcManager);
+        //    var providerDepository = new ProviderDepository(baseHttp, lcManager);
 
-            var component = new EducationComponent(providerDepository);
+        //    var component = new EducationComponent(providerDepository);
 
-            var programs = await component.GetProgramByDiscipline(key);
+        //    var programs = await component.GetProgramByDiscipline(key);
 
-            return programs.ToList();
-        }
+        //    return programs.ToList();
+        //}
 
 
         [HttpPost]
