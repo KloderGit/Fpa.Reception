@@ -28,8 +28,8 @@ namespace Service.lC.Provider
 
             var query = manager.Group
                         .Select(x=>x.Key)
-                        .Filter(x => x.DeletionMark == false).AndAlso();
-                        //.Filter(x => x.Finish > today).AndAlso();
+                        .Filter(x => x.DeletionMark == false).And()
+                        .Filter(x => x.Finish > today).AndAlso();
 
             var nodeList = new LinkedList<Guid>(programKeys);
             for (var node = nodeList.First; node != null; node = node.Next)

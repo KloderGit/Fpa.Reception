@@ -21,7 +21,7 @@ namespace Service.lC.Manager
             this.subGroupProvider = subGroupProvider;
         }
 
-        public async Task<IEnumerable<Group>> IncludeSubGroups(IEnumerable<Group> groups)
+        public async Task IncludeSubGroups(IEnumerable<Group> groups)
         {
             var groupKeys = ReduceArray(groups.Select(t => t.Key));
 
@@ -29,8 +29,6 @@ namespace Service.lC.Manager
 
             groups.ToList()
                 .ForEach(x => x.SubGroups = subGroups.Where(g => g.Owner == x.Key));
-
-            return groups;
         }
 
         private List<Guid> ReduceArray(IEnumerable<Guid> keys)

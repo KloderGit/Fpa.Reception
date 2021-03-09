@@ -201,7 +201,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
         public async Task<ActionResult<dynamic>> FindByEmployee2(Guid key)
         {
 
-            var programs = await EducationLogic.FindProgramByDiscipline(key);
+            var programs = await EducationLogic.FindProgramByTeacher(key);
 
             return programs.ToList();
         }
@@ -226,24 +226,14 @@ namespace reception.fitnesspro.ru.Controllers.Education
             return viewModel;
         }
 
-        //[HttpGet]
-        //[Route("Program/FindSiblings2")]
-        //public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
-        //{
-        //    var lcManager = new Manager("kloder", "Kaligula2");
+        [HttpGet]
+        [Route("Program/FindSiblings2")]
+        public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
+        {
+            var programs = await EducationLogic.FindProgramByDiscipline(key);
 
-        //    var http = new HttpClient();
-        //    http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
-        //    var baseHttp = new BaseHttpClient(http);
-
-        //    var providerDepository = new ProviderDepository(baseHttp, lcManager);
-
-        //    var component = new EducationComponent(providerDepository);
-
-        //    var programs = await component.GetProgramByDiscipline(key);
-
-        //    return programs.ToList();
-        //}
+            return programs.ToList();
+        }
 
 
         [HttpPost]

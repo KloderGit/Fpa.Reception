@@ -49,7 +49,7 @@ namespace Service.lC.Manager
             return programs;
         }
 
-        public async Task<IEnumerable<Program>> IncludeDisciplines(IEnumerable<Program> programs)
+        public async Task IncludeDisciplines(IEnumerable<Program> programs)
         {
             var array = programs.ToList();
 
@@ -69,43 +69,35 @@ namespace Service.lC.Manager
                 });
                 p.Educations = eduScheme;
             });
-
-            return array;
         }
 
-        public async Task<IEnumerable<Program>> IncludeEducationForm(IEnumerable<Program> programs)
+        public async Task IncludeEducationForm(IEnumerable<Program> programs)
         {
             var array = programs.ToList();
 
             var educationFormKeys = ReduceArray(array.Select(x => x.EducationForm.Key));
             var educationForms = await educationFormProvider.Repository.GetAsync(educationFormKeys);
             array.ForEach(x => x.EducationForm = educationForms.FirstOrDefault(e => e.Key == x.EducationForm.Key));
-
-            return array;
         }
 
-        public async Task<IEnumerable<Program>> IncludeTeachers(IEnumerable<Program> programs)
+        public async Task IncludeTeachers(IEnumerable<Program> programs)
         {
             var teacherKeys = ReduceArray( programs.SelectMany(x => x.Teachers.Select(t => t.Key)) );
 
             var teachers = await employeeProvider.Repository.GetAsync(teacherKeys);
 
             programs.ToList()
-                .ForEach(x => x.Teachers = teachers.Where(x => teacherKeys.Contains(x.Key)));
-
-            return programs;
+                .ForEach(x => x.Teachers = x.Teachers.Select(t=> teachers.FirstOrDefault(f=>f.Key == t.Key)));
         }
 
-        public async Task<IEnumerable<Program>> IncludeGroups(IEnumerable<Program> programs)
+        public async Task IncludeGroups(IEnumerable<Program> programs)
         {
-            var programsKeys = ReduceArray(programs.SelectMany(x => x.Teachers.Select(t => t.Key)));
+            var programsKeys = ReduceArray(programs.Select(x => x.Key));
 
             var groups = await groupProvider.FilterByProgram(programsKeys);
 
             programs.ToList()
                 .ForEach(x => x.Groups = groups.Where(g => g.Owner == x.Key));
-
-            return programs;
         }
 
         private List<Guid> ReduceArray(IEnumerable<Guid> keys)
