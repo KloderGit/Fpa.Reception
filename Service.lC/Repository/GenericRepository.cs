@@ -9,10 +9,10 @@ namespace Service.lC.Repository
 {
     public class GenericRepository<TDomen, TDto> : IRepositoryAsync<TDomen, TDto> where TDto : IConvert<TDto>, new() where TDomen : new()
     {
-        private readonly BaseHttpClient http;
-        private readonly string endpoint;
+        protected readonly BaseHttpClient http;
+        protected readonly string endpoint;
 
-        private readonly Func<TDto, TDomen> converter = Converter.GetConverter<TDto,TDomen>();
+        protected readonly Func<TDto, TDomen> converter = Converter.GetConverter<TDto,TDomen>();
 
         public GenericRepository(BaseHttpClient httpClient, string endpoint)
         {

@@ -16,7 +16,10 @@ namespace Service.lC.Repository
         private IRepositoryAsync<Base, BaseDto> controlType;
         private IRepositoryAsync<Base, BaseDto> employee;
         private IRepositoryAsync<Group, GroupDto> group;
-        private IRepositoryAsync<Base, BaseDto> subGroup;
+        private IRepositoryAsync<SubGroup, SubGroupDto> subGroup;
+        private IRepositoryAsync<Student, StudentDto> student;
+        private PersonRepository person;
+        private IRepositoryAsync<Contract, ContractDto> contract;
 
         public RepositoryDepository(BaseHttpClient client, IConfiguration configuration)
         {
@@ -30,23 +33,10 @@ namespace Service.lC.Repository
         public IRepositoryAsync<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericRepository<Base, BaseDto>(client, "lc/Control"));
         public IRepositoryAsync<Base, BaseDto> Employee => employee ?? (employee = new GenericRepository<Base, BaseDto>(client, "lc/Employee"));
         public IRepositoryAsync<Group, GroupDto> Group => group ?? (group = new GenericRepository<Group, GroupDto>(client, "lc/Group"));
-        public IRepositoryAsync<Base, BaseDto> SubGroup => subGroup ?? (subGroup = new GenericRepository<Base, BaseDto>(client, "lc/SubGroup"));
+        public IRepositoryAsync<SubGroup, SubGroupDto> SubGroup => subGroup ?? (subGroup = new GenericRepository<SubGroup, SubGroupDto>(client, "lc/SubGroup"));
+        public IRepositoryAsync<Student, StudentDto> Student => student ?? (student = new GenericRepository<Student, StudentDto>(client, "lc/Student"));
+        public PersonRepository Person => person ?? (person = new PersonRepository(client, "lc/Person"));
+        public IRepositoryAsync<Contract, ContractDto> Contract => contract ?? (contract = new GenericRepository<Contract, ContractDto>(client, "lc/v1/Contract"));
 
-        //public IRepositoryAsync<T> GetRepository<T>()
-        //{
-        //    var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        //    var withInterface = properties
-        //        .FirstOrDefault(x =>
-        //            x.PropertyType.GetInterfaces()
-        //                .FirstOrDefault(i => i.GenericTypeArguments.Any(t => t == typeof(T)))
-        //            != null);
-
-        //    IRepositoryAsync<T> result = null;
-
-        //    result = withInterface.GetValue(manager) as IRepository<T>;
-
-        //    return result;
-        //}
     }
 }

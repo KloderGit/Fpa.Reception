@@ -7,9 +7,12 @@ using Application.Component;
 using Application.Employee;
 using Application.HttpClient;
 using Application.Program;
+using Domain.Interface;
 using lc.fitnesspro.library;
+using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using reception.fitnesspro.ru.Controllers.Education.ViewModel;
 using reception.fitnesspro.ru.Controllers.Teacher;
 using Service.lC;
 using Service.lC.Provider;
@@ -32,7 +35,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
         ProgramMethods programAction;
         EmployeeMethods employeeAction;
 
-        EducationComponent EducationLogic;
+        IEducationComponent EducationLogic;
 
         public EducationController(
             Context context,
@@ -198,15 +201,14 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
         [HttpGet]
         [Route("Program/FindByEmployee2")]
-        public async Task<ActionResult<dynamic>> FindByEmployee2(Guid key)
+        public async Task<ActionResult<IEnumerable<FindByEmployeeViewModel>>> FindByEmployee2(Guid key)
         {
-
             var programs = await EducationLogic.FindProgramByTeacher(key);
 
-            return programs.ToList();
+            var viewModel = programs.Adapt<IEnumerable<FindByEmployeeViewModel>>();
+
+            return viewModel.ToList();
         }
-
-
 
         [HttpGet]
         [Route("Program/FindSiblings")]
@@ -231,6 +233,16 @@ namespace reception.fitnesspro.ru.Controllers.Education
         public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
         {
             var programs = await EducationLogic.FindProgramByDiscipline(key);
+
+            return programs.ToList();
+        }
+
+
+        [HttpGet]
+        [Route("Student/EducationInfo")]
+        public async Task<ActionResult<dynamic>> GetSudentEducationInfo(Guid key)
+        {
+            var programs = await EducationLogic.GetStudentEducationInfoByPersonKeys(new List<Guid>(){ key });
 
             return programs.ToList();
         }

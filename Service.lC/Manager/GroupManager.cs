@@ -1,11 +1,8 @@
-﻿using Service.lC.Dto;
-using Service.lC.Interface;
-using Service.lC.Model;
+﻿using Service.lC.Model;
 using Service.lC.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Service.lC.Manager

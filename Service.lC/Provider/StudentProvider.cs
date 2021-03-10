@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 
 namespace Service.lC.Provider
 {
-    public class SubGroupProvider : GenericProvider<SubGroup, SubGroupDto>
+    public class StudentProvider : GenericProvider<Student, StudentDto>
     {
         private readonly IManager manager;
 
-        public SubGroupProvider(
-            IRepositoryAsync<SubGroup, SubGroupDto> repository,
+        public StudentProvider(
+            IRepositoryAsync<Student, StudentDto> repository,
             IManager manager)
             : base(repository)
         {
             this.manager = manager;
         }
 
-        public async Task<IEnumerable<SubGroup>> FilterByGroup(IEnumerable<Guid> groupKeys)
+        public async Task<IEnumerable<Student>> FilterByPerson(IEnumerable<Guid> personKeys)
         {
-            var query = manager.SubGroup
+            var query = manager.Student
                         .Filter(x => x.DeletionMark == false).AndAlso();
 
-            var nodeList = new LinkedList<Guid>(groupKeys);
+            var nodeList = new LinkedList<Guid>(personKeys);
             for (var node = nodeList.First; node != null; node = node.Next)
             {
                 var value = node.Value;
-                query.Filter(x => x.GroupKey == value);
+                query.Filter(x => x.PersonKey == value);
                 if (node != nodeList.Last) query.Or();
             };
 
@@ -38,9 +38,9 @@ namespace Service.lC.Provider
 
             var keys = result?.Select(x => x.Key) ?? Enumerable.Empty<Guid>();
 
-            var subGroups = await Repository.GetAsync(keys);
+            var students = await Repository.GetAsync(keys);
 
-            return subGroups;
+            return students;
         }
     }
 }

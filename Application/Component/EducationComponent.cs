@@ -1,4 +1,6 @@
-﻿using Service.lC;
+﻿using Domain.Interface;
+using Mapster;
+using Service.lC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using lcService = Service.lC;
 
 namespace Application.Component
 {
-    public class EducationComponent
+    public class EducationComponent : IEducationComponent
     {
         private readonly Context lcService;
 
@@ -16,7 +18,7 @@ namespace Application.Component
             this.lcService = lcService;
         }
 
-        public async Task<IEnumerable<lcService.Model.Program>> FindProgramByTeacher(Guid teacherKey)
+        public async Task<IEnumerable<Domain.Education.Program>> FindProgramByTeacher(Guid teacherKey)
         {
             var programManager = lcService.Program;
 
@@ -31,10 +33,12 @@ namespace Application.Component
             var groups = programs.SelectMany(x => x.Groups);
                 await groupManager.IncludeSubGroups(groups);
 
-            return programs;
+            var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
+
+            return domain;
         }
 
-        public async Task<IEnumerable<lcService.Model.Program>> FindProgramByDiscipline(Guid disciplineKey)
+        public async Task<IEnumerable<Domain.Education.Program>> FindProgramByDiscipline(Guid disciplineKey)
         {
             var programManager = lcService.Program;
 
@@ -46,7 +50,21 @@ namespace Application.Component
             var groups = programs.SelectMany(x => x.Groups);
                 await groupManager.IncludeSubGroups(groups);
 
-            return programs;
+            var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
+
+            return domain;
+        }
+
+        public async Task<IEnumerable<dynamic>> GetStudentEducationInfoByPersonKeys(IEnumerable<Guid> personKeys)
+        {
+            var personsPipe = lcService.Person;
+            var studentsPipe = lcService.Student;
+
+            var persons = await personsPipe.FindByKeys(personKeys);
+                await personsPipe.IncludeStudents(persons);
+                await studentsPipe.IncludeContracts(persons.SelectMany(x=>x.Students));
+
+            return persons;
         }
     }
 }

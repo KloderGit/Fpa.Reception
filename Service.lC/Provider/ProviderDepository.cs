@@ -16,8 +16,11 @@ namespace Service.lC.Provider
         private IProvider<Base, BaseDto> educationForm;
         private IProvider<Base, BaseDto> controlType;
         private IProvider<Base, BaseDto> employee;
+        private StudentProvider student;
         private GroupProvider group;
         private SubGroupProvider subGroup;
+        private PersonProvider person;
+        private ContractProvider contract;
 
         public ProviderDepository(RepositoryDepository repositories, IManager manager)
         {
@@ -32,5 +35,8 @@ namespace Service.lC.Provider
         public IProvider<Base, BaseDto> Employee => employee ?? (employee = new GenericProvider<Base, BaseDto>(repositories.Employee));
         public GroupProvider Group => group ?? (group = new GroupProvider(repositories.Group, manager));
         public SubGroupProvider SubGroup => subGroup ?? (subGroup = new SubGroupProvider(repositories.SubGroup, manager));
+        public StudentProvider Student => student ?? (student = new StudentProvider(repositories.Student, manager));
+        public PersonProvider Person => person ?? (person = new PersonProvider(repositories.Person, manager));
+        public ContractProvider Contract => contract ?? (contract = new ContractProvider(repositories.Contract, manager));
     }
 }

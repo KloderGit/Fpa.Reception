@@ -17,6 +17,8 @@ namespace Service.lC
 
         private ProgramManager program;
         private GroupManager group;
+        private PersonManager person;
+        private StudentManager student;
 
         public Context(
             BaseHttpClient httpClient,
@@ -24,8 +26,6 @@ namespace Service.lC
             IConfiguration configuration)
         {
             this.client = httpClient ?? throw new System.ArgumentNullException(nameof(httpClient));
-            this.lcManager = lcManager ?? throw new System.ArgumentNullException(nameof(lcManager));
-            //this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
 
             repositories = new RepositoryDepository(client, configuration);
             providers = new ProviderDepository(repositories, lcManager);
@@ -42,6 +42,9 @@ namespace Service.lC
 
         public GroupManager Group => group ?? (group = new GroupManager(providers.SubGroup));
 
+        public PersonManager Person => person ?? (person = new PersonManager(providers.Person, providers.Student));
+
+        public StudentManager Student => student ?? (student = new StudentManager(providers.Contract));
     }
 
 
