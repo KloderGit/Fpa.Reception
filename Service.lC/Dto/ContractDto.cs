@@ -36,13 +36,13 @@ namespace Service.lC.Dto
             {
                 Key = dto.Key,
                 Title = dto.RegisterTitle,
-                Students = dto.Registry.Select(x=>x.StudentKey),
-                EducationProgramKey = dto.EducationProgramKey,
-                GroupKey = dto.GroupKey,
-                SubGroupKey = dto.SubGroupKey,
+                Students = dto.Registry.Select(x => x.StudentKey),
+                EducationProgram = new Base { Key = dto.EducationProgramKey },
+                Group = new Base { Key = dto.GroupKey },
+                SubGroup = new Base { Key = dto.SubGroupKey },
                 ExpiredDate = dto.ExpiredDate,
                 StartEducationDate = dto.StartEducationDate,
-                FinisEducationhDate = dto.FinisEducationhDate
+                FinishEducationhDate = dto.FinisEducationhDate
             };
 
             return contract;

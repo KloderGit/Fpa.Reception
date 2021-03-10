@@ -59,10 +59,16 @@ namespace Application.Component
         {
             var personsPipe = lcService.Person;
             var studentsPipe = lcService.Student;
+            var contractPipe = lcService.Contract;
 
             var persons = await personsPipe.FindByKeys(personKeys);
                 await personsPipe.IncludeStudents(persons);
                 await studentsPipe.IncludeContracts(persons.SelectMany(x=>x.Students));
+
+            var contracts = persons.SelectMany(p => p.Students.SelectMany(s => s.Contract));
+                await contractPipe.IncludePrograms(contracts);
+                await contractPipe.IncludeGroup(contracts);
+                await contractPipe.IncludeSubGroup(contracts);
 
             return persons;
         }

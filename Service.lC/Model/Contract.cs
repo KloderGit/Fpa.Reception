@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Service.lC.Model
 {
@@ -10,9 +9,9 @@ namespace Service.lC.Model
 
         public DateTime ExpiredDate { get; set; }
         public DateTime StartEducationDate { get; set; }
-        public DateTime FinisEducationhDate { get; set; }
-        public Guid EducationProgramKey { get; set; }
-        public Guid GroupKey { get; set; }
-        public Guid SubGroupKey { get; set; }
+        public DateTime FinishEducationhDate { get; set; }
+        public Base EducationProgram { get; set; }
+        public Base Group { get; set; }
+        public Base SubGroup { get; set; }
     }
 }
