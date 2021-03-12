@@ -1,0 +1,18 @@
+﻿using System.Collections.Generic;
+
+namespace Domain.Model.Education
+{
+    public class Person : BaseInfo
+    {
+        public PersonContact Contacts { get; set; }
+
+        public IEnumerable<Student> Students { get; set; }
+
+        public class PersonContact
+        {
+            public string Skype { get; set; }
+            public IEnumerable<string> Phones { get; set; }
+            public IEnumerable<string> Emails { get; set; }
+        }
+    }
+}

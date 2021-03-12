@@ -1,4 +1,5 @@
-﻿using Domain.Interface;
+﻿using Application.Mappings;
+using Domain.Interface;
 using Mapster;
 using Service.lC;
 using System;
@@ -16,6 +17,10 @@ namespace Application.Component
         public EducationComponent(Context lcService)
         {
             this.lcService = lcService;
+
+            new StudentMaps();
+            new PersonMaps();
+            new ContractMaps();
         }
 
         public async Task<IEnumerable<Domain.Education.Program>> FindProgramByTeacher(Guid teacherKey)
@@ -70,7 +75,9 @@ namespace Application.Component
                 await contractPipe.IncludeGroup(contracts);
                 await contractPipe.IncludeSubGroup(contracts);
 
-            return persons;
+            var domen = persons.Adapt<IEnumerable<Domain.Model.Education.Person>>();
+
+            return domen;
         }
     }
 }
