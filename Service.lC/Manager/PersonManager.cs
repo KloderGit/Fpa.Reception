@@ -21,7 +21,14 @@ namespace Service.lC.Manager
             this.studentProvider = studentProvider;
         }
 
-        public async Task<IEnumerable<Person>> FindByKeys(IEnumerable<Guid> keys)
+        public async Task<Person> Get(Guid key)
+        {
+            var person = await personProvider.Repository.GetAsync(key);
+
+            return person;
+        }
+
+        public async Task<IEnumerable<Person>> Get(IEnumerable<Guid> keys)
         {
             var persons = await personProvider.Repository.GetAsync(keys);
 

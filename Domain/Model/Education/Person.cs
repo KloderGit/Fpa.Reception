@@ -6,7 +6,7 @@ namespace Domain.Model.Education
     {
         public PersonContact Contacts { get; set; }
 
-        public IEnumerable<Student> Students { get; set; }
+        public List<Student> Students { get; set; }
 
         public class PersonContact
         {

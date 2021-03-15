@@ -35,6 +35,13 @@ namespace Service.lC.Manager
             this.groupProvider = groupProvider;
         }
 
+        public async Task<Program> GetProgram(Guid programKey)
+        {
+            var program = await programProvider.Repository.GetAsync(programKey);
+
+            return program;
+        }
+
         public async Task<IEnumerable<Program>> FilterByTeacher(Guid teacherKey)
         {
             var programs = await programProvider.FilterByTeacher(teacherKey);
@@ -73,11 +80,17 @@ namespace Service.lC.Manager
 
         public async Task IncludeEducationForm(IEnumerable<Program> programs)
         {
-            var array = programs.ToList();
+            //var array = programs.ToList();
 
-            var educationFormKeys = ReduceArray(array.Select(x => x.EducationForm.Key));
+            var educationFormKeys = ReduceArray(programs.Select(x => x.EducationForm.Key));
             var educationForms = await educationFormProvider.Repository.GetAsync(educationFormKeys);
-            array.ForEach(x => x.EducationForm = educationForms.FirstOrDefault(e => e.Key == x.EducationForm.Key));
+
+            
+
+            programs.ToList()
+                .ForEach(x => x.EducationForm = educationForms.FirstOrDefault(g => g.Key == x.EducationForm.Key));
+
+            //array.ForEach(x => x.EducationForm = educationForms.FirstOrDefault(e => e.Key == x.EducationForm.Key));
         }
 
         public async Task IncludeTeachers(IEnumerable<Program> programs)

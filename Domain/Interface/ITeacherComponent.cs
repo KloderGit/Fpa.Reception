@@ -1,12 +1,13 @@
 ﻿using Domain.Education;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Interface
 {
-    public interface IEducationComponent
+    public interface ITeacherComponent
     {
-        Task<IEnumerable<Program>> FindProgramByDiscipline(Guid disciplineKey);
+        Task<IEnumerable<Program>> GetProgram(Guid teacherKey);
     }
 }

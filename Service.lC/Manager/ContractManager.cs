@@ -11,19 +11,29 @@ namespace Service.lC.Manager
 {
     public class ContractManager
     {
+        private readonly ContractProvider contractProvider;
         private readonly ProgramProvider programProvider;
         private readonly GroupProvider groupProvider;
         private readonly SubGroupProvider subGroupProvider;
 
         public ContractManager(
+            ContractProvider contractProvider,
             ProgramProvider programProvider,
             GroupProvider groupProvider,
             SubGroupProvider subGroupProvider
             )
         {
+            this.contractProvider = contractProvider;
             this.programProvider = programProvider;
             this.groupProvider = groupProvider;
             this.subGroupProvider = subGroupProvider;
+        }
+
+        public async Task<Contract> GetContract(Guid contractKey)
+        {
+            var contract = await contractProvider.Repository.GetAsync( new List<Guid> { contractKey });
+
+            return contract.First();
         }
 
         public async Task IncludePrograms(IEnumerable<Contract> contracts)

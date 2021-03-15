@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using Application.HttpClient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Net.Http.Headers;
+using Domain.Interface;
+using Service.lC;
+using Application.Component;
 
 namespace reception.fitnesspro.ru.Controllers.Person
 {
@@ -23,17 +26,22 @@ namespace reception.fitnesspro.ru.Controllers.Person
     [ApiController]
     public class PersonController : ControllerBase
     {
+        private readonly Context context;
+        private readonly IPersonComponent personComponent;
         private readonly IdentityHttpClient identityHttpClient;
         private readonly AssignHttpClient assignHttpClient;
         private readonly PersonMethods personAction;
         private readonly EmployeeMethods employeeAction;
 
         public PersonController(
+            Context context,
             PersonHttpClient personHttpClient, 
             EmployeeHttpClient employeeHttpClient,
             IdentityHttpClient identityHttpClient,
             AssignHttpClient assignHttpClient)
         {
+            this.context = context;
+            this.personComponent = new PersonComponent(context);
             this.identityHttpClient = identityHttpClient;
             this.assignHttpClient = assignHttpClient;
             personAction = new PersonMethods(personHttpClient);
@@ -64,6 +72,16 @@ namespace reception.fitnesspro.ru.Controllers.Person
             });
 
             return viewModel.ToList();
+        }
+
+        [HttpPost]
+        [Route("Info")]
+        public async Task<ActionResult<IEnumerable<Domain.Model.Education.Person>>> GetInfo([FromBody]IEnumerable<Guid> keys)
+        {
+
+            var context = await personComponent.GetInfo(keys);
+
+            return context.ToList();
         }
 
     }

@@ -42,7 +42,7 @@ namespace Service.lC.Repository
         {
             TDomen result = default;
 
-            var request = await http.Client.GetAsync(endpoint + "/", key.ToString());
+            var request = await http.Client.GetAsync(endpoint + "/" + key.ToString());
 
             if (request.IsSuccessStatusCode)
             {

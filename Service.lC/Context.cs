@@ -47,7 +47,7 @@ namespace Service.lC
 
         public StudentManager Student => student ?? (student = new StudentManager(providers.Contract));
 
-        public ContractManager Contract => contract ?? (contract = new ContractManager(providers.Program, providers.Group, providers.SubGroup));
+        public ContractManager Contract => contract ?? (contract = new ContractManager(providers.Contract, providers.Program, providers.Group, providers.SubGroup));
     }
 
 

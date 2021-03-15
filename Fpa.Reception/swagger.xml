@@ -9,19 +9,12 @@
             Физ лицо 1С
             </summary>
         </member>
-        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetByKeys(System.Collections.Generic.IEnumerable{System.Guid})">
+        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetEducation(System.Guid)">
             <summary>
-            Get teacher info by key
+            Get an information which program and discipline teacher involved in
             </summary>
-            <param name="keys">Method takes an array of teachers guids</param>
+            <param name="key">Method takes a key of emplyee</param>
             <returns></returns>
-        </member>
-        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetByPersonKey(System.Collections.Generic.IEnumerable{System.Guid})">
-            <summary>
-            Get a teacher for certain person by a guid of person
-            </summary>
-            <param name="keys">Method takes an array of persons guids</param>
-            <returns>Ienumerable string</returns>
         </member>
     </members>
 </doc>

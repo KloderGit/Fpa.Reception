@@ -24,6 +24,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
     [ApiController]
     public class EducationController : ControllerBase
     {
+        private readonly IEducationComponent educationComponent;
         private readonly Context context;
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
@@ -36,8 +37,10 @@ namespace reception.fitnesspro.ru.Controllers.Education
         EmployeeMethods employeeAction;
 
         IEducationComponent EducationLogic;
+        StudentComponent StudentLogic;
 
         public EducationController(
+            //IEducationComponent educationComponent,
             Context context,
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
@@ -46,6 +49,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             EducationFormHttpClient educationFormHttpClient,
             ControlTypeHttpClient controlTypeHttpClient)
         {
+            this.educationComponent = educationComponent;
             this.context = context;
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
@@ -58,6 +62,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
 
             EducationLogic = new EducationComponent(context);
+            StudentLogic = new StudentComponent(context);
         }
 
         [HttpPost]
@@ -200,17 +205,6 @@ namespace reception.fitnesspro.ru.Controllers.Education
         }
 
         [HttpGet]
-        [Route("Program/FindByEmployee2")]
-        public async Task<ActionResult<IEnumerable<FindByEmployeeViewModel>>> FindByEmployee2(Guid key)
-        {
-            var programs = await EducationLogic.FindProgramByTeacher(key);
-
-            var viewModel = programs.Adapt<IEnumerable<FindByEmployeeViewModel>>();
-
-            return viewModel.ToList();
-        }
-
-        [HttpGet]
         [Route("Program/FindSiblings")]
         public async Task<ActionResult<EducationStructureViewModel>> FindProgramsWithDisciplineKey(Guid key)
         {
@@ -232,20 +226,21 @@ namespace reception.fitnesspro.ru.Controllers.Education
         [Route("Program/FindSiblings2")]
         public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
         {
-            var programs = await EducationLogic.FindProgramByDiscipline(key);
+            var programs = await educationComponent.FindProgramByDiscipline(key);
 
             return programs.ToList();
         }
 
 
         [HttpGet]
-        [Route("Student/EducationInfo")]
-        public async Task<ActionResult<dynamic>> GetSudentEducationInfo(Guid key)
+        [Route("GetByContract")]
+        public async Task<ActionResult> GetByContract(Guid key)
         {
-            var programs = await EducationLogic.GetStudentEducationInfoByPersonKeys(new List<Guid>(){ key });
+            var res = await StudentLogic.GetEducationByContract(key);
 
-            return programs.ToList();
+            return Ok(res);
         }
+
 
 
         [HttpPost]

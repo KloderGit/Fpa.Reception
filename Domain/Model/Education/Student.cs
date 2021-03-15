@@ -5,14 +5,14 @@ namespace Domain.Model.Education
 {
     public class Student : BaseInfo
     {
-        public IEnumerable<StudentEducation> Educations { get; set; }
+        public List<StudentEducation> Educations { get; set; }
 
         public class StudentEducation
         {
             public BaseInfo EducationProgram { get; set; }
             public BaseInfo Group { get; set; }
             public BaseInfo SubGroup { get; set; }
-
+            public BaseInfo EducationForm { get; set; }
             public StudentContract Contract { get; set; }
         }
 

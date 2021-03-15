@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Application.Extensions;
 using Application.HttpClient;
 using Domain;
+using Domain.Interface;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -17,6 +18,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     [Route("[controller]")]
     public class TeacherController : ControllerBase
     {
+        private readonly ITeacherComponent teacherComponent;
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
         private readonly AssignHttpClient assignHttpClient;
@@ -28,6 +30,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         EmployeeMethods employeeAction;
 
         public TeacherController(
+            ITeacherComponent teacherComponent,
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
             AssignHttpClient assignHttpClient,
@@ -35,6 +38,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             EducationFormHttpClient educationFormHttpClient,
             ControlTypeHttpClient controlTypeHttpClient)
         {
+            this.teacherComponent = teacherComponent;
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
             this.assignHttpClient = assignHttpClient;
@@ -47,76 +51,18 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         }
 
         /// <summary>
-        /// Get teacher info by key
+        /// Get an information which program and discipline teacher involved in
         /// </summary>
-        /// <param name="keys">Method takes an array of teachers guids</param>
+        /// <param name="key">Method takes a key of emplyee</param>
         /// <returns></returns>
         [HttpGet]
-        [Route("GetByKeys")]
-        public async Task<ActionResult<dynamic>> GetByKeys([FromBody] IEnumerable<Guid> keys)
+        [Route("GetEducation")]
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation(Guid key)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(@"http://localhost:6400/");
+            var programs = await teacherComponent.GetProgram(key);
 
-            var request = await client.GetAsync("/Employee/GetByKeys", keys).ConfigureAwait(false);
-
-            var result = await request.Content.ReadAsStringAsync();
-
-            return result;
+            return programs.ToList();
         }
-
-        [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult<dynamic>> GetAll()
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(@"http://localhost:6400/");
-
-            var request = await client.GetAsync("/Employee/GetAll").ConfigureAwait(false);
-
-            var result = await request.Content.ReadAsStringAsync();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get a teacher for certain person by a guid of person
-        /// </summary>
-        /// <param name="keys">Method takes an array of persons guids</param>
-        /// <returns>Ienumerable string</returns>
-        [HttpGet]
-        [Route("GetByPersonKeys")]
-        [Produces("application/json")]
-
-        public async Task<ActionResult<dynamic>> GetByPersonKey([FromBody] IEnumerable<Guid> keys)
-        {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(@"http://localhost:6400/");
-
-            var request = await client.GetAsync("/Employee/GetByPersonKeys", keys).ConfigureAwait(false);
-
-            var result = await request.Content.ReadAsStringAsync();
-
-            return result;
-        }
-
-        ///// <summary>
-        ///// Get an information which program and discipline teacher involved in
-        ///// </summary>
-        ///// <param name="keys">Method takes an array of emplyee guids</param>
-        ///// <returns></returns>
-        //[HttpGet]
-        //[Route("Disciplines")]
-        //public async Task<ActionResult<GetDisciplinesViewModel>> GetDisciplines(IEnumerable<Guid> keys)
-        //{
-        //    var orders = await employeeAction.GetDisciplines(keys);
-
-        //    var programs = await programAction.GetByDiscipline(orders.SelectMany(x=>x.Disciplines));
-
-        //    var viewModel = new GetDisciplinesViewModel(orders, programs).Create();
-
-        //    return viewModel;
-        //}
 
 
         [HttpGet]
