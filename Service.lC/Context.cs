@@ -41,13 +41,23 @@ namespace Service.lC
                     providers.Employee, 
                     providers.Group));
 
-        public GroupManager Group => group ?? (group = new GroupManager(providers.SubGroup));
+        public GroupManager Group => group ?? (
+            group = new GroupManager(providers.SubGroup));
 
-        public PersonManager Person => person ?? (person = new PersonManager(providers.Person, providers.Student));
+        public PersonManager Person => person ?? (
+            person = new PersonManager(
+                providers.Person, 
+                providers.Student));
 
-        public StudentManager Student => student ?? (student = new StudentManager(providers.Contract));
+        public StudentManager Student => student ?? (
+            student = new StudentManager(providers.Contract));
 
-        public ContractManager Contract => contract ?? (contract = new ContractManager(providers.Contract, providers.Program, providers.Group, providers.SubGroup));
+        public ContractManager Contract => contract ?? (
+            contract = new ContractManager(
+                providers.Contract, 
+                providers.Program, 
+                providers.Group, 
+                providers.SubGroup));
     }
 
 

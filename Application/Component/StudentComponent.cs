@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using Domain.Interface;
+using Mapster;
 using Service.lC;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Component
 {
-    public class StudentComponent
+    public class StudentComponent : IStudentComponent
     {
         private readonly Context lcservice;
 
@@ -15,10 +16,10 @@ namespace Application.Component
             this.lcservice = lcservice;
         }
 
-        public async Task<Domain.Education.Program> GetEducationByContract(Guid contractKey)
+        public async Task<Domain.Education.Program> GetEducationByContract(Guid key)
         {
             var contractManager = lcservice.Contract;
-            var contract = await contractManager.GetContract(contractKey);
+            var contract = await contractManager.Get(key);
 
             var programKey = contract.EducationProgram.Key;
 

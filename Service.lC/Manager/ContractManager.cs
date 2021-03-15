@@ -29,11 +29,11 @@ namespace Service.lC.Manager
             this.subGroupProvider = subGroupProvider;
         }
 
-        public async Task<Contract> GetContract(Guid contractKey)
+        public async Task<Contract> Get(Guid contractKey)
         {
-            var contract = await contractProvider.Repository.GetAsync( new List<Guid> { contractKey });
+            var contract = await contractProvider.Repository.GetAsync(contractKey);
 
-            return contract.First();
+            return contract;
         }
 
         public async Task IncludePrograms(IEnumerable<Contract> contracts)
