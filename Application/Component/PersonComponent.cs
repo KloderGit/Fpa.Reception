@@ -1,7 +1,7 @@
 ﻿using Application.Mappings;
 using Domain;
 using Domain.Interface;
-using Domain.Model.Education;
+using Domain.Education;
 using Mapster;
 using Service.lC;
 using System;
@@ -19,13 +19,9 @@ namespace Application.Component
         public PersonComponent(Context lcService)
         {
             this.lcService = lcService;
-
-            new StudentMaps();
-            new PersonMaps();
-            new ContractMaps();
         }
 
-        public async Task<IEnumerable<Domain.Model.Education.Person>> GetInfo(IEnumerable<Guid> personKeys)
+        public async Task<IEnumerable<Domain.Education.Person>> GetInfo(IEnumerable<Guid> personKeys)
         {
             var personsPipe = lcService.Person;
             var studentsPipe = lcService.Student;
@@ -44,7 +40,7 @@ namespace Application.Component
             var programs = contracts.Select(x => x.EducationProgram).Cast<Service.lC.Model.Program>().ToList();
                 await programPipe.IncludeEducationForm(programs);
 
-            var domen = persons.Adapt<IEnumerable<Domain.Model.Education.Person>>().ToList();
+            var domen = persons.Adapt<IEnumerable<Domain.Education.Person>>().ToList();
 
             domen.ForEach(d =>
                 d.Students.ToList().ForEach(

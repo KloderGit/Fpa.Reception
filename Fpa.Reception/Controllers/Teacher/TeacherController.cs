@@ -18,7 +18,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     [Route("[controller]")]
     public class TeacherController : ControllerBase
     {
-        private readonly ITeacherComponent teacherComponent;
+        private readonly IAppContext context;
+
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
         private readonly AssignHttpClient assignHttpClient;
@@ -30,7 +31,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         EmployeeMethods employeeAction;
 
         public TeacherController(
-            ITeacherComponent teacherComponent,
+            IAppContext context,
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
             AssignHttpClient assignHttpClient,
@@ -38,7 +39,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             EducationFormHttpClient educationFormHttpClient,
             ControlTypeHttpClient controlTypeHttpClient)
         {
-            this.teacherComponent = teacherComponent;
+            this.context = context;
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
             this.assignHttpClient = assignHttpClient;
@@ -51,19 +52,22 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         }
 
         /// <summary>
-        /// Get an information which program and discipline teacher involved in
+        /// Get information in which programs and disciplines the teacher is invoved in
         /// </summary>
-        /// <param name="key">Method takes a key of emplyee</param>
+        /// <param name="key">Method takes a key of employee</param>
         /// <returns></returns>
         [HttpGet]
         [Route("GetEducation")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation(Guid key)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation([FromQuery]Guid key)
         {
-            var programs = await teacherComponent.GetProgram(key);
+            var programs = await context.Teacher.GetEducation(key);
+
+            if(programs.IsNullOrEmpty()) programs = await context.Education.GetAllPrograms();
+
+            if (programs.IsNullOrEmpty()) return NotFound();
 
             return programs.ToList();
         }
-
 
         [HttpGet]
         //[Route("Prototype")]

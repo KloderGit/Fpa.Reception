@@ -72,7 +72,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception.Converter
                 {
                     TeacherKey = result.TeacherKey,
                     ScoreType = result.Score.Type,
-                    ScoreValue = result.Score.Value.Item2.ToString(),
+                    ScoreValue = result.Score.Value,
                     Comment = result.Comment
                 };
             }

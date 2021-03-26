@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Application.ReceptionComponent.Converter
+namespace Application.Component
 {
     public static class ReceptionConverter
     {
@@ -68,7 +68,10 @@ namespace Application.ReceptionComponent.Converter
                 return new Service.MongoDB.Model.Result
                 {
                     TeacherKey = result.TeacherKey,
-                    Score = new Service.MongoDB.Model.Score { Type = (Service.MongoDB.Model.ScoreType)(int)result.Score.Type, Value = new Tuple<string, object>(result.Score.Value.Item1.FullName, result.Score.Value.Item2) },
+                    Score = new Service.MongoDB.Model.Score { 
+                        Type = (Service.MongoDB.Model.ScoreType)(int)result.Score.Type, 
+                        Value = new Tuple<string, object>(result.Score.GetScoreType().FullName, result.Score.GetScoreValue()) 
+                    },
                     Comment = result.Comment
                 };
             }
@@ -143,11 +146,19 @@ namespace Application.ReceptionComponent.Converter
             {
                 if (score == null) return null;
 
-                return new Domain.Score
+                Domain.Score result;
+
+                switch (score.Type)
                 {
-                    Type = (Domain.ScoreType)(int)score.Type,
-                    Value = new Tuple<Type, object>(Type.GetType(score.Value.Item1), score.Value.Item2)
-                };
+                    case ScoreType.Five: result = new Five(int.Parse(score.Value.Item2.ToString())); break;
+                    case ScoreType.Hundred: result = new Hundred(int.Parse(score.Value.Item2.ToString())); break;
+                    case ScoreType.IsVisited: result = new IsVisited(bool.Parse(score.Value.Item2.ToString())); break;
+                    case ScoreType.Passed: result = new Passed(bool.Parse(score.Value.Item2.ToString())); break;
+                    default: result = new Domain.Score(AttestationScoreType.NoResult); break;
+                }
+
+
+                return result;
             }
 
 

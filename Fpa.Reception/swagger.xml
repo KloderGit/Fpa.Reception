@@ -11,9 +11,9 @@
         </member>
         <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetEducation(System.Guid)">
             <summary>
-            Get an information which program and discipline teacher involved in
+            Get information in which programs and disciplines the teacher is invoved in
             </summary>
-            <param name="key">Method takes a key of emplyee</param>
+            <param name="key">Method takes a key of employee</param>
             <returns></returns>
         </member>
     </members>

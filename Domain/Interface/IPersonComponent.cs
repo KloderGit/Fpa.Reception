@@ -1,4 +1,4 @@
-﻿using Domain.Model.Education;
+﻿using Domain.Education;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

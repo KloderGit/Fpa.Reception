@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Component;
-using Domain.Interface;
-using Microsoft.AspNetCore.Http;
+﻿using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Service.lC;
+using System;
+using System.Threading.Tasks;
 
 namespace reception.fitnesspro.ru.Controllers.Student
 {
@@ -14,25 +9,21 @@ namespace reception.fitnesspro.ru.Controllers.Student
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly Context lcService;
+        private readonly IAppContext context;
 
-        IStudentComponent studentComponent;
-
-        public StudentController(Context lcService)
+        public StudentController(IAppContext context)
         {
-            this.lcService = lcService;
-            studentComponent = new StudentComponent(lcService);
+            this.context = context;
         }
 
-
-
         [HttpGet]
-        [Route("Education")]
-        public async Task<ActionResult> GetStudentEducation(Guid key)
+        [Route("Attestation")]
+        public async Task<ActionResult> GetAtteststion(Guid studentKey, Guid programKey)
         {
-            var program = await studentComponent.GetEducationByContract(key);
+            var studentComponent = context.Student;
+            var receptions = await studentComponent.GetAttestation(studentKey, programKey);
 
-            return Ok(program);
+            return receptions;
         }
     }
 }

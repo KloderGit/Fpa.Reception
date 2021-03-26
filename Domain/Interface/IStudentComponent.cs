@@ -8,6 +8,6 @@ namespace Domain.Interface
 {
     public interface IStudentComponent
     {
-        Task<Program> GetEducationByContract(Guid contractKey);
+        Task<dynamic> GetAttestation(Guid studentKey, Guid programKey);
     }
 }

@@ -26,22 +26,22 @@ namespace reception.fitnesspro.ru.Controllers.Person
     [ApiController]
     public class PersonController : ControllerBase
     {
-        private readonly Context context;
-        private readonly IPersonComponent personComponent;
+        private readonly IAppContext context;
         private readonly IdentityHttpClient identityHttpClient;
         private readonly AssignHttpClient assignHttpClient;
         private readonly PersonMethods personAction;
         private readonly EmployeeMethods employeeAction;
 
         public PersonController(
-            Context context,
+            IAppContext context,
+            
             PersonHttpClient personHttpClient, 
             EmployeeHttpClient employeeHttpClient,
             IdentityHttpClient identityHttpClient,
             AssignHttpClient assignHttpClient)
         {
             this.context = context;
-            this.personComponent = new PersonComponent(context);
+
             this.identityHttpClient = identityHttpClient;
             this.assignHttpClient = assignHttpClient;
             personAction = new PersonMethods(personHttpClient);
@@ -76,12 +76,12 @@ namespace reception.fitnesspro.ru.Controllers.Person
 
         [HttpPost]
         [Route("Info")]
-        public async Task<ActionResult<IEnumerable<Domain.Model.Education.Person>>> GetInfo([FromBody]IEnumerable<Guid> keys)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Person>>> GetInfo([FromBody]IEnumerable<Guid> keys)
         {
 
-            var context = await personComponent.GetInfo(keys);
+            var persons = await context.Person.GetInfo(keys);
 
-            return context.ToList();
+            return persons.ToList();
         }
 
     }

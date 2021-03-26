@@ -24,8 +24,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
     [ApiController]
     public class EducationController : ControllerBase
     {
-        private readonly IEducationComponent educationComponent;
-        private readonly Context context;
+        private readonly IAppContext context;
+
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
         private readonly AssignHttpClient assignHttpClient;
@@ -36,12 +36,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
         ProgramMethods programAction;
         EmployeeMethods employeeAction;
 
-        IEducationComponent EducationLogic;
-        StudentComponent StudentLogic;
-
         public EducationController(
-            //IEducationComponent educationComponent,
-            Context context,
+            IAppContext context,
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
             AssignHttpClient assignHttpClient,
@@ -49,7 +45,6 @@ namespace reception.fitnesspro.ru.Controllers.Education
             EducationFormHttpClient educationFormHttpClient,
             ControlTypeHttpClient controlTypeHttpClient)
         {
-            this.educationComponent = educationComponent;
             this.context = context;
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
@@ -60,9 +55,6 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             programAction = new ProgramMethods(programHttpClient);
             employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
-
-            EducationLogic = new EducationComponent(context);
-            StudentLogic = new StudentComponent(context);
         }
 
         [HttpPost]
@@ -151,6 +143,9 @@ namespace reception.fitnesspro.ru.Controllers.Education
                 return BadRequest(ModelState);
             }
 
+            //var prgs = await context.Teacher.GetEducation(key).ConfigureAwait(false);
+            //prgs.ToList();
+
             // get programs with teacher
             var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
 
@@ -226,20 +221,20 @@ namespace reception.fitnesspro.ru.Controllers.Education
         [Route("Program/FindSiblings2")]
         public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
         {
-            var programs = await educationComponent.FindProgramByDiscipline(key);
+            var programs = await context.Education.FindByDiscipline(key);
 
             return programs.ToList();
         }
 
 
-        [HttpGet]
-        [Route("GetByContract")]
-        public async Task<ActionResult> GetByContract(Guid key)
-        {
-            var res = await StudentLogic.GetEducationByContract(key);
+        //[HttpGet]
+        //[Route("GetByContract")]
+        //public async Task<ActionResult> GetByContract(Guid key)
+        //{
+        //    var res = await context.Student.GetEducationByContract(key);
 
-            return Ok(res);
-        }
+        //    return Ok(res);
+        //}
 
 
 

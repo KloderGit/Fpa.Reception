@@ -1,13 +1,9 @@
-﻿using Application.ReceptionComponent;
-using Application.ReceptionComponent.Converter;
+﻿using Application;
 using Domain;
-using Mapster;
+using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Reception.Converter;
 using reception.fitnesspro.ru.Controllers.Reception.ViewModel;
-using reception.fitnesspro.ru.ViewModel;
-using Service.MongoDB;
-using Service.MongoDB.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,25 +15,20 @@ namespace reception.fitnesspro.ru.Controllers.Reception
     [ApiController]
     public class ReceptionController : ControllerBase
     {
-        IMongoRepository<Service.MongoDB.Model.Reception> database;
+        private readonly IAppContext context;
 
-        ReceptionComponent receptionComponent;
-
-        public ReceptionController(IMongoRepository<Service.MongoDB.Model.Reception> mongodb)
+        public ReceptionController(IAppContext context)
         {
-            this.database = mongodb;
-            this.receptionComponent = new ReceptionComponent(database);
+            this.context = context;
         }
 
 
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var result = receptionComponent.GetAll();
+            var result = context.Reception.Get();
 
-            var domain = result.Select(x => new Domain.Reception().ConvertFromType(ReceptionConverter.ConvertMongoToDomain, x));
-
-            var viewmodel = domain.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
             return Ok(viewmodel);
         }
@@ -49,9 +40,9 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
             var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            receptionComponent.StoreReception(item);
+            context.Reception.Store(item);
 
-            return Ok(item);
+            return Ok();
         }
 
 
@@ -59,11 +50,9 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         [Route("FindByDiscipline")]
         public async Task<ActionResult> FindByDiscipline(Guid key)
         {
-            var result = receptionComponent.GetReceptionByDisciplineKey(key);
+            var result = context.Reception.GetByDisciplineKey(key);
 
-            var domain = result.Select(x => new Domain.Reception().ConvertFromType(ReceptionConverter.ConvertMongoToDomain, x));
-
-            var viewmodel = domain.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
             return Ok(viewmodel);
         }
@@ -72,13 +61,20 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         [Route("FindByTeacher")]
         public async Task<ActionResult> FindByTeacher(Guid key)
         {
-            var result = receptionComponent.GetReceptionByTeacherKey(key);
+            var result = context.Reception.GetByTeacherKey(key);
 
-            return Ok(result.Adapt<IEnumerable<Domain.Reception>>());
+            return Ok(result);
         }
 
 
+        [HttpGet]
+        [Route("ProgramDisciplines")]
+        public async Task<ActionResult> ProgramDisciplines(Guid studentkey, Guid prgramkey)
+        {
+            var result = await context.Reception.GetReceptions(studentkey, prgramkey);
 
+            return Ok(result);
+        }
 
         public Domain.Reception CreateReception()
         {

@@ -1,5 +1,6 @@
 ﻿using lc.fitnesspro.library.Interface;
 using Service.lC.Dto;
+using Service.lC.Extensions;
 using Service.lC.Interface;
 using Service.lC.Model;
 using System;
@@ -23,6 +24,8 @@ namespace Service.lC.Provider
 
         public async Task<IEnumerable<SubGroup>> FilterByGroup(IEnumerable<Guid> groupKeys)
         {
+            if (groupKeys.IsNullOrEmpty()) return new List<SubGroup>();
+
             var query = manager.SubGroup
                         .Filter(x => x.DeletionMark == false).AndAlso();
 

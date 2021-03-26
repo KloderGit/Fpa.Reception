@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Domain.Model.Education
+namespace Domain.Education
 {
     public class Student : BaseInfo
     {

@@ -149,5 +149,20 @@ namespace Service.MongoDB
         {
             return Task.Run(() => _collection.DeleteManyAsync(filterExpression));
         }
+
+        public virtual IEnumerable<TDocument> FilterByArray(string str, IEnumerable<Guid> guids)
+        {
+            BsonArray bsonArray = new BsonArray();
+
+            foreach (var key in guids)
+            {
+                bsonArray.Add(new BsonDocument(str, new BsonDocument("$eq", key)));
+            }
+
+            var filter = new BsonDocument("$or", bsonArray);
+
+            var res = _collection.Find(filter);
+            return res.ToEnumerable();
+        }
     }
 }

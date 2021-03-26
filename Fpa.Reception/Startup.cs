@@ -1,3 +1,6 @@
+using Application;
+using Application.Mappings;
+using Domain.Interface;
 using lc.fitnesspro.library;
 using lc.fitnesspro.library.Interface;
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +31,8 @@ namespace reception.fitnesspro.ru
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            new RegisterMaps();
+
             HttpClientLibrary.AddHttpClients(services, Configuration);
 
             BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
@@ -43,8 +48,8 @@ namespace reception.fitnesspro.ru
                 c.BaseAddress = new Uri("https://api.fitness-pro.ru/");
             });
             services.AddScoped<IManager>(_ => new Manager("Kloder", "Kaligula2"));
-            services.AddScoped<Context>();
 
+            services.AddScoped<IAppContext, lcAppContext>();
 
             services.AddControllers();
 
@@ -69,11 +74,11 @@ namespace reception.fitnesspro.ru
                 });
             });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                c.IncludeXmlComments("swagger.xml");
-            });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            //    c.IncludeXmlComments("swagger.xml");
+            //});
         }
 
         private static string GetXmlCommentsPath()
@@ -95,11 +100,11 @@ namespace reception.fitnesspro.ru
             app.UseAuthentication();
             app.UseAuthorization();
             
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+            //app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            //});
 
             app.UseEndpoints(endpoints =>
             {

@@ -51,5 +51,6 @@ namespace Service.MongoDB
         void DeleteMany(Expression<Func<TDocument, bool>> filterExpression);
 
         Task DeleteManyAsync(Expression<Func<TDocument, bool>> filterExpression);
+        IEnumerable<TDocument> FilterByArray(string str, IEnumerable<Guid> guids);
     }
 }

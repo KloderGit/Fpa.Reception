@@ -1,4 +1,5 @@
 ﻿using Service.lC.Dto;
+using Service.lC.Extensions;
 using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Provider;
@@ -35,11 +36,25 @@ namespace Service.lC.Manager
             this.groupProvider = groupProvider;
         }
 
+        public async Task<IEnumerable<Program>> GetAll()
+        {
+            var program = await programProvider.GetAll();
+
+            return program;
+        }
+
         public async Task<Program> GetProgram(Guid programKey)
         {
             var program = await programProvider.Repository.GetAsync(programKey);
 
             return program;
+        }
+
+        public async Task<IEnumerable<Program>> GetPrograms(IEnumerable<Guid> programKeys)
+        {
+            var programs = await programProvider.Repository.GetAsync(programKeys);
+
+            return programs;
         }
 
         public async Task<IEnumerable<Program>> FilterByTeacher(Guid teacherKey)
@@ -58,6 +73,8 @@ namespace Service.lC.Manager
 
         public async Task IncludeDisciplines(IEnumerable<Program> programs)
         {
+            if (programs.IsNullOrEmpty()) return;
+
             var array = programs.ToList();
 
             var disciplineKeys = ReduceArray(array.SelectMany(p => p.Educations.Select(d => d.Discipline.Key)));
@@ -80,12 +97,10 @@ namespace Service.lC.Manager
 
         public async Task IncludeEducationForm(IEnumerable<Program> programs)
         {
-            //var array = programs.ToList();
+            if (programs.IsNullOrEmpty()) return;
 
             var educationFormKeys = ReduceArray(programs.Select(x => x.EducationForm.Key));
-            var educationForms = await educationFormProvider.Repository.GetAsync(educationFormKeys);
-
-            
+            var educationForms = await educationFormProvider.Repository.GetAsync(educationFormKeys);            
 
             programs.ToList()
                 .ForEach(x => x.EducationForm = educationForms.FirstOrDefault(g => g.Key == x.EducationForm.Key));
@@ -95,6 +110,8 @@ namespace Service.lC.Manager
 
         public async Task IncludeTeachers(IEnumerable<Program> programs)
         {
+            if (programs.IsNullOrEmpty()) return;
+
             var teacherKeys = ReduceArray( programs.SelectMany(x => x.Teachers.Select(t => t.Key)) );
 
             var teachers = await employeeProvider.Repository.GetAsync(teacherKeys);
@@ -105,6 +122,8 @@ namespace Service.lC.Manager
 
         public async Task IncludeGroups(IEnumerable<Program> programs)
         {
+            if (programs.IsNullOrEmpty()) return;
+
             var programsKeys = ReduceArray(programs.Select(x => x.Key));
 
             var groups = await groupProvider.FilterByProgram(programsKeys);

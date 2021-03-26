@@ -36,6 +36,22 @@ namespace Service.lC.Manager
             return contract;
         }
 
+        public async Task<IEnumerable<Contract>> GetByStudent(Guid studentKey)
+        {
+            var contracts = await contractProvider.FilterByStudent(new List<Guid> { studentKey });
+
+            return contracts;
+        }
+
+        public async Task<IEnumerable<Contract>> FindForStudentByProgram(Guid studentKey, Guid programKey)
+        {
+            var contracts = await contractProvider.FilterByStudent(new List<Guid> { studentKey });
+
+            var result = contracts.Where(x => x.EducationProgram.Key == programKey);
+
+            return result;
+        }
+
         public async Task IncludePrograms(IEnumerable<Contract> contracts)
         {
             var programKeys = ReduceArray(contracts.Select(t => t.EducationProgram.Key));

@@ -6,7 +6,10 @@ namespace Domain
 {
     public class Constraint
     {
-        public DateTime SubscribeBefore { get; set; } = default;
-        public DateTime UnsubscribeBefore { get; set; } = default;
+        public Guid ProgramKey { get; set; }
+        public Guid DisciplineKey { get; set; }
+        public int ActiveForDays { get; set; }
+        public int AllowedAttemptCount { get; set; }
+        public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; }
     }
 }

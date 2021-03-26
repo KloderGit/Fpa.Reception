@@ -22,8 +22,25 @@ namespace Service.lC.Provider
             this.manager = manager;
         }
 
+        public async Task<IEnumerable<Program>> GetAll()
+        {
+            var query = await manager.Program
+                .Filter(x => x.DeletionMark == false).And()
+                .Filter(x => x.Status == "Активный")
+                .Select(x => x.Key)
+                .GetByFilter().ConfigureAwait(false);
+
+            var keys = query?.Select(x => x.Key) ?? Enumerable.Empty<Guid>();
+
+            var programs = await Repository.GetAsync(keys);
+
+            return programs;
+        }
+
         public async Task<IEnumerable<Program>> FilterByTeacher(Guid teacherKey)
         {
+            if (teacherKey == default) return new List<Program>();
+
             var query = await manager.Program
                 .Filter(x => x.DeletionMark == false).And()
                 .Filter(x => x.Status == "Активный").And()
@@ -40,6 +57,8 @@ namespace Service.lC.Provider
 
         public async Task<IEnumerable<Program>> FilterByDiscipline(Guid disciplineKey)
         {
+            if (disciplineKey == default) return new List<Program>();
+
             var query = await manager.Program
                     .Filter(x => x.DeletionMark == false).And()
                     .Filter(x => x.Status == "Активный").And()

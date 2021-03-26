@@ -1,4 +1,4 @@
-﻿using Application.ReceptionComponent.Converter;
+﻿using Application.Component;
 using Domain;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;

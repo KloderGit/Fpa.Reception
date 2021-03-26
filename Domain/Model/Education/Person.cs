@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Domain.Model.Education
+namespace Domain.Education
 {
     public class Person : BaseInfo
     {

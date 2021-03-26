@@ -11,12 +11,12 @@ namespace Service.MongoDB.Model
     public class Reception : IDocument
     {
         public ObjectId Id { get; set; }
-        public Guid Key { get; set; }
+        public Guid Key { get; set; } = Guid.NewGuid();
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
         public IEnumerable<Event> Events { get; set; } = new List<Event>();
         public PositionManager PositionManager { get; set; }
         public IEnumerable<History> Histories { get; set; } = new List<History>();
-        public DateTime CreatedAt { get; }
+        public DateTime CreatedAt { get; } = DateTime.Now;
     }
 }

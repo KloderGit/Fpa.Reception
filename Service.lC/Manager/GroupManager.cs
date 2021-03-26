@@ -1,4 +1,5 @@
-﻿using Service.lC.Model;
+﻿using Service.lC.Extensions;
+using Service.lC.Model;
 using Service.lC.Provider;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace Service.lC.Manager
 
         public async Task IncludeSubGroups(IEnumerable<Group> groups)
         {
+            if (groups.IsNullOrEmpty()) return;
+
             var groupKeys = ReduceArray(groups.Select(t => t.Key));
 
             var subGroups = await subGroupProvider.FilterByGroup(groupKeys);

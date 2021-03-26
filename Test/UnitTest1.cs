@@ -1,6 +1,8 @@
 using Application.Component;
+using Application.Mappings;
 using Domain;
 using lc.fitnesspro.library;
+using Mapster;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using Service.lC;
@@ -19,6 +21,28 @@ namespace Test
     [TestClass]
     public class UnitTest1
     {
+
+        [TestMethod]
+        public void TestMethod4()
+        {
+             new RegisterMaps();
+
+            var domen1 = new Domain.Score(AttestationScoreType.Five, new Tuple<Type, object>(typeof(int), 45));
+
+            var score = domen1.Adapt<Service.MongoDB.Model.Score>();
+
+            var domen2 = score.Adapt<Domain.Score>();
+        }
+        Tuple<Type, Object> GetParametr(Service.MongoDB.Model.Score score)
+        {
+            var type = Type.GetType(score.Value.Item1);
+            var value = score.Value.Item2;
+
+            var tuple = new Tuple<Type, Object>(type, value);
+
+            return tuple;
+        }
+
         [TestMethod]
         public void TestMethod3()
         {
@@ -38,11 +62,11 @@ namespace Test
 
             var context = new Context(baseHttp, lcManager, null);
 
-            var progs = context.Program.FilterByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
-                progs = context.Program.IncludeDisciplines(progs).Result;
-                progs = context.Program.IncludeEducationForm(progs).Result;
-                progs = context.Program.IncludeTeachers(progs).Result;
-                progs = context.Program.IncludeGroups(progs).Result;
+            //var progs = context.Program.FilterByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+            //    progs = context.Program.IncludeDisciplines(progs).Result;
+            //    progs = context.Program.IncludeEducationForm(progs).Result;
+            //    progs = context.Program.IncludeTeachers(progs).Result;
+            //    progs = context.Program.IncludeGroups(progs).Result;
         }
 
 

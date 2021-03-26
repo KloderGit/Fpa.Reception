@@ -1,7 +1,7 @@
 ﻿using Application.Extensions;
 using Mapster;
 using System.Linq;
-using domain = Domain.Model.Education;
+using domain = Domain.Education;
 using lcservice = Service.lC.Model;
 
 namespace Application.Mappings

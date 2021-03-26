@@ -1,5 +1,6 @@
 ﻿using lc.fitnesspro.library.Interface;
 using Service.lC.Dto;
+using Service.lC.Extensions;
 using Service.lC.Interface;
 using Service.lC.Model;
 using System;
@@ -23,6 +24,8 @@ namespace Service.lC.Provider
 
         public async Task<IEnumerable<Student>> FilterByPerson(IEnumerable<Guid> personKeys)
         {
+            if (personKeys.IsNullOrEmpty()) return new List<Student>();
+
             var query = manager.Student
                         .Filter(x => x.DeletionMark == false).AndAlso();
 
