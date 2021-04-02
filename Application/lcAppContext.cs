@@ -18,6 +18,7 @@ namespace Application
         ITeacherComponent teacher;
         IReceptionComponent reception;
         IConstraintComponent constraint;
+        IValidateComponent validator;
 
         public lcAppContext(
             BaseHttpClient httpClient,
@@ -35,5 +36,6 @@ namespace Application
         public ITeacherComponent Teacher => teacher ?? (teacher = new TeacherComponent(lcContext));
         public IReceptionComponent Reception => reception ?? (reception = new ReceptionComponent(mongo, lcContext));
         public IConstraintComponent Constraint => constraint ?? (constraint = new ConstraintComponent(mongo, lcContext));
+        public IValidateComponent Validator => validator ?? (validator = new ValidateComponent(mongo, lcContext));
     }
 }

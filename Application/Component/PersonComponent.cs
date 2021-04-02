@@ -51,5 +51,14 @@ namespace Application.Component
             return domen;
 
         }
+
+        public async Task<IEnumerable<Domain.Education.Person>> GetByStudent(IEnumerable<Guid> studentsKeys)
+        {
+            var dto = await lcService.Person.FindByStudents(studentsKeys);
+
+            var result = dto.Adapt<IEnumerable<Domain.Education.Person>>();
+
+            return result;
+        }
     }
 }

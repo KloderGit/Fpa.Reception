@@ -39,13 +39,15 @@ namespace Application.Mappings
             .NewConfig()
                 .Map(dest => dest.CheckAttemps, src => src.CheckAttemps)
                 .Map(dest => dest.CheckDependings, src => src.CheckDependings)
-                .Map(dest => dest.CheckContractExpired, src => src.CheckContractExpired);
+                .Map(dest => dest.CheckContractExpired, src => src.CheckContractExpired)
+                .Map(dest => dest.CheckAllowingPeriod, src => src.CheckAllowingPeriod);
 
             TypeAdapterConfig<Service.MongoDB.Model.Option, Domain.PayloadOption>
             .NewConfig()
                 .Map(dest => dest.CheckAttemps, src => src.CheckAttemps)
                 .Map(dest => dest.CheckDependings, src => src.CheckDependings)
-                .Map(dest => dest.CheckContractExpired, src => src.CheckContractExpired);
+                .Map(dest => dest.CheckContractExpired, src => src.CheckContractExpired)
+                .Map(dest => dest.CheckAllowingPeriod, src => src.CheckAllowingPeriod);
         }
     }
 }

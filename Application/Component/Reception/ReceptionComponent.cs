@@ -29,9 +29,39 @@ namespace Application.Component
             return result;
         }
 
+        public Reception Get(Guid key)
+        {
+            var dto = database.Receptions.FindOne(x => x.Key == key);
+
+            var result = dto.Adapt<Reception>();
+
+            return result;
+        }
+
+        public void ReplaceReception(Reception reception)
+        {
+            var dto = reception.Adapt<Service.MongoDB.Model.Reception>();
+                
+            database.Receptions.ReplaceOne(dto);
+        }
+
         public IEnumerable<Reception> GetByDisciplineKey(Guid key)
         {
             var dto = database.Receptions.FilterByPath("Events.Discipline.Key", key).ToList();
+
+            return dto.Adapt<List<Reception>>();
+        }
+
+        public IEnumerable<Reception> GetByPosition(Guid key)
+        {
+            var dto = database.Receptions.FilterByPath("PositionManager.Positions.Key", key).ToList();
+
+            return dto.Adapt<List<Reception>>();
+        }
+
+        public IEnumerable<Reception> GetByStudentKey(Guid studentKey)
+        {
+            var dto = database.Receptions.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey);
 
             return dto.Adapt<List<Reception>>();
         }
@@ -66,6 +96,17 @@ namespace Application.Component
             //var result = receptions.Where(x => x.Events.Where(e => e.Restrictions.Where(r => r.Program == program || r.Program == default)))
             //                       .Where(x => x.Events.Where(e => e.Restrictions.Where(r => r.Group == group || r.Group == default)))
             //                       .Where(x => x.Events.Where(e => e.Restrictions.Where(r => r.SubGroup == subGroup || r.SubGroup == default)));
+
+            return receptions;
+        }
+
+        public async Task<IEnumerable<Reception>> GetProgramReceptions(Guid programKey)
+        {
+            var program = await lcContext.Program.GetProgram(programKey);
+            var disciplineKeys = program.Educations.Select(x => x.Discipline.Key).ToList();
+
+            var dtoReceptions = database.Receptions.FilterByArray("Events.Discipline.Key", disciplineKeys).ToList(); // and Date > 1 date of this month
+            var receptions = dtoReceptions.Adapt<List<Reception>>();
 
             return receptions;
         }

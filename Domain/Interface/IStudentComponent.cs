@@ -1,4 +1,5 @@
 ﻿using Domain.Education;
+using Domain.Model.Education;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,8 @@ namespace Domain.Interface
 {
     public interface IStudentComponent
     {
-        Task<dynamic> GetAttestation(Guid studentKey, Guid programKey);
+        Task<IEnumerable<Reception>> GetAttestation(Guid studentKey, Guid programKey);
+        Task<IEnumerable<Student>> GetByKeys(IEnumerable<Guid> studentKeys);
+        Task<IEnumerable<Contract>> GetContracts(Guid studentKey);
     }
 }

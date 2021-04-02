@@ -12,5 +12,6 @@ namespace Domain.Interface
         ITeacherComponent Teacher { get; }
         IReceptionComponent Reception { get; }
         IConstraintComponent Constraint { get; }
+        IValidateComponent Validator { get; }
     }
 }

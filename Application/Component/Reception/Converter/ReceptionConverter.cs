@@ -68,10 +68,10 @@ namespace Application.Component
                 return new Service.MongoDB.Model.Result
                 {
                     TeacherKey = result.TeacherKey,
-                    Score = new Service.MongoDB.Model.Score { 
-                        Type = (Service.MongoDB.Model.ScoreType)(int)result.Score.Type, 
-                        Value = new Tuple<string, object>(result.Score.GetScoreType().FullName, result.Score.GetScoreValue()) 
-                    },
+                    //Score = new Service.MongoDB.Model.Score { 
+                    //    Type = (Service.MongoDB.Model.ScoreType)(int)result.Score.Type, 
+                    //    Value = new Tuple<string, object>(result.Score.GetScoreType().FullName, result.Score.GetScoreValue()) 
+                    //},
                     Comment = result.Comment
                 };
             }
@@ -137,7 +137,7 @@ namespace Application.Component
                 return new Domain.Result
                 {
                     TeacherKey = result.TeacherKey,
-                    Score = GetScore(result.Score),
+                    //Score = GetScore(result.Score),
                     Comment = result.Comment
                 };
             }

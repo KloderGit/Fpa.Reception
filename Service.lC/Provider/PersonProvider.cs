@@ -1,7 +1,9 @@
 ﻿using lc.fitnesspro.library.Interface;
 using Service.lC.Dto;
+using Service.lC.Extensions;
 using Service.lC.Model;
 using Service.lC.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,5 +34,29 @@ namespace Service.lC.Provider
 
             return persons.ToList();
         }
+
+        //public async Task<Person> FindByStudent(Guid studentKey)
+        //{
+        //    if (studentKey == default) throw new ArgumentNullException(nameof(studentKey));
+
+        //    var studentQuery = manager.Student
+        //                .Select(x => x.PersonKey)
+        //                .Filter(x => x.DeletionMark == false).And()
+        //                .Filter(x => x.Key == studentKey);
+        //    var foundedStudent = await studentQuery.GetByFilter();
+
+        //    if (foundedStudent.IsNullOrEmpty()) return null;
+
+        //    var personQuery = manager.Person
+        //        .Select(x => x.Key)
+        //        .Filter(x => x.DeletionMark == false).And()
+        //        .Filter(x => x.Key == foundedStudent.FirstOrDefault().Key);
+        //    var person = await personQuery.GetByFilter();
+
+        //    var contracts = await Repository.GetAsync(keys);
+
+        //    return contracts;
+
+        //}
     }
 }

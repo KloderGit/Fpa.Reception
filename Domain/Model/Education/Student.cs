@@ -5,6 +5,7 @@ namespace Domain.Education
 {
     public class Student : BaseInfo
     {
+        public Guid Owner { get; set; }
         public List<StudentEducation> Educations { get; set; }
 
         public class StudentEducation

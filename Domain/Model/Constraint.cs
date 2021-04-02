@@ -11,5 +11,12 @@ namespace Domain
         public int ActiveForDays { get; set; }
         public int AllowedAttemptCount { get; set; }
         public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; }
+
+        public bool Validate()
+        {
+            if (DisciplineKey == default) return false;
+
+            return true;
+        }
     }
 }

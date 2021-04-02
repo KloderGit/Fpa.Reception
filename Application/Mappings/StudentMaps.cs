@@ -15,6 +15,7 @@ namespace Application.Mappings
             .NewConfig()
                 .Map(dest => dest.Key, src => src.Key)
                 .Map(dest => dest.Title, src => src.Title)
+                .Map(dest => dest.Owner, src => src.Owner)
                 .Map(dest => dest.Educations, src => src.Contract.Adapt<IEnumerable<domain.Student.StudentEducation>>());
         }
     }

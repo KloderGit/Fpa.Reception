@@ -31,15 +31,13 @@ namespace Service.lC.Provider
             var lcGroups = new List<lc.fitnesspro.library.Model.Group>();
 
 
-            var chekedFullQuery = BuildQuery(programKeys);
+            var query = BuildQuery(programKeys);
 
-            var dbg = chekedFullQuery.DebugViewQuery();
+            var dbg = query.DebugViewQuery();
 
 
-            if (chekedFullQuery.IsQueryLengthMoreThen(3000))
-            {
-                manager.Group.ClearQuery();
-
+            if (query.IsQueryLengthMoreThen(3000))
+            {                
                 var piece = 30;
                 var cnt = Math.Round((decimal)programKeys.Count() / piece);
                 var indx = 0;
@@ -49,15 +47,21 @@ namespace Service.lC.Provider
                     var array = programKeys.Skip(indx).Take(piece).ToArray();
                     indx += piece;
 
-                    var query = BuildQuery(array);
+                    query = BuildQuery(array);
 
-                    dbg = chekedFullQuery.DebugViewQuery();
+                    dbg = query.DebugViewQuery();
 
                     var response = await query.GetByFilter();
 
                     lcGroups.AddRange(response);
                 }
             }
+            else
+            {                
+                var response = await query.GetByFilter();
+                lcGroups.AddRange(response);
+            }
+            
 
             var keys = lcGroups?.Select(x => x.Key) ?? Enumerable.Empty<Guid>();
 
@@ -69,6 +73,8 @@ namespace Service.lC.Provider
         private IRepository<lc.fitnesspro.library.Model.Group> BuildQuery(IEnumerable<Guid> keys)
         {
             var today = DateTime.Now;
+
+            manager.Group.ClearQuery();
 
             var query = manager.Group
                         .Select(x => x.Key)

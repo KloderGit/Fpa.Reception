@@ -225,43 +225,5 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             return programs.ToList();
         }
-
-
-        //[HttpGet]
-        //[Route("GetByContract")]
-        //public async Task<ActionResult> GetByContract(Guid key)
-        //{
-        //    var res = await context.Student.GetEducationByContract(key);
-
-        //    return Ok(res);
-        //}
-
-
-
-        [HttpPost]
-        [Route("Limit/Create")]
-        public async Task<ActionResult> CreateLimit([FromBody] LimitViewModel model)
-        {
-            return Ok();
-        }
-
-
-        [HttpGet]
-        [Route("Limit")]
-        public async Task<ActionResult> Limit()
-        {
-
-
-            return Ok();
-        }
-
-        public class LimitViewModel
-        {
-            public Guid ProgramKey { get; set; }
-            public Guid DisciplineKey { get; set; }
-            public IEnumerable<Guid> DependsOnOtherDiscipline { get; set; } = new List<Guid>();
-            public int AllowedAttempCount { get; set; }
-        }
-
     }
 }

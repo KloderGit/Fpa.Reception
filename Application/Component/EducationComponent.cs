@@ -1,4 +1,4 @@
-﻿using Application.Mappings;
+﻿using Domain;
 using Domain.Interface;
 using Mapster;
 using Service.lC;
@@ -54,6 +54,22 @@ namespace Application.Component
             var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
 
             return domain;
+        }
+
+        public async Task<IEnumerable<BaseInfo>> GetDisciplinesByKeys(IEnumerable<Guid> disciplineKeys)
+        {
+            var disciplines = await lcService.Education.GetDisciplinesByKeys(disciplineKeys);
+
+            return disciplines.Adapt<IEnumerable<BaseInfo>>();
+        }
+
+        public async Task<IEnumerable<BaseInfo>> GetProgramsByKeys(IEnumerable<Guid> programKeys)
+        {
+            var programs = await lcService.Program.GetPrograms(programKeys);
+
+            var result = programs.Adapt<IEnumerable<Domain.Education.Program>>();
+
+            return result;
         }
     }
 }

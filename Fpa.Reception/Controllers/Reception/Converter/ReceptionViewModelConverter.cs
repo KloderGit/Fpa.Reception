@@ -71,8 +71,8 @@ namespace reception.fitnesspro.ru.Controllers.Reception.Converter
                 return new ResultViewModel
                 {
                     TeacherKey = result.TeacherKey,
-                    ScoreType = result.Score.Type,
-                    ScoreValue = result.Score.Value,
+                    //ScoreType = result.Score.Type,
+                    //ScoreValue = result.Score.Value,
                     Comment = result.Comment
                 };
             }

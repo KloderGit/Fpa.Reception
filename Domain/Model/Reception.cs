@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain
 {
@@ -13,6 +14,28 @@ namespace Domain
         public List<Event> Events { get; set; } = new List<Event>();
 
         public List<History> Histories { get; set; } = new List<History>();
+
+
+        public bool IsForProgram(Guid programKey)
+        {
+            var result = Events.Where(x => x.Restrictions.Any(p => p.Program == programKey || p.Program == default));
+
+            return result != default && result.Any();
+        }
+
+        public bool IsForGroup(Guid groupKey)
+        {
+            var result = Events.Where(x => x.Restrictions.Any(p => p.Group == groupKey || p.Group == default));
+
+            return result != default && result.Any();
+        }
+
+        public bool IsForSubGroup(Guid subGroupKey)
+        {
+            var result = Events.Where(x => x.Restrictions.Any(p => p.SubGroup == subGroupKey || p.SubGroup == default));
+
+            return result != default && result.Any();
+        }
 
         public TConverted ConvertToType<TConverted>(Func<Reception, TConverted> function )
         {
@@ -36,6 +59,13 @@ namespace Domain
         {
         }
         public List<Position> Positions { get; set; } = new List<Position>();
+
+        public IEnumerable<Position> GetSignedUpStudentPosition(Guid studentKey)
+        {
+            var positions = Positions.Where(x => x.Record != default && x.Record.StudentKey == studentKey && x.Record.Result != default);
+
+            return positions;
+        }
     }
 
     public enum PositionType
@@ -77,6 +107,7 @@ namespace Domain
         public bool CheckContractExpired { get; set; } = true;
         public bool CheckDependings { get; set; } = true;
         public bool CheckAttemps { get; set; } = true;
+        public bool CheckAllowingPeriod { get; set; } = true;
     }
 
 }

@@ -21,11 +21,45 @@ namespace Test
     [TestClass]
     public class UnitTest1
     {
+        public struct ConstraintM
+        {
+            public Guid ProgramKey { get; set; }
+            public Guid DisciplineKey { get; set; }
+            public int ActiveForDays { get; set; }
+            public int AllowedAttemptCount { get; set; }
+            public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; }
+        }
+
+
+        [TestMethod]
+        public void TstStruct()
+        {
+            var aaa = new ConstraintM
+            {
+                ActiveForDays = 180,
+                AllowedAttemptCount = 10,
+                DisciplineKey = new Guid("e789b564-907e-11e6-80e4-0cc47a4b75cc"),
+                ProgramKey = new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc"),
+                //DependsOnOtherDisciplines = new List<Guid> { new Guid("1d6b3a27-907d-11e6-80e4-0cc47a4b75cc") }
+            };
+
+            var bbb = new ConstraintM
+            {
+                ActiveForDays = 180,
+                AllowedAttemptCount = 10,
+                DisciplineKey = new Guid("e789b564-907e-11e6-80e4-0cc47a4b75cc"),
+                ProgramKey = new Guid("51170581-907b-11e6-80e4-0cc47a4b75cc"),
+                //DependsOnOtherDisciplines = new List<Guid> { new Guid("1d6b3a27-907d-11e6-80e4-0cc47a4b75cc") }
+            };
+
+            var res = aaa.Equals(bbb);
+        }
+
 
         [TestMethod]
         public void TestMethod4()
         {
-             new RegisterMaps();
+            new RegisterMaps();
 
             var domen1 = new Domain.Score(AttestationScoreType.Five, new Tuple<Type, object>(typeof(int), 45));
 
@@ -111,7 +145,7 @@ namespace Test
                               }
                          }
                      },
-                PositionManager = new PositionManager()
+                PositionManager = new Domain.PositionManager()
                 {
                     Positions = new List<Position> {
                    new Position{
@@ -125,7 +159,7 @@ namespace Test
                                  Result = new Result{
                                      TeacherKey = Guid.NewGuid(),
                                       Comment = "Rate comment",
-                                       Score = new Hundred(45)
+                                       //Score = new Hundred(45)
                                  }
                         }
                    }
@@ -176,7 +210,7 @@ namespace Test
                     dates.AddLast(new LinkedListNode<DateTime>(new DateTime(date.AddDays(i).Ticks)));
                 }
 
-                var lastDayWeekDay = (int)date.AddDays(monthDayCount-1).DayOfWeek;
+                var lastDayWeekDay = (int)date.AddDays(monthDayCount - 1).DayOfWeek;
 
                 var lastDate = date.AddDays(monthDayCount - 1);
 

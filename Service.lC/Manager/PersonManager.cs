@@ -42,6 +42,17 @@ namespace Service.lC.Manager
             return persons;
         }
 
+        public async Task<IEnumerable<Person>> FindByStudents(IEnumerable<Guid> studentKeys)
+        {
+            var students = await studentProvider.Repository.GetAsync(studentKeys);
+
+            var personsKeys = students.Select(x => x.Owner);
+
+            var persons = await personProvider.Repository.GetAsync(personsKeys);
+
+            return persons;
+        }
+
         public async Task IncludeStudents(IEnumerable<Person> persons)
         {
             var personKeys = persons.Select(x => x.Key).ToList().Distinct();

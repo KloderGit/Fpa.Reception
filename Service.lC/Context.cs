@@ -20,6 +20,7 @@ namespace Service.lC
         private PersonManager person;
         private StudentManager student;
         private ContractManager contract;
+        private EducationManager education;
 
         public Context(
             BaseHttpClient httpClient,
@@ -50,7 +51,7 @@ namespace Service.lC
                 providers.Student));
 
         public StudentManager Student => student ?? (
-            student = new StudentManager(providers.Contract));
+            student = new StudentManager(providers.Contract, providers.Student));
 
         public ContractManager Contract => contract ?? (
             contract = new ContractManager(
@@ -58,6 +59,9 @@ namespace Service.lC
                 providers.Program, 
                 providers.Group, 
                 providers.SubGroup));
+
+        public EducationManager Education => education ?? (
+            education = new EducationManager( providers.Discipline) );
     }
 
 

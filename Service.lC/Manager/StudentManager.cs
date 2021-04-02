@@ -11,13 +11,24 @@ namespace Service.lC.Manager
     public class StudentManager
     {
         private readonly ContractProvider contractProvider;
+        private readonly StudentProvider studentProvider;
 
         public StudentManager(
-            ContractProvider contractProvider
+            ContractProvider contractProvider,
+            StudentProvider studentProvider
             )
         {
             this.contractProvider = contractProvider;
+            this.studentProvider = studentProvider;
         }
+
+        public async Task<IEnumerable<Student>> GetStudentsByKeys(IEnumerable<Guid> studentKeys)
+        {
+            var students = await studentProvider.Repository.GetAsync(studentKeys);
+
+            return students;
+        }
+
 
         public async Task IncludeContracts(IEnumerable<Student> students)
         {
