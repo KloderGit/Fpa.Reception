@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Service.MongoDB;
 
 namespace Application.Component
 {
@@ -48,7 +49,7 @@ namespace Application.Component
 
         public async Task<bool> CheckAttemptsCount(Event @event, Guid studentKey)
         {
-            var allStudentReceptions = database.Receptions.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey).ToList();
+            var allStudentReceptions = database.Receptions.Repository.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey).ToList();
 
             var receptionsByDiscipline = allStudentReceptions.SelectMany(x => x.Events).Select(x => x.Discipline).Where(x=>x.Key == @event.Discipline.Key);
 
@@ -61,7 +62,7 @@ namespace Application.Component
 
         public async Task<bool> CheckSignUpDoubles(Guid disciplineKey, Guid studentKey)
         {
-            var allStudentReceptions = database.Receptions.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey).ToList();
+            var allStudentReceptions = database.Receptions.Repository.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey).ToList();
 
             var positions = allStudentReceptions
                 .SelectMany(x => x.PositionManager.Positions)

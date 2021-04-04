@@ -98,7 +98,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                 if (contract.StartEducationDate.AddDays(commonLimitDays) > DateTime.Now) EventRejectReasons.Add("The registration period for the discipline has expired");
             }
 
-            public void CheckAttemptsCount(Guid disciplineKey, Guid studentKey, Contract contract, IReceptionComponent logic)
+            public async Task CheckAttemptsCount(Guid disciplineKey, Guid studentKey, Contract contract, IReceptionComponent logic)
             {
                 // get common limit
                 var commonLimitCount = 10;
@@ -114,7 +114,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
                 if (overridedChekingValue == false) return;
 
-                var receptions = logic.GetByStudentKey(studentKey);
+                var receptions = await logic.GetByStudentKey(studentKey);
 
                 var filledByStudent = receptions.SelectMany(x => x.PositionManager.Positions)
                     .Where(x => x.Record != default && x.Record.StudentKey == studentKey && x.Record.DisciplineKey == disciplineKey)
@@ -123,9 +123,9 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                 if (filledByStudent.Count() >= commonLimitCount) EventRejectReasons.Add("The number of attempts for the discipline is over");
             }
 
-            public void CheckSignUpDoubles(Guid disciplineKey, Guid studentKey, IReceptionComponent logic)
+            public async Task CheckSignUpDoubles(Guid disciplineKey, Guid studentKey, IReceptionComponent logic)
             {
-                var receptions = logic.GetByStudentKey(studentKey);
+                var receptions = await logic.GetByStudentKey(studentKey);
 
                 var filledByStudent = receptions.SelectMany(x => x.PositionManager.Positions)
                     .Where(x => x.Record != default && x.Record.StudentKey == studentKey && x.Record.DisciplineKey == disciplineKey)

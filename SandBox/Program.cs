@@ -85,7 +85,7 @@ namespace SandBox
                             {
                                 TeacherKey = Guid.NewGuid(),
                                 Comment = "Rate comment",
-                                Score = new Hundred(45)
+                                //Score = new Hundred(45)
                             }
                         }
                    }

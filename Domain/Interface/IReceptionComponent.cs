@@ -9,10 +9,10 @@ namespace Domain.Interface
     {
         IEnumerable<Domain.Reception> Get();
         Reception Get(Guid key);
-        IEnumerable<Domain.Reception> GetByDisciplineKey(Guid key);
-        IEnumerable<Reception> GetByPosition(Guid key);
-        IEnumerable<Reception> GetByStudentKey(Guid studentKey);
-        IEnumerable<Domain.Reception> GetByTeacherKey(Guid key);
+        Task<IEnumerable<Reception>> GetByDisciplineKey(Guid key);
+        Task<IEnumerable<Reception>> GetByPosition(Guid key);
+        Task<IEnumerable<Reception>> GetByStudentKey(Guid studentKey);
+        Task<IEnumerable<Reception>> GetByTeacherKey(Guid key);
         Task<IEnumerable<Reception>> GetProgramReceptions(Guid programKey);
         System.Threading.Tasks.Task<dynamic> GetReceptions(Guid studentKey, Guid programKey);
         void ReplaceReception(Reception reception);

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Service.MongoDB;
 
 namespace Application.Component
 {
@@ -22,7 +23,7 @@ namespace Application.Component
 
         public IEnumerable<Reception> Get()
         {
-            var dto = database.Receptions.AsQueryable().ToList();
+            var dto = database.Receptions.Repository.AsQueryable().ToList();
 
             var result = dto.Adapt<List<Reception>>();
 
@@ -31,44 +32,44 @@ namespace Application.Component
 
         public Reception Get(Guid key)
         {
-            var dto = database.Receptions.FindOne(x => x.Key == key);
+            var dto = database.Receptions.Repository.FindOne(x => x.Key == key);
 
             var result = dto.Adapt<Reception>();
 
             return result;
         }
 
-        public void ReplaceReception(Reception reception)
+        public void Update(Reception reception)
         {
             var dto = reception.Adapt<Service.MongoDB.Model.Reception>();
                 
-            database.Receptions.ReplaceOne(dto);
+            database.Receptions.Repository.ReplaceOne(dto);
         }
 
-        public IEnumerable<Reception> GetByDisciplineKey(Guid key)
+        public async Task<IEnumerable<Reception>> GetByDisciplineKey(Guid disciplineKey)
         {
-            var dto = database.Receptions.FilterByPath("Events.Discipline.Key", key).ToList();
+            var dto = await database.Receptions.GetByDiscipline(disciplineKey);
 
             return dto.Adapt<List<Reception>>();
         }
 
-        public IEnumerable<Reception> GetByPosition(Guid key)
+        public async Task<IEnumerable<Reception>> GetByPosition(Guid positionKey)
         {
-            var dto = database.Receptions.FilterByPath("PositionManager.Positions.Key", key).ToList();
+            var dto = await database.Receptions.GetByPosition(positionKey);
 
             return dto.Adapt<List<Reception>>();
         }
 
-        public IEnumerable<Reception> GetByStudentKey(Guid studentKey)
+        public async Task<IEnumerable<Reception>> GetByStudentKey(Guid studentKey)
         {
-            var dto = database.Receptions.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey);
+            var dto = await database.Receptions.GetByStudent(studentKey);
 
             return dto.Adapt<List<Reception>>();
         }
 
-        public IEnumerable<Reception> GetByTeacherKey(Guid key)
+        public async Task<IEnumerable<Reception>> GetByTeacherKey(Guid teacherKey)
         {
-            var dto = database.Receptions.FilterByPath("Events.Teachers.Key", key);
+            var dto = await database.Receptions.GetByTeacher(teacherKey);
 
             return dto.Adapt<List<Reception>>();
         }
@@ -105,7 +106,7 @@ namespace Application.Component
             var program = await lcContext.Program.GetProgram(programKey);
             var disciplineKeys = program.Educations.Select(x => x.Discipline.Key).ToList();
 
-            var dtoReceptions = database.Receptions.FilterByArray("Events.Discipline.Key", disciplineKeys).ToList(); // and Date > 1 date of this month
+            var dtoReceptions = database.Receptions.Repository.FilterByArray("Events.Discipline.Key", disciplineKeys).ToList(); // and Date > 1 date of this month
             var receptions = dtoReceptions.Adapt<List<Reception>>();
 
             return receptions;
@@ -115,14 +116,23 @@ namespace Application.Component
         {
             var dto = reception.ConvertToType<Service.MongoDB.Model.Reception>(ReceptionConverter.ConvertToMongoDto);
 
-            database.Receptions.InsertOne(dto);
+            database.Receptions.Repository.InsertOne(dto);
         }
+
+
 
         public IEnumerable<Reception> GetByDisciplineKeys(IEnumerable<Guid> keys)
         {
-            var dto = database.Receptions.FilterByArray("Events.Discipline.Key", keys).ToList();
+            var dto = database.Receptions.Repository.FilterByArray("Events.Discipline.Key", keys).ToList();
 
             return dto.Adapt<List<Reception>>();
+        }
+
+        public void ReplaceReception(Reception reception)
+        {
+            var dto = reception.Adapt<Service.MongoDB.Model.Reception>();
+
+            database.Receptions.Repository.ReplaceOne(dto);
         }
     }
 }

@@ -50,7 +50,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         [Route("FindByDiscipline")]
         public async Task<ActionResult> FindByDiscipline(Guid key)
         {
-            var result = context.Reception.GetByDisciplineKey(key);
+            var result = await context.Reception.GetByDisciplineKey(key);
 
             var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Service.MongoDB;
 
 namespace Application.Component
 {
@@ -46,7 +47,7 @@ namespace Application.Component
 
             var disciplines = program.Educations.Where(x => x.ControlType.Key != default).Select(x => x.Discipline.Key);
 
-            var dto = database.Receptions.FilterByArray("Events.Discipline.Key", disciplines).ToList();
+            var dto = database.Receptions.Repository.FilterByArray("Events.Discipline.Key", disciplines).ToList();
 
             var domen = dto.Adapt<List<Reception>>();
 
@@ -71,7 +72,7 @@ namespace Application.Component
 
         public async Task<IEnumerable<Reception>> GetAppointments(Guid studentKey)
         {
-            var dto = database.Receptions.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey);
+            var dto = database.Receptions.Repository.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey);
 
             var domen = dto.Adapt<IEnumerable<Reception>>();
 
@@ -80,7 +81,7 @@ namespace Application.Component
 
         public async Task<IEnumerable<Reception>> GetAppointments(IEnumerable<Guid> studentKeys)
         {
-            var dto = database.Receptions.FilterByArray("PositionManager.Positions.Record.StudentKey", studentKeys);
+            var dto = database.Receptions.Repository.FilterByArray("PositionManager.Positions.Record.StudentKey", studentKeys);
 
             var domen = dto.Adapt<IEnumerable<Reception>>();
 

@@ -42,7 +42,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
         {
             var contract = await GetStudentContract();
             
-            var disciplineReceptions = context.Reception.GetByDisciplineKey(disciplineKey);
+            var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
 
             var viewModel = disciplineReceptions.Select(x => new DisciplineReceptionViewModel(x)).ToList();
 
@@ -67,9 +67,12 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] SignUpViewModel model)
         {
-            var reception = context.Reception.GetByPosition(model.PositionKey).FirstOrDefault();
+            var getting = await context.Reception.GetByPosition(model.PositionKey);
+            var reception = getting.FirstOrDefault();
 
-            var position = reception.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
+            var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
+
+            if (position == default) return NotFound(nameof(model.PositionKey));
 
             position.Record = new Domain.Record { DisciplineKey = model.DisciplineKey, ProgramKey = model.ProgramKey, StudentKey = model.StudentKey };
 
