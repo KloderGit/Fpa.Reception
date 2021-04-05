@@ -136,7 +136,7 @@ namespace Service.lC
             {
                 Key = x.Key,
                 Title = x.Title,
-                OwnerKey = x.GroupKey
+                GroupKey = x.GroupKey
             });
 
             return subGroups ?? Enumerable.Empty<SubGroupDto>();

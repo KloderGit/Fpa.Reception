@@ -47,7 +47,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
         public void CheckEvents(Guid disciplineKey, Guid studentKey, Contract contract, IReceptionComponent logic)
         {
             Events.ForEach(x => x.CheckSignUpBefore());
-            Events.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
+            Events.ForEach(x => x.CheckAllowedDisciplinePeriod(contract, reception.Date));
             Events.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, logic));
             Events.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, logic));
             //Events.ForEach(x => x.CheckDependencies());
@@ -66,6 +66,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             public EventViewModel(Domain.Event @event)
             {
                 this.@event = @event;
+                DisciplineKey = @event.Discipline.Key;
             }
 
             public List<string> EventRejectReasons { get; set; } = new List<string>();
@@ -76,13 +77,13 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             public void CheckSignUpBefore()
             {
                 if (@event?.Requirement?.SubscribeBefore == default) return;
-                if (@event.Requirement.SubscribeBefore > DateTime.Now) EventRejectReasons.Add("The opportunity to register is in the past");
+                if (@event.Requirement.SubscribeBefore < DateTime.Now) EventRejectReasons.Add("The opportunity to register is in the past");
             }
 
-            public void CheckAllowedDisciplinePeriod(Contract contract)
+            public void CheckAllowedDisciplinePeriod(Contract contract, DateTime date)
             {
                 // get common limit
-                var commonLimitDays = 180;
+                var commonLimitDays = 5;
 
                 var restrictions = @event.Restrictions.Where(x=>x.Option != default && x.Option.CheckAllowingPeriod != default)
                     .Where(x => x.Program == contract.EducationProgram.Key || x.Program == default)
@@ -91,11 +92,14 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
                 if (restrictions == default) return;
 
-                var overridedChekingValue = restrictions.FirstOrDefault().Option.CheckAllowingPeriod;
+                var overridedChekingValue = restrictions.FirstOrDefault()?.Option.CheckAllowingPeriod;
 
-                if (overridedChekingValue == false) return;
+                if (overridedChekingValue.HasValue == true && overridedChekingValue.Value == false) return;
 
-                if (contract.StartEducationDate.AddDays(commonLimitDays) > DateTime.Now) EventRejectReasons.Add("The registration period for the discipline has expired");
+                var limitDate = contract.StartEducationDate.AddDays(commonLimitDays);
+                var isLowerThenNow = limitDate < date.Date;
+
+                if (isLowerThenNow) EventRejectReasons.Add("The registration period for the discipline has expired");
             }
 
             public async Task CheckAttemptsCount(Guid disciplineKey, Guid studentKey, Contract contract, IReceptionComponent logic)
@@ -110,9 +114,9 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
                 if (restrictions == default) return;
 
-                var overridedChekingValue = restrictions.FirstOrDefault().Option.CheckAttemps;
+                var overridedChekingValue = restrictions.FirstOrDefault()?.Option.CheckAttemps;
 
-                if (overridedChekingValue == false) return;
+                if (overridedChekingValue.HasValue == true && overridedChekingValue.Value == false) return;
 
                 var receptions = await logic.GetByStudentKey(studentKey);
 

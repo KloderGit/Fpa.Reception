@@ -48,7 +48,7 @@ namespace Service.MongoDB
 
         public async Task<IEnumerable<Reception>> GetByDiscipline(Guid disciplineKey)
         {
-            var result = await Task.Run(() => Repository.FilterByPath("Event.Discipline.Key", disciplineKey));
+            var result = await Task.Run(() => Repository.FilterByPath("Events.Discipline.Key", disciplineKey));
 
             return result;
         }

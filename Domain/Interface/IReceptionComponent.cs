@@ -15,7 +15,7 @@ namespace Domain.Interface
         Task<IEnumerable<Reception>> GetByTeacherKey(Guid key);
         Task<IEnumerable<Reception>> GetProgramReceptions(Guid programKey);
         System.Threading.Tasks.Task<dynamic> GetReceptions(Guid studentKey, Guid programKey);
-        void ReplaceReception(Reception reception);
+        Task ReplaceReception(Reception reception);
         void Store(Reception reception);
     }
 }

@@ -128,9 +128,11 @@ namespace Application.Component
             return dto.Adapt<List<Reception>>();
         }
 
-        public void ReplaceReception(Reception reception)
+        public async Task ReplaceReception(Reception reception)
         {
-            var dto = reception.Adapt<Service.MongoDB.Model.Reception>();
+            var serviceReception = await database.Receptions.GetByKeyAsync(reception.Key);
+            
+            var dto = reception.Adapt(serviceReception);
 
             database.Receptions.Repository.ReplaceOne(dto);
         }

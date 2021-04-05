@@ -13,5 +13,11 @@ namespace Domain.Model.Education
         public BaseInfo EducationProgram { get; set; }
         public BaseInfo Group { get; set; }
         public BaseInfo SubGroup { get; set; }
+
+        public bool HasContractExpiredForDay(DateTime date)
+        {
+            if (ExpiredDate != default && ExpiredDate.Date < date.Date) return true;
+            return false;
+        }
     }
 }

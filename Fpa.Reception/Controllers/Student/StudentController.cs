@@ -44,7 +44,13 @@ namespace reception.fitnesspro.ru.Controllers.Student
             
             var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
 
-            var viewModel = disciplineReceptions.Select(x => new DisciplineReceptionViewModel(x)).ToList();
+
+            var filtered = disciplineReceptions
+                .Where(x => x.IsForProgram(contract.EducationProgram.Key))
+                .Where(x => x.IsForGroup(contract.Group.Key))
+                .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
+
+            var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
 
             viewModel.ForEach(x => x.CheckContractExpired(contract));
             viewModel.ForEach(x => x.CheckEmptyPlaces());
@@ -56,7 +62,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             async Task<Contract> GetStudentContract()
             {
                 var allStudentContract = await context.Student.GetContracts(studentKey);
-                var contract = allStudentContract.Where(x => x.ExpiredDate > DateTime.Now.Date)
+                var contract = allStudentContract//.Where(x => x.ExpiredDate > DateTime.Now.Date)
                     .FirstOrDefault(x => x.ExpiredDate == allStudentContract.Max(d => d.ExpiredDate));
 
                 return contract;

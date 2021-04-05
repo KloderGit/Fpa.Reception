@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Model.Education;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,24 +19,40 @@ namespace Domain
 
         public bool IsForProgram(Guid programKey)
         {
-            var result = Events.Where(x => x.Restrictions.Any(p => p.Program == programKey || p.Program == default));
+            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.Program == programKey || p.Program == default)).ToList();
 
             return result != default && result.Any();
         }
 
         public bool IsForGroup(Guid groupKey)
         {
-            var result = Events.Where(x => x.Restrictions.Any(p => p.Group == groupKey || p.Group == default));
+            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.Group == groupKey || p.Group == default));
 
             return result != default && result.Any();
         }
 
         public bool IsForSubGroup(Guid subGroupKey)
         {
-            var result = Events.Where(x => x.Restrictions.Any(p => p.SubGroup == subGroupKey || p.SubGroup == default));
+            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.SubGroup == subGroupKey || p.SubGroup == default));
 
             return result != default && result.Any();
         }
+
+
+        public bool IsReceptionInPast()
+        {
+            if (Date < DateTime.Now.Date) return false;
+            return true;
+        }
+
+        public bool HasEmptyPlaces()
+        {
+            return PositionManager.HasEmptyPlaces();
+        }
+
+
+
+
 
         public TConverted ConvertToType<TConverted>(Func<Reception, TConverted> function )
         {
@@ -60,6 +77,25 @@ namespace Domain
         }
         public List<Position> Positions { get; set; } = new List<Position>();
 
+        public bool HasEmptyPlaces()
+        {
+            if (LimitType == PositionType.Free) return true;
+            if (Positions == default || Positions.Any() == false) return false;
+
+            var positions = Positions.Where(x => x.Record == default || x.Record.StudentKey == default);
+
+            if (positions == default || positions.Any() == false) return false;
+
+            return true;
+        }
+
+        public Position GetPositionByKey(Guid positionKey)
+        {
+            var position = Positions.FirstOrDefault(x => x.Key == positionKey);
+
+            return position;
+        }
+
         public IEnumerable<Position> GetSignedUpStudentPosition(Guid studentKey)
         {
             var positions = Positions.Where(x => x.Record != default && x.Record.StudentKey == studentKey && x.Record.Result != default);
@@ -82,6 +118,45 @@ namespace Domain
         public BaseInfo Discipline { get; set; }
         public List<PayloadRestriction> Restrictions { get; set; } = new List<PayloadRestriction>();
         public PayloadRequirement Requirement { get; set; }
+
+        public bool CanSignUpBefore(DateTime date)
+        {
+            if (Requirement == default) return true;
+            if (Requirement.SubscribeBefore == default) return true;
+            if (Requirement.SubscribeBefore > date) return true;
+
+            return false;
+        }
+
+        //public void CheckAllowedDisciplinePeriod(DateTime date, int days)
+        //{
+        //    // get common limit
+        //    var commonLimitDays = days;
+
+        //    var restrictions = @event.Restrictions.Where(x => x.Option != default && x.Option.CheckAllowingPeriod != default)
+        //        .Where(x => x.Program == contract.EducationProgram.Key || x.Program == default)
+        //        .Where(x => x.Group == contract.Group.Key || x.Group == default)
+        //        .Where(x => x.SubGroup == contract.SubGroup.Key || x.SubGroup == default);
+
+        //    if (restrictions == default) return;
+
+        //    var overridedChekingValue = restrictions.FirstOrDefault()?.Option.CheckAllowingPeriod;
+
+        //    if (overridedChekingValue.HasValue == true && overridedChekingValue.Value == false) return;
+
+        //    var limitDate = contract.StartEducationDate.AddDays(commonLimitDays);
+        //    var isLowerThenNow = limitDate < date.Date;
+
+        //    if (isLowerThenNow) EventRejectReasons.Add("The registration period for the discipline has expired");
+        //}
+
+        //private PayloadRestriction GetRestriction(Guid programKey, Guid groupKey, Guid subgroupKey)
+        //{
+        //    var restrictions = Restrictions
+        //        .Where(x => x.Program == programKey || x.Program == default)
+        //        .Where(x => x.Group == groupKey || x.Group == default)
+        //        .Where(x => x.SubGroup == subgroupKey || x.SubGroup == default);
+        //}
     }
 
     public class PayloadRequirement
@@ -100,6 +175,30 @@ namespace Domain
         public Guid SubGroup { get; set; }
 
         public PayloadOption Option { get; set; }
+
+        public bool CheckContractExpired()
+        {
+            if (Option == default || Option.CheckContractExpired == false) return false;
+            return true;
+        }
+
+        public bool CheckDependings()
+        {
+            if (Option == default || Option.CheckDependings == false) return false;
+            return true;
+        }
+
+        public bool CheckAttemps()
+        {
+            if (Option == default || Option.CheckAttemps == false) return false;
+            return true;
+        }
+
+        public bool CheckAllowingPeriod()
+        {
+            if (Option == default || Option.CheckAllowingPeriod == false) return false;
+            return true;
+        }
     }
 
     public class PayloadOption

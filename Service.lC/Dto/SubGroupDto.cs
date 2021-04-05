@@ -8,7 +8,7 @@ namespace Service.lC.Dto
 {
     public class SubGroupDto : BaseDto, IConvert<SubGroupDto>
     {
-        public Guid OwnerKey { get; set; }
+        public Guid GroupKey { get; set; }
 
         static SubGroupDto()
         {
@@ -27,7 +27,7 @@ namespace Service.lC.Dto
             {
                 Key = dto.Key,
                 Title = dto.Title,
-                Owner = dto.OwnerKey
+                Owner = dto.GroupKey
             };
 
             return subGroup;
