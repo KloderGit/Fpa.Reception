@@ -76,7 +76,7 @@ namespace Application.Component
                 };
             }
 
-            return reception.Adapt<Service.MongoDB.Model.Reception>();
+            return item;// reception.Adapt<Service.MongoDB.Model.Reception>();
         }
 
         public static Domain.Reception ConvertMongoToDomain(Service.MongoDB.Model.Reception dto)

@@ -12,7 +12,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
         private readonly Domain.Reception reception;
 
         public List<string> CommonRejectReasons { get; set; } = new List<string>();
-        public DateTimeOffset Date { get; set; }
+        public DateTime Date { get; set; }
         public List<PositionViewModel> Positions { get; set; } = new List<PositionViewModel>();
 
         public List<EventViewModel> Events { get; set; } = new List<EventViewModel>();
@@ -24,7 +24,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             this.Date = reception.Date;
             this.Positions = reception.PositionManager.Positions
                 .Where(x => x.Record == default)
-                .Select(x => new PositionViewModel { Key = x.Key, Time = x.Time - Date.Date }).ToList();
+                .Select(x => new PositionViewModel { Key = x.Key, OffsetInMinutes = (int)(x.Time - Date.Date).TotalMinutes }).ToList();
             this.Events = reception.Events.Select(x => new EventViewModel(x)).ToList();
         }
 
@@ -72,7 +72,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
         public class PositionViewModel
         {
             public Guid Key { get; set; }
-            public TimeSpan Time { get; set; }
+            public int OffsetInMinutes { get; set; }
         }
 
         public class EventViewModel
