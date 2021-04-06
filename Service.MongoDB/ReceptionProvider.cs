@@ -46,6 +46,15 @@ namespace Service.MongoDB
             return result;
         }
 
+        //public async Task<IEnumerable<Reception>> GetByStudentEducation(Guid studentKey, Guid programKey, Guid groupKey, Guid subGroupKey)
+        //{
+
+
+        //    var result = await Task.Run(() => Repository.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey));
+
+        //    return result;
+        //}
+
         public async Task<IEnumerable<Reception>> GetByDiscipline(Guid disciplineKey)
         {
             var result = await Task.Run(() => Repository.FilterByPath("Events.Discipline.Key", disciplineKey));

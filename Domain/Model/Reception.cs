@@ -41,8 +41,8 @@ namespace Domain
 
         public bool IsReceptionInPast()
         {
-            if (Date < DateTime.Now.Date) return false;
-            return true;
+            if (Date < DateTime.Now) return true;
+            return false;
         }
 
         public bool HasEmptyPlaces()
@@ -123,40 +123,23 @@ namespace Domain
         {
             if (Requirement == default) return true;
             if (Requirement.SubscribeBefore == default) return true;
-            if (Requirement.SubscribeBefore > date) return true;
+            if (date > Requirement.SubscribeBefore) return false;
 
-            return false;
+            return true;
         }
 
-        //public void CheckAllowedDisciplinePeriod(DateTime date, int days)
-        //{
-        //    // get common limit
-        //    var commonLimitDays = days;
+        public PayloadRestriction GetRestriction(Guid programKey, Guid groupKey, Guid subgroupKey)
+        {
+            if (Restrictions == default) return null;
 
-        //    var restrictions = @event.Restrictions.Where(x => x.Option != default && x.Option.CheckAllowingPeriod != default)
-        //        .Where(x => x.Program == contract.EducationProgram.Key || x.Program == default)
-        //        .Where(x => x.Group == contract.Group.Key || x.Group == default)
-        //        .Where(x => x.SubGroup == contract.SubGroup.Key || x.SubGroup == default);
+            var restriction = Restrictions
+                .Where(x => x.Program == programKey || x.Program == default)
+                .Where(x => x.Group == groupKey || x.Group == default)
+                .Where(x => x.SubGroup == subgroupKey || x.SubGroup == default)
+                .FirstOrDefault();
 
-        //    if (restrictions == default) return;
-
-        //    var overridedChekingValue = restrictions.FirstOrDefault()?.Option.CheckAllowingPeriod;
-
-        //    if (overridedChekingValue.HasValue == true && overridedChekingValue.Value == false) return;
-
-        //    var limitDate = contract.StartEducationDate.AddDays(commonLimitDays);
-        //    var isLowerThenNow = limitDate < date.Date;
-
-        //    if (isLowerThenNow) EventRejectReasons.Add("The registration period for the discipline has expired");
-        //}
-
-        //private PayloadRestriction GetRestriction(Guid programKey, Guid groupKey, Guid subgroupKey)
-        //{
-        //    var restrictions = Restrictions
-        //        .Where(x => x.Program == programKey || x.Program == default)
-        //        .Where(x => x.Group == groupKey || x.Group == default)
-        //        .Where(x => x.SubGroup == subgroupKey || x.SubGroup == default);
-        //}
+            return restriction;
+        }
     }
 
     public class PayloadRequirement
@@ -178,25 +161,25 @@ namespace Domain
 
         public bool CheckContractExpired()
         {
-            if (Option == default || Option.CheckContractExpired == false) return false;
+            if (Option != default && Option.CheckContractExpired == false) return false;
             return true;
         }
 
         public bool CheckDependings()
         {
-            if (Option == default || Option.CheckDependings == false) return false;
+            if (Option != default && Option.CheckDependings == false) return false;
             return true;
         }
 
         public bool CheckAttemps()
         {
-            if (Option == default || Option.CheckAttemps == false) return false;
+            if (Option != default && Option.CheckAttemps == false) return false;
             return true;
         }
 
         public bool CheckAllowingPeriod()
         {
-            if (Option == default || Option.CheckAllowingPeriod == false) return false;
+            if (Option != default && Option.CheckAllowingPeriod == false) return false;
             return true;
         }
     }

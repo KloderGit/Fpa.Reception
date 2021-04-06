@@ -14,10 +14,20 @@ namespace Domain.Model.Education
         public BaseInfo Group { get; set; }
         public BaseInfo SubGroup { get; set; }
 
-        public bool HasContractExpiredForDay(DateTime date)
+        public bool IsContractExpiredForDay(DateTime date)
         {
             if (ExpiredDate != default && ExpiredDate.Date < date.Date) return true;
             return false;
+        }
+
+        public bool IsDateInPeriodFromStart(DateTime date, int daysFromStart)
+        {
+            var limitDate = StartEducationDate.AddDays(daysFromStart);
+            var isLowerThenDate = limitDate < date.Date;
+
+            if (isLowerThenDate) return false;
+
+            return true;
         }
     }
 }

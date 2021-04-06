@@ -44,7 +44,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
             
             var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
 
-
             var filtered = disciplineReceptions
                 .Where(x => x.IsForProgram(contract.EducationProgram.Key))
                 .Where(x => x.IsForGroup(contract.Group.Key))
@@ -55,7 +54,11 @@ namespace reception.fitnesspro.ru.Controllers.Student
             viewModel.ForEach(x => x.CheckContractExpired(contract));
             viewModel.ForEach(x => x.CheckEmptyPlaces());
             viewModel.ForEach(x => x.CheckIsNotInPast());
-            viewModel.ForEach(x => x.CheckEvents(disciplineKey, studentKey, contract, context.Reception));
+            viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
+            viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Reception));
+            viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
+            viewModel.ForEach(x => x.CheckSignUpBefore());
+            viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Reception));
 
             return viewModel;
 
