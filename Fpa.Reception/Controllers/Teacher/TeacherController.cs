@@ -1,16 +1,11 @@
-﻿using Application.Employee;
-using Application.Program;
+﻿using Application.Extensions;
+using Domain;
+using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Application.Extensions;
-using Application.HttpClient;
-using Domain;
-using Domain.Interface;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -34,7 +29,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetEducation")]
         public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid employeeKey)
         {
-            var programs = await context.Teacher.GetTeacherEducation(employeeKey);
+            var programs = await context.Teacher.GetEducation(employeeKey);
             if (programs.IsNullOrEmpty()) return NoContent();
 
             return programs.ToList();
@@ -44,7 +39,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetScheduleFromReceptions(Guid employeeKey)
         {
-            new NotImplementedException();
+            throw new NotImplementedException();
             return null;
         }
 
