@@ -1,5 +1,4 @@
-﻿using Application.Component;
-using Domain.Interface;
+﻿using Domain.Interface;
 using Domain.Model.Education;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Student.ViewModel;
@@ -51,7 +50,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
 
         [HttpGet]
-        [Route("GetReceptions")]
+        [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
             var contract = await GetStudentContract();
@@ -99,38 +98,9 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             position.Record = new Domain.Record { DisciplineKey = model.DisciplineKey, ProgramKey = model.ProgramKey, StudentKey = model.StudentKey };
 
-            context.Reception.ReplaceReception(reception);
+            await context.Reception.ReplaceReception(reception);
 
             return Ok();
-        }
-
-
-        [HttpGet]
-        [Route("GetReceptions2")]
-        public async Task<ActionResult<IEnumerable<GetProgramReceptionsViewModel>>> GetProgramReceptions2(Guid studentKey, Guid programKey)
-        {
-            var programReceptions = await context.Reception.GetProgramReceptions(programKey);
-
-            var allStudentContract = await context.Student.GetContracts(studentKey);
-            var programContracts = allStudentContract.Where(x => x.EducationProgram.Key == programKey);
-            var contract = programContracts.Where(x => x.ExpiredDate > DateTime.Now.Date)
-                .FirstOrDefault(x => x.ExpiredDate == programContracts.Max(d => d.ExpiredDate));
-
-            var viewModelList = programReceptions.Select(x => GetProgramReceptionsViewModel.Create(x)).ToList();
-
-            foreach (var item in viewModelList)
-            {
-                if ((contract.ExpiredDate != default && contract.ExpiredDate < DateTime.Now) == false) 
-                    item.CommonRejectReasons.Add("Contract Expired");
-                if ((item.Date < DateTime.Now) == false) 
-                    item.CommonRejectReasons.Add("Date is in the past");
-                if (item.Positions == default || item.Positions.Any() == false )
-                    item.CommonRejectReasons.Add("There are not free places");
-            }
-
-            viewModelList.ForEach(x => x.Events.ForEach(e => e.EventRejectReasons = null));
-
-            return null;
         }
     }
 }
