@@ -1,11 +1,8 @@
-﻿using Application;
-using Domain;
-using Domain.Interface;
+﻿using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Reception.Converter;
 using reception.fitnesspro.ru.Controllers.Reception.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,13 +43,14 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(CreateReceptionViewModel model)
+        [Route("Create")]
+        public async Task<ActionResult> CreateReception(CreateReceptionViewModel model)
         {
             if (ModelState.IsValid == false) return BadRequest(model);
 
             var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            context.Reception.Store(item);
+            context.Reception.CreateRecord(item);
 
             return Ok();
         }
