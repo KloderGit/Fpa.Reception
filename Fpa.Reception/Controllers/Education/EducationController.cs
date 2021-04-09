@@ -133,16 +133,6 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
 
         [HttpGet]
-        [Route("Program")]
-        public async Task<ActionResult<Domain.Education.Program>> GetProgram(Guid programKey)
-        {
-            var programsByKeys = await context.Education.GetStudentEducation(programKey);
-
-            return programsByKeys;
-        }
-
-
-        [HttpGet]
         [Route("Program/FindByEmployee")]
         public async Task<ActionResult<IEnumerable<EducationInfoViewModel>>> FindByEmployee(Guid key)
         {

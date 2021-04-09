@@ -35,7 +35,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetEducation")]
         public async Task<ActionResult<Domain.Education.Program>> GetEducation(Guid programKey)
         {
-            var program = await context.Education.GetStudentEducation(programKey);
+            var program = await context.Student.GetStudentEducation(programKey);
 
             if (program == default) return NoContent();
 

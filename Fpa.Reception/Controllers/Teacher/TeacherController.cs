@@ -60,10 +60,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetEducation")]
         public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation(Guid employeeKey)
         {
-            var programs = await context.Education.GetTeacherEducation(employeeKey);
-
-            if(programs.IsNullOrEmpty()) programs = await context.Education.GetAllPrograms();
-
+            var programs = await context.Teacher.GetTeacherEducation(employeeKey);
             if (programs.IsNullOrEmpty()) return NoContent();
 
             return programs.ToList();
