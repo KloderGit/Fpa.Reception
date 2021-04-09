@@ -22,16 +22,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
         }
 
         [HttpGet]
-        [Route("Attestation")]
-        public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetAtteststion(Guid studentKey, Guid programKey)
-        {
-            var studentComponent = context.Student;
-            var receptions = await studentComponent.GetAttestation(studentKey, programKey);
-
-            return receptions.ToList();
-        }
-
-        [HttpGet]
         [Route("GetEducation")]
         public async Task<ActionResult<Domain.Education.Program>> GetEducation(Guid programKey)
         {
