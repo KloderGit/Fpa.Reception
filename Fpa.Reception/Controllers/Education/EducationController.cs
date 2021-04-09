@@ -1,22 +1,9 @@
-﻿using System;
+﻿using Domain.Interface;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Application.Component;
-using Application.Employee;
-using Application.HttpClient;
-using Application.Program;
-using Domain.Interface;
-using lc.fitnesspro.library;
-using Mapster;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using reception.fitnesspro.ru.Controllers.Education.ViewModel;
-using reception.fitnesspro.ru.Controllers.Teacher;
-using Service.lC;
-using Service.lC.Provider;
-using Service.MongoDB;
 
 namespace reception.fitnesspro.ru.Controllers.Education
 {
