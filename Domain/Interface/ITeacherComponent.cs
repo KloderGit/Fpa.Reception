@@ -7,6 +7,6 @@ namespace Domain.Interface
 {
     public interface ITeacherComponent
     {
-        Task<IEnumerable<Program>> GetEducation(Guid key);
+        Task<IEnumerable<Program>> GetEducation(Guid employeeKey);
     }
 }

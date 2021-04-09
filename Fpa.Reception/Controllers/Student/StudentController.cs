@@ -28,12 +28,36 @@ namespace reception.fitnesspro.ru.Controllers.Student
             var studentComponent = context.Student;
             var receptions = await studentComponent.GetAttestation(studentKey, programKey);
 
-
-
-
             return receptions.ToList();
         }
 
+        [HttpGet]
+        [Route("GetEducation")]
+        public async Task<ActionResult<Domain.Education.Program>> GetEducation(Guid programKey)
+        {
+            var program = await context.Education.GetStudentEducation(programKey);
+
+            if (program == default) return NoContent();
+
+            return program;
+        }
+
+        [HttpGet]
+        [Route("GetHistory")]
+        public async Task<ActionResult<dynamic>> GetHistory(Guid studentKey)
+        { 
+            var receptions = await context.Reception.GetByStudentKey(studentKey);
+
+            var positions = receptions.Select(x=> new { 
+                    Date = x.Date, 
+                    Time = x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Time,
+                    Program =x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.ProgramKey,
+                    Discipline =x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.DisciplineKey,
+                    Result = x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.Result.Comment
+                });
+
+            return positions.ToList();
+        }
 
 
         [HttpGet]

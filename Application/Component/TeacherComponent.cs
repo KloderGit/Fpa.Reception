@@ -17,11 +17,11 @@ namespace Application.Component
             this.lcService = lcService;
         }
 
-        public async Task<IEnumerable<Domain.Education.Program>> GetEducation(Guid key)
+        public async Task<IEnumerable<Domain.Education.Program>> GetEducation(Guid employeeKey)
         {
             var programManager = lcService.Program;
 
-            var programs = await programManager.FilterByTeacher(key);
+            var programs = await programManager.FilterByTeacher(employeeKey);
             await programManager.IncludeDisciplines(programs);
             await programManager.IncludeEducationForm(programs);
             await programManager.IncludeTeachers(programs);

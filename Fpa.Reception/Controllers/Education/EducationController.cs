@@ -131,6 +131,17 @@ namespace reception.fitnesspro.ru.Controllers.Education
             return res.ToList();
         }
 
+
+        [HttpGet]
+        [Route("Program")]
+        public async Task<ActionResult<Domain.Education.Program>> GetProgram(Guid programKey)
+        {
+            var programsByKeys = await context.Education.GetStudentEducation(programKey);
+
+            return programsByKeys;
+        }
+
+
         [HttpGet]
         [Route("Program/FindByEmployee")]
         public async Task<ActionResult<IEnumerable<EducationInfoViewModel>>> FindByEmployee(Guid key)
@@ -218,10 +229,10 @@ namespace reception.fitnesspro.ru.Controllers.Education
         }
 
         [HttpGet]
-        [Route("Program/FindSiblings2")]
-        public async Task<ActionResult<dynamic>> FindProgramsWithDisciplineKey2(Guid key)
+        [Route("Program/GetSiblings")]
+        public async Task<ActionResult<dynamic>> GetSiblings(Guid key)
         {
-            var programs = await context.Education.FindByDiscipline(key);
+            var programs = await context.Education.GetProgramsByDiscipline(key);
 
             return programs.ToList();
         }

@@ -54,17 +54,17 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         /// <summary>
         /// Get information in which programs and disciplines the teacher is invoved in
         /// </summary>
-        /// <param name="key">Method takes a key of employee</param>
+        /// <param name="employeeKey">Method takes a key of employee</param>
         /// <returns></returns>
         [HttpGet]
         [Route("GetEducation")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation([FromQuery]Guid key)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation(Guid employeeKey)
         {
-            var programs = await context.Teacher.GetEducation(key);
+            var programs = await context.Education.GetTeacherEducation(employeeKey);
 
             if(programs.IsNullOrEmpty()) programs = await context.Education.GetAllPrograms();
 
-            if (programs.IsNullOrEmpty()) return NotFound();
+            if (programs.IsNullOrEmpty()) return NoContent();
 
             return programs.ToList();
         }
