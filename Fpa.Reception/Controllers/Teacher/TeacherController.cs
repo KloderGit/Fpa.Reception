@@ -37,10 +37,23 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
         [HttpGet]
         [Route("GetSchedule")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetScheduleFromReceptions(Guid employeeKey)
+        public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
         {
-            throw new NotImplementedException();
-            return null;
+            var currentYear = DateTime.Now.Year;
+            var currentMonth = DateTime.Now.Month;
+
+            if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+            if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
+            if(toDate > fromDate)
+            { 
+                var temp = toDate;
+                toDate = fromDate;
+                fromDate = temp;
+            }
+
+            var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
+
+            return receptions.ToList();
         }
 
 

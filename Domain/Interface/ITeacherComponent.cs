@@ -9,6 +9,6 @@ namespace Domain.Interface
     {
         Task<IEnumerable<Program>> GetEducation(Guid employeeKey);
 
-        Task<IEnumerable<Reception>> GetReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
+        Task<IEnumerable<Reception>> GetReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate);
     }
 }
