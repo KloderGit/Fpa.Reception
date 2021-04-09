@@ -35,7 +35,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetHistory")]
         public async Task<ActionResult<dynamic>> GetHistory(Guid studentKey)
         { 
-            var receptions = await context.Reception.GetByStudentKey(studentKey);
+                var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
 
             var positions = receptions.Select(x=> new { 
                     Date = x.Date, 
@@ -53,6 +53,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
+                var receptions = context.Student.GetReceptionsForSignUpStudent(studentKey,disciplineKey);
+
             var contract = await GetStudentContract();
             
             var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
