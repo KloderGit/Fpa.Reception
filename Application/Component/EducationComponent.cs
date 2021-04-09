@@ -51,26 +51,5 @@ namespace Application.Component
 
             return disciplines.Adapt<IEnumerable<BaseInfo>>();
         }
-
-
-        public async Task<IEnumerable<Domain.Education.Program>> GetAllPrograms()
-        {
-            var programManager = lcService.Program;
-
-            var programs = await programManager.GetAll();
-            await programManager.IncludeDisciplines(programs);
-            await programManager.IncludeEducationForm(programs);
-            //await programManager.IncludeTeachers(programs);
-            //await programManager.IncludeGroups(programs);
-
-            //var groupManager = lcService.Group;
-
-            //var groups = programs.SelectMany(x => x.Groups);
-            //await groupManager.IncludeSubGroups(groups);
-
-            var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
-
-            return domain;
-        }
     }
 }

@@ -7,7 +7,6 @@ namespace Domain.Interface
 {
     public interface IEducationComponent
     {
-        Task<IEnumerable<Program>> GetAllPrograms();
         Task<IEnumerable<BaseInfo>> GetDisciplinesByKeys(IEnumerable<Guid> disciplineKeys);
         Task<IEnumerable<Program>> GetProgramsByDiscipline(Guid disciplineKey);
         Task<IEnumerable<Program>> GetProgramsByKeys(IEnumerable<Guid> programKeys);        

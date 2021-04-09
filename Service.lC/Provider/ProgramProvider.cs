@@ -1,5 +1,6 @@
 using lc.fitnesspro.library.Interface;
 using Service.lC.Dto;
+using Service.lC.Extensions;
 using Service.lC.Interface;
 using Service.lC.Model;
 using Service.lC.Repository;
@@ -38,9 +39,7 @@ namespace Service.lC.Provider
         }
 
         public async Task<IEnumerable<Program>> FilterByTeacher(Guid teacherKey)
-        {
-            if (teacherKey == default) return new List<Program>();
-
+        { 
             var query = await manager.Program
                 .Filter(x => x.DeletionMark == false).And()
                 .Filter(x => x.Status == "Активный").And()
@@ -71,6 +70,28 @@ namespace Service.lC.Provider
             var programs = await Repository.GetAsync(keys);
 
             return programs;
+        }
+
+
+
+        private IRepository<lc.fitnesspro.library.Model.Program> BuildQuery(IEnumerable<Guid> keys)
+        {
+            manager.Program.ClearQuery();
+
+            var query = manager.Program
+                        .Select(x => x.Key)
+                        .Filter(x => x.Status == "Активный").And()
+                        .Filter(x => x.DeletionMark == false).AndAlso();
+
+            var nodeList = new LinkedList<Guid>(keys);
+            for (var node = nodeList.First; node != null; node = node.Next)
+            {
+                var value = node.Value;
+                query.Filter(x => x.Teachers.Any(x=>x.TeacherKey == value));
+                if (node != nodeList.Last) query.Or();
+            };
+
+            return query;
         }
     }
 }
