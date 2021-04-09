@@ -23,6 +23,17 @@ namespace Application.Component
             this.database = mongo;
         }
 
+        public async Task<Domain.Education.Program> GetStudentEducation(Guid programKey)
+        { 
+            var foundedProgramQuery = await lcservice.Program.GetProgram(programKey);
+            await lcservice.Program.IncludeDisciplines(new List<Service.lC.Model.Program>(){ foundedProgramQuery });
+
+            var domain = foundedProgramQuery.Adapt<Domain.Education.Program>();
+
+            return domain;
+        }
+
+
         public async Task<IEnumerable<Reception>> GetAttestation(Guid studentKey, Guid programKey)
         {
             //Найти договор студента по программе

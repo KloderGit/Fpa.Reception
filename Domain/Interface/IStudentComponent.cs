@@ -12,5 +12,7 @@ namespace Domain.Interface
         Task<IEnumerable<Reception>> GetAttestation(Guid studentKey, Guid programKey);
         Task<IEnumerable<Student>> GetByKeys(IEnumerable<Guid> studentKeys);
         Task<IEnumerable<Contract>> GetContracts(Guid studentKey);
+
+        Task<Program> GetStudentEducation(Guid programKey);
     }
 }

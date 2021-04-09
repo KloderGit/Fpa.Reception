@@ -30,16 +30,6 @@ namespace Application.Component
             return domain;
         }
 
-        public async Task<Domain.Education.Program> GetStudentEducation(Guid programKey)
-        { 
-            var foundedProgramQuery = await lcService.Program.GetProgram(programKey);
-            await lcService.Program.IncludeDisciplines(new List<Service.lC.Model.Program>(){ foundedProgramQuery });
-
-            var domain = foundedProgramQuery.Adapt<Domain.Education.Program>();
-
-            return domain;
-        }
-
 
         public async Task<IEnumerable<Domain.Education.Program>> GetProgramsByDiscipline(Guid disciplineKey)
         { 
