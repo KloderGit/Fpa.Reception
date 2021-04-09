@@ -19,18 +19,6 @@ namespace Application.Component
             this.lcService = lcService;
         }
 
-        public async Task<IEnumerable<Domain.Education.Program>> GetTeacherEducation(Guid employeeKey)
-        { 
-            var foundedProgramsQuery = await lcService.Program.FilterByTeacher(employeeKey);
-            await lcService.Program.IncludeDisciplines(foundedProgramsQuery);
-            await lcService.Program.IncludeEducationForm(foundedProgramsQuery);
-
-            var domain = foundedProgramsQuery.Adapt<IEnumerable<Domain.Education.Program>>();
-
-            return domain;
-        }
-
-
         public async Task<IEnumerable<Domain.Education.Program>> GetProgramsByDiscipline(Guid disciplineKey)
         { 
             var programManager = lcService.Program;
