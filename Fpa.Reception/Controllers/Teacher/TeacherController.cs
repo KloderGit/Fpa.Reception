@@ -32,7 +32,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         /// <returns></returns>
         [HttpGet]
         [Route("GetEducation")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation(Guid employeeKey)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid employeeKey)
         {
             var programs = await context.Teacher.GetTeacherEducation(employeeKey);
             if (programs.IsNullOrEmpty()) return NoContent();
@@ -40,10 +40,18 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             return programs.ToList();
         }
 
+        [HttpGet]
+        [Route("GetSchedule")]
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetScheduleFromReceptions(Guid employeeKey)
+        {
+            new NotImplementedException();
+            return null;
+        }
+
 
         [HttpGet]
-        [Route("GetReception")]
-        public async Task<dynamic> GetReception([FromQuery] Guid key)
+        [Route("GetTable")]
+        public async Task<dynamic> GetTableFromReception([FromQuery] Guid key)
         {
             // Get Reception
             // Get Discipline Title
