@@ -225,5 +225,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             return programs.ToList();
         }
+
+
     }
 }

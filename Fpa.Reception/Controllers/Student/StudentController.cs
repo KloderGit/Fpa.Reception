@@ -28,12 +28,16 @@ namespace reception.fitnesspro.ru.Controllers.Student
             var studentComponent = context.Student;
             var receptions = await studentComponent.GetAttestation(studentKey, programKey);
 
-
-
-
             return receptions.ToList();
         }
 
+        [HttpGet]
+        [Route("GetEducation")]
+        public async Task<ActionResult<Domain.Education.Program>> GetEducatoin(Guid programKey)
+        {
+            var program = await context.Education.GetStudentEducation(programKey);
+            return program;
+        }
 
 
         [HttpGet]

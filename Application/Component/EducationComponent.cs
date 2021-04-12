@@ -71,5 +71,15 @@ namespace Application.Component
 
             return result;
         }
+
+        public async Task<Domain.Education.Program> GetStudentEducation(Guid programKey)
+        {
+            var foundedProgramQuery = await lcService.Program.GetProgram(programKey);
+            await lcService.Program.IncludeDisciplines(new List<Service.lC.Model.Program>() { foundedProgramQuery });
+
+            var domain = foundedProgramQuery.Adapt<Domain.Education.Program>();
+
+            return domain;
+        }
     }
 }
