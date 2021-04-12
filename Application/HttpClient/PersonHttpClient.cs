@@ -18,7 +18,10 @@ namespace Application.HttpClient
         {
             var result = Enumerable.Empty<Guid>();
 
-            var dto = new { Phones = phones, Emails = emails };
+            var phonesDto = phones.Where(x => x != default);
+            var emailsDto = emails.Where(x => x != default);
+
+            var dto = new { Phones = phonesDto ?? new List<string>(), Emails = emailsDto ?? new List<string>() };
 
             var request = await Client.GetAsync("FindByContacts", dto);
 
