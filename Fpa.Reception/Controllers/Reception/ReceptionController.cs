@@ -54,6 +54,36 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
             return Ok();
         }
+
+
+        #region OLD implementation
+
+        [HttpPost]
+        [Obsolete]
+        public async Task<ActionResult> Post(CreateReceptionViewModel model)
+        {
+            if (ModelState.IsValid == false) return BadRequest(model);
+
+            var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
+
+            context.Reception.CreateRecord(item);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("FindByDiscipline")]
+        [Obsolete]
+        public async Task<ActionResult> FindByDiscipline(Guid key)
+        {
+            var result = await context.Reception.GetByDisciplineKey(key);
+
+            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+
+            return Ok(viewmodel);
+        }
+
+        #endregion
     }
 
 }

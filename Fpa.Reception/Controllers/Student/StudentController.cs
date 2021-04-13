@@ -53,7 +53,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
-                var receptions = context.Student.GetReceptionsForSignUpStudent(studentKey,disciplineKey);
+            var receptions = context.Student.GetReceptionsForSignUpStudent(studentKey,disciplineKey);
 
             var contract = await GetStudentContract();
             
@@ -104,5 +104,46 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             return Ok();
         }
+
+        #region OLD
+
+        [HttpGet]
+        [Route("GetReceptions")]
+        [Obsolete]
+        public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptionsOld(Guid studentKey, Guid disciplineKey)
+        {
+            var contract = await GetStudentContract();
+            
+            var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
+
+            var filtered = disciplineReceptions
+                .Where(x => x.IsForProgram(contract.EducationProgram.Key))
+                .Where(x => x.IsForGroup(contract.Group.Key))
+                .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
+
+            var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
+
+            viewModel.ForEach(x => x.CheckContractExpired(contract));
+            viewModel.ForEach(x => x.CheckEmptyPlaces());
+            viewModel.ForEach(x => x.CheckIsNotInPast());
+            viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
+            viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student));
+            viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
+            viewModel.ForEach(x => x.CheckSignUpBefore());
+            viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
+
+            return viewModel;
+
+            async Task<Contract> GetStudentContract()
+            {
+                var allStudentContract = await context.Student.GetContracts(studentKey);
+                var contract = allStudentContract//.Where(x => x.ExpiredDate > DateTime.Now.Date)
+                    .FirstOrDefault(x => x.ExpiredDate == allStudentContract.Max(d => d.ExpiredDate));
+
+                return contract;
+            }
+        }
+
+        #endregion
     }
 }

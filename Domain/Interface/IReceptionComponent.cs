@@ -14,5 +14,8 @@ namespace Domain.Interface
         Reception GetByKey(Guid key);
         Reception GetByPosition(Guid positionKey);
         void CreateRecord(Reception reception);
+
+        [Obsolete]
+        Task<IEnumerable<Reception>> GetByDisciplineKey(Guid discilineKey);
     }
 }

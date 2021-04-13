@@ -6,6 +6,7 @@ using Service.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Application.Component
 {
@@ -67,5 +68,19 @@ namespace Application.Component
         {
             throw new NotImplementedException();
         }
+
+        #region OLd
+
+        [Obsolete]
+        public async Task<IEnumerable<Reception>> GetByDisciplineKey(Guid discilineKey)
+        {
+            var dto = await database.Receptions.GetByDiscipline(discilineKey);
+
+            var result = dto.Adapt<IEnumerable<Reception>>();
+
+            return result;
+        }
+
+        #endregion
     }
 }
