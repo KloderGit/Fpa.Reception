@@ -67,7 +67,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             // Get Students Program Title
 
 
-            var reception = context.Reception.Get(key);
+            var reception = context.Reception.GetByKey(key);
             if (reception == default) return BadRequest(nameof(key));
 
             var discipline = (await context.Education.GetDisciplinesByKeys(reception.Events.Select(x=>x.Discipline.Key))).ToList();
@@ -76,7 +76,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 .Where(x => x.Record != default && x.Record.StudentKey != default)
                 .Select(x => x.Record.StudentKey);
 
-            var students = (await context.Student.GetByKeys(studentsKeys)).ToList();
+            var students = (await context.Student.GetStudents(studentsKeys)).ToList();
 
             var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
 

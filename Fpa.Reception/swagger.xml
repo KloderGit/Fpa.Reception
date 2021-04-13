@@ -9,11 +9,11 @@
             Физ лицо 1С
             </summary>
         </member>
-        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetEducation(System.Guid)">
+        <member name="M:reception.fitnesspro.ru.Controllers.Teacher.TeacherController.GetEducationByEmployeeKey(System.Guid)">
             <summary>
             Get information in which programs and disciplines the teacher is invoved in
             </summary>
-            <param name="key">Method takes a key of employee</param>
+            <param name="employeeKey">Method takes a key of employee</param>
             <returns></returns>
         </member>
     </members>

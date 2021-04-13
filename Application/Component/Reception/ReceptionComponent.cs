@@ -47,5 +47,25 @@ namespace Application.Component
         {
             throw new NotImplementedException();
         }
+
+        public Reception GetByPosition(Guid positionKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Reception Create(Reception reception)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Reception Update(Reception reception)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Reception Delete(Guid key)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
