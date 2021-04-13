@@ -57,7 +57,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             var contract = await GetStudentContract();
             
-            var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
+            var disciplineReceptions = await context.Student.GetReceptionsForSignUpStudent(studentKey, disciplineKey);
 
             var filtered = disciplineReceptions
                 .Where(x => x.IsForProgram(contract.EducationProgram.Key))
@@ -70,10 +70,10 @@ namespace reception.fitnesspro.ru.Controllers.Student
             viewModel.ForEach(x => x.CheckEmptyPlaces());
             viewModel.ForEach(x => x.CheckIsNotInPast());
             viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
-            viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Reception));
+            viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student));
             viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
             viewModel.ForEach(x => x.CheckSignUpBefore());
-            viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Reception));
+            viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
 
             return viewModel;
 
@@ -91,8 +91,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] SignUpViewModel model)
         {
-            var getting = await context.Reception.GetByPosition(model.PositionKey);
-            var reception = getting.FirstOrDefault();
+            var getting = context.Reception.GetByPosition(model.PositionKey);
+            var reception = getting;
 
             var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
 
@@ -100,7 +100,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             position.Record = new Domain.Record { DisciplineKey = model.DisciplineKey, ProgramKey = model.ProgramKey, StudentKey = model.StudentKey };
 
-            await context.Reception.ReplaceReception(reception);
+            context.Reception.Update(reception);
 
             return Ok();
         }
