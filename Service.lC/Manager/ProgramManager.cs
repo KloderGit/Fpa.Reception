@@ -59,6 +59,8 @@ namespace Service.lC.Manager
 
         public async Task<IEnumerable<Program>> FilterByTeacher(Guid teacherKey)
         {
+            if(teacherKey == default) throw new ArgumentNullException(nameof(teacherKey));
+
             var programs = await programProvider.FilterByTeacher(teacherKey);
 
             return programs;

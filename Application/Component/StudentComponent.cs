@@ -1,14 +1,13 @@
 ﻿using Domain;
-using Domain.Education;
 using Domain.Interface;
 using Domain.Model.Education;
 using Mapster;
 using Service.lC;
+using Service.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Service.MongoDB;
 
 namespace Application.Component
 {
@@ -23,7 +22,17 @@ namespace Application.Component
             this.database = mongo;
         }
 
-        public async Task<IEnumerable<Reception>> GetAttestation(Guid studentKey, Guid programKey)
+        public async Task<Domain.Education.Program> GetStudentEducation(Guid programKey)
+        { 
+            var foundedProgramQuery = await lcservice.Program.GetProgram(programKey);
+            await lcservice.Program.IncludeDisciplines(new List<Service.lC.Model.Program>(){ foundedProgramQuery });
+
+            var domain = foundedProgramQuery.Adapt<Domain.Education.Program>();
+
+            return domain;
+        }
+
+        public async Task<IEnumerable<Reception>> GetReceptionsForSignUpStudent(Guid studentKey, Guid programKey)
         {
             //Найти договор студента по программе
 
@@ -58,6 +67,14 @@ namespace Application.Component
             return result;
         }
 
+        public async Task<IEnumerable<Domain.Education.Student>> GetStudents(IEnumerable<Guid> studentKeys)
+        {
+            var students = await lcservice.Student.GetStudentsByKeys(studentKeys);
+
+            var result = students.Adapt<IEnumerable<Domain.Education.Student>>();
+
+            return result;
+        }
 
         public async Task<IEnumerable<Contract>> GetContracts(Guid studentKey)
         {
@@ -68,9 +85,7 @@ namespace Application.Component
             return result;
         }
 
-
-
-        public async Task<IEnumerable<Reception>> GetAppointments(Guid studentKey)
+        public async Task<IEnumerable<Reception>> GetReceptionsWithSignedUpStudent(Guid studentKey)
         {
             var dto = database.Receptions.Repository.FilterByPath("PositionManager.Positions.Record.StudentKey", studentKey);
 
@@ -79,22 +94,5 @@ namespace Application.Component
             return domen;
         }
 
-        public async Task<IEnumerable<Reception>> GetAppointments(IEnumerable<Guid> studentKeys)
-        {
-            var dto = database.Receptions.Repository.FilterByArray("PositionManager.Positions.Record.StudentKey", studentKeys);
-
-            var domen = dto.Adapt<IEnumerable<Reception>>();
-
-            return domen;
-        }
-
-        public async Task<IEnumerable<Domain.Education.Student>> GetByKeys(IEnumerable<Guid> studentKeys)
-        {
-            var students = await lcservice.Student.GetStudentsByKeys(studentKeys);
-
-            var result = students.Adapt<IEnumerable<Domain.Education.Student>>();
-
-            return result;
-        }
     }
 }

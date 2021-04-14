@@ -1,16 +1,11 @@
-﻿using Application.Employee;
-using Application.Program;
+﻿using Application.Extensions;
+using Domain;
+using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Application.Extensions;
-using Application.HttpClient;
-using Domain;
-using Domain.Interface;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -20,59 +15,51 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     {
         private readonly IAppContext context;
 
-        private EmployeeHttpClient employeeHttpClient;
-        private ProgramHttpClient programHttpClient;
-        private readonly AssignHttpClient assignHttpClient;
-        private readonly DisciplineHttpClient disciplineHttpClient;
-        private readonly EducationFormHttpClient educationFormHttpClient;
-        private readonly ControlTypeHttpClient controlTypeHttpClient;
-
-        ProgramMethods programAction;
-        EmployeeMethods employeeAction;
-
-        public TeacherController(
-            IAppContext context,
-            EmployeeHttpClient employeeHttpClient,
-            ProgramHttpClient programHttpClient,
-            AssignHttpClient assignHttpClient,
-            DisciplineHttpClient disciplineHttpClient,
-            EducationFormHttpClient educationFormHttpClient,
-            ControlTypeHttpClient controlTypeHttpClient)
+        public TeacherController(IAppContext context)
         {
             this.context = context;
-            this.employeeHttpClient = employeeHttpClient;
-            this.programHttpClient = programHttpClient;
-            this.assignHttpClient = assignHttpClient;
-            this.disciplineHttpClient = disciplineHttpClient;
-            this.educationFormHttpClient = educationFormHttpClient;
-            this.controlTypeHttpClient = controlTypeHttpClient;
-
-            programAction = new ProgramMethods(programHttpClient);
-            employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
         }
 
         /// <summary>
         /// Get information in which programs and disciplines the teacher is invoved in
         /// </summary>
-        /// <param name="key">Method takes a key of employee</param>
+        /// <param name="employeeKey">Method takes a key of employee</param>
         /// <returns></returns>
         [HttpGet]
         [Route("GetEducation")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducation([FromQuery]Guid key)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid employeeKey)
         {
-            var programs = await context.Teacher.GetEducation(key);
-
-            if(programs.IsNullOrEmpty()) programs = await context.Education.GetAllPrograms();
-
-            if (programs.IsNullOrEmpty()) return NotFound();
+            var programs = await context.Teacher.GetEducation(employeeKey);
+            if (programs.IsNullOrEmpty()) return NoContent();
 
             return programs.ToList();
         }
 
+        [HttpGet]
+        [Route("GetSchedule")]
+        public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
+        {
+            var currentYear = DateTime.Now.Year;
+            var currentMonth = DateTime.Now.Month;
+
+            if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+            if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
+            if(toDate > fromDate)
+            { 
+                var temp = toDate;
+                toDate = fromDate;
+                fromDate = temp;
+            }
+
+            var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
+
+            return receptions.ToList();
+        }
+
 
         [HttpGet]
-        [Route("GetReception")]
-        public async Task<dynamic> GetReception([FromQuery] Guid key)
+        [Route("GetTable")]
+        public async Task<dynamic> GetTableFromReception([FromQuery] Guid key)
         {
             // Get Reception
             // Get Discipline Title
@@ -80,7 +67,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             // Get Students Program Title
 
 
-            var reception = context.Reception.Get(key);
+            var reception = context.Reception.GetByKey(key);
             if (reception == default) return BadRequest(nameof(key));
 
             var discipline = (await context.Education.GetDisciplinesByKeys(reception.Events.Select(x=>x.Discipline.Key))).ToList();
@@ -89,7 +76,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 .Where(x => x.Record != default && x.Record.StudentKey != default)
                 .Select(x => x.Record.StudentKey);
 
-            var students = (await context.Student.GetByKeys(studentsKeys)).ToList();
+            var students = (await context.Student.GetStudents(studentsKeys)).ToList();
 
             var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
 
@@ -125,79 +112,6 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 };
             }
         }
-
-
-
-
-
-        [HttpGet]
-        //[Route("Prototype")]
-        [Route("Disciplines")]
-        public async Task<ActionResult<IEnumerable<TeacherAssignViewModel>>> GetDisciplines(IEnumerable<Guid> keys)
-        {
-            var techerDisciplineKeys = await employeeAction.GetTeacherDisciplines(keys);
-
-            var programs = await programAction.GetByDiscipline(techerDisciplineKeys.SelectMany(x => x.Children));
-
-            var teachers = await employeeAction.GetByKeys(keys);
-
-            var disciplineInfo = await disciplineHttpClient.Find(techerDisciplineKeys.SelectMany(x => x.Children));
-
-            var educationForms = await educationFormHttpClient.GetByKeys(programs.Select(e=>e.EducationFormKey).Where(e=>e != default));
-
-            var controlTypes = await controlTypeHttpClient.GetByKeys(programs.SelectMany(d=>d.Disciplines.Select(i=>i.ControlTypeKey)));
-
-            var res = from info in techerDisciplineKeys
-                      let teacher = teachers.FirstOrDefault(x => x.Key == info.Key)
-                      let discipline =(
-                              from disciplineKey in info.Children
-                              let disciplineEntity = disciplineInfo.FirstOrDefault(d=>d.Key == disciplineKey)
-                              select new DisciplineViewModel { Key = disciplineKey, Title = disciplineEntity.Title })
-                      let programT = info.Children
-                              .SelectMany(x => programs.Where(p => p.Disciplines.Any(d => d.DisciplineKey == x))
-                              .Select(i => 
-                                  new Teacher.ProgramInfoViewModel 
-                                  { 
-                                      Key = i.Key,
-                                      Title = i.Title,
-                                      EducationForm = new EducationFormViewModel
-                                      {
-                                          Key = i.EducationFormKey,
-                                          Title = educationForms.FirstOrDefault(e=>e.Key == i.EducationFormKey)?.Title
-                                      }, 
-                                      Disciplines = 
-                                          new List<DisciplinePlanViewModel> 
-                                          { 
-                                              new DisciplinePlanViewModel
-                                              {
-                                                  Discipline = discipline.First(k => k.Key == x),
-                                                  ControlType = 
-                                                      new ControlTypeViewModel
-                                                      {
-                                                          Key = i.Disciplines.FirstOrDefault(ct=>ct.DisciplineKey == x).ControlTypeKey,
-                                                          Title = controlTypes.FirstOrDefault(ctp=>ctp.Key == i.Disciplines.FirstOrDefault(ct=>ct.DisciplineKey == x).ControlTypeKey)?.Title
-                                                      }
-                                              }
-                                          }
-                                  })
-                          ).GroupBy(g=>g.Key)
-                          .Select(r=>new Teacher.ProgramInfoViewModel
-                          {
-                              Key = r.Key,
-                              Title = r.First().Title,
-                              EducationForm = r.First().EducationForm,
-                              Disciplines = r.SelectMany(d => d.Disciplines)
-                          } )
-                      select new TeacherAssignViewModel
-                      {
-                          Key = teacher.Key,
-                          Title = teacher.Title,
-                          Programs = programT
-                      };
-
-            return res.ToList();
-        }
-
 
     }
 }

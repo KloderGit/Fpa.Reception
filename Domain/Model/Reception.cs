@@ -96,11 +96,11 @@ namespace Domain
             return position;
         }
 
-        public IEnumerable<Position> GetSignedUpStudentPosition(Guid studentKey)
+        public Position GetSignedUpStudentPosition(Guid studentKey)
         {
-            var positions = Positions.Where(x => x.Record != default && x.Record.StudentKey == studentKey && x.Record.Result != default);
+            var positions = Positions.Where(x => x.Record != default && x.Record.StudentKey == studentKey);
 
-            return positions;
+            return positions.FirstOrDefault();
         }
     }
 

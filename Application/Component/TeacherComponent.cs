@@ -1,4 +1,5 @@
-﻿using Domain.Interface;
+﻿using Domain;
+using Domain.Interface;
 using Mapster;
 using Service.lC;
 using System;
@@ -17,24 +18,20 @@ namespace Application.Component
             this.lcService = lcService;
         }
 
-        public async Task<IEnumerable<Domain.Education.Program>> GetEducation(Guid key)
+        public async Task<IEnumerable<Domain.Education.Program>> GetEducation(Guid employeeKey)
         {
-            var programManager = lcService.Program;
+            var foundedProgramsQuery = await lcService.Program.FilterByTeacher(employeeKey);
+            await lcService.Program.IncludeDisciplines(foundedProgramsQuery);
+            await lcService.Program.IncludeEducationForm(foundedProgramsQuery);
 
-            var programs = await programManager.FilterByTeacher(key);
-            await programManager.IncludeDisciplines(programs);
-            await programManager.IncludeEducationForm(programs);
-            await programManager.IncludeTeachers(programs);
-            await programManager.IncludeGroups(programs);
-
-            var groupManager = lcService.Group;
-
-            var groups = programs.SelectMany(x => x.Groups);
-            await groupManager.IncludeSubGroups(groups);
-
-            var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
+            var domain = foundedProgramsQuery.Adapt<IEnumerable<Domain.Education.Program>>();
 
             return domain;
+        }
+
+        public Task<IEnumerable<Reception>> GetReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
+        {
+            throw new NotImplementedException();
         }
     }
 }
