@@ -2,6 +2,7 @@
 using Domain;
 using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
+using reception.fitnesspro.ru.Controllers.Teacher.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,18 +62,16 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetTable")]
         public async Task<dynamic> GetTableFromReception([FromQuery] Guid key)
         {
-            // Get Reception
-            // Get Discipline Title
-            // Get Students person Title
-            // Get Students Program Title
-
-
             var reception = context.Reception.GetByKey(key);
             if (reception == default) return BadRequest(nameof(key));
 
-            var discipline = (await context.Education.GetDisciplinesByKeys(reception.Events.Select(x=>x.Discipline.Key))).ToList();
+            var disciplineKeys = reception.PositionManager?.Positions?
+                .Where(x => x.Record != default && x.Record.StudentKey != default)
+                .Select(x=>x.Record.DisciplineKey); // Select keys from all signed up students for cases manually signed up students
 
-            var studentsKeys = reception.PositionManager.Positions
+            var discipline = (await context.Education.GetDisciplinesByKeys(disciplineKeys)).ToList();
+
+            var studentsKeys = reception.PositionManager?.Positions?
                 .Where(x => x.Record != default && x.Record.StudentKey != default)
                 .Select(x => x.Record.StudentKey);
 
@@ -80,37 +79,15 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
 
-            var programsKeys = reception.PositionManager.Positions
+            var programsKeys = reception.PositionManager?.Positions?
                 .Where(x => x.Record != default && x.Record.StudentKey != default && x.Record.ProgramKey != default)
                 .Select(x => x.Record.ProgramKey);
 
             var programs = (await context.Education.GetProgramsByKeys(programsKeys)).ToList();
 
-            var vm = new {
-                Discipline = discipline.FirstOrDefault(),
-                Date = reception.Date,
-                Position = reception.PositionManager.Positions
-                                                    .Where(x=>x != default && x.Record != default)
-                                                    .Select(x => GetTimeViewModel(x))
-            };
+            var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,null);
 
-            return vm;
-
-            dynamic GetTimeViewModel(Position position)
-            {
-                var student = students.FirstOrDefault(x => x.Key == position.Record.StudentKey);
-                var person = persons.FirstOrDefault(x => x.Key == student.Owner);
-
-                var program = programs.FirstOrDefault(x => x.Key == position.Record.ProgramKey);
-
-                return new
-                {
-                    Time = position.Time,
-                    Student = new { Title = person.Title, Key = student.Key },
-                    Program = new { Title = program.Title, Key = program.Key },
-                    PositionKey = position.Key
-                };
-            }
+            return viewModel;
         }
 
     }
