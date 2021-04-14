@@ -23,13 +23,13 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         /// <summary>
         /// Get information in which programs and disciplines the teacher is invoved in
         /// </summary>
-        /// <param name="employeeKey">Method takes a key of employee</param>
+        /// <param name="key">Method takes a key of employee</param>
         /// <returns></returns>
         [HttpGet]
         [Route("GetEducation")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid employeeKey)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid key)
         {
-            var programs = await context.Teacher.GetEducation(employeeKey);
+            var programs = await context.Teacher.GetEducation(key);
             if (programs.IsNullOrEmpty()) return NoContent();
 
             return programs.ToList();

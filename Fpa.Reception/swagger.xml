@@ -13,7 +13,7 @@
             <summary>
             Get information in which programs and disciplines the teacher is invoved in
             </summary>
-            <param name="employeeKey">Method takes a key of employee</param>
+            <param name="key">Method takes a key of employee</param>
             <returns></returns>
         </member>
     </members>

@@ -91,8 +91,9 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] SignUpViewModel model)
         {
-            var getting = context.Reception.GetByPosition(model.PositionKey);
-            var reception = getting;
+            var reception = await context.Reception.GetByPosition(model.PositionKey);
+
+            if(reception == default) return NoContent();
 
             var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
 
@@ -100,7 +101,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             position.Record = new Domain.Record { DisciplineKey = model.DisciplineKey, ProgramKey = model.ProgramKey, StudentKey = model.StudentKey };
 
-            context.Reception.Update(reception);
+            await context.Reception.Update(reception);
 
             return Ok();
         }

@@ -50,7 +50,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
             var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            context.Reception.CreateRecord(item);
+            context.Reception.Create(item);
 
             return Ok();
         }
@@ -66,7 +66,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
             var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            context.Reception.CreateRecord(item);
+            context.Reception.Create(item);
 
             return Ok();
         }

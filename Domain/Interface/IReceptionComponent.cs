@@ -6,14 +6,13 @@ namespace Domain.Interface
 {
     public interface IReceptionComponent
     {
-        Reception Create(Reception reception);
-        Reception Update(Reception reception);
-        Reception Delete(Guid key);
+        void Create(Reception reception);
+        Task Update(Reception reception);
+        void Delete(Guid key);
 
         IEnumerable<Reception> Get();
         Reception GetByKey(Guid key);
-        Reception GetByPosition(Guid positionKey);
-        void CreateRecord(Reception reception);
+        Task<Reception> GetByPosition(Guid positionKey);
 
         [Obsolete]
         Task<IEnumerable<Reception>> GetByDisciplineKey(Guid discilineKey);

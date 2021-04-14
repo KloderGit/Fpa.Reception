@@ -37,34 +37,32 @@ namespace Application.Component
             return result;
         }
 
-        public void CreateReception(Reception reception)
+        public async Task<Reception> GetByPosition(Guid positionKey)
+        {
+            var reception = await database.Receptions.GetByPosition(positionKey);
+
+            var domen = reception.Adapt<IEnumerable<Domain.Reception>>();
+
+            return domen.FirstOrDefault();
+        }
+
+        public void Create(Reception reception)
         {
             var dto = reception.Adapt<Service.MongoDB.Model.Reception>();
                 
             database.Receptions.Repository.InsertOne(dto);
         }
 
-        public void CreateRecord(Reception reception)
+        public async Task Update(Reception reception)
         {
-            throw new NotImplementedException();
+            var serviceReception = await database.Receptions.GetByKeyAsync(reception.Key);
+
+            var dto = reception.Adapt(serviceReception);
+                
+            database.Receptions.Repository.ReplaceOne(dto);
         }
 
-        public Reception GetByPosition(Guid positionKey)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Reception Create(Reception reception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Reception Update(Reception reception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Reception Delete(Guid key)
+        public void Delete(Guid key)
         {
             throw new NotImplementedException();
         }

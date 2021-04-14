@@ -32,7 +32,7 @@ namespace Service.MongoDB
         {
             var query = await Task.Run(() => Repository.FilterByPath("PositionManager.Positions.Key", positionKey));
 
-            var sdff = Repository.FilterByPath("PositionManager.Positions.Key", positionKey).ToList();
+            //var sdff = Repository.FilterByPath("PositionManager.Positions.Key", positionKey).ToList();
 
             var result = query.ToList();
 
