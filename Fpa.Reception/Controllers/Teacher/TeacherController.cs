@@ -77,13 +77,17 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var students = (await context.Student.GetStudents(studentsKeys)).ToList();
 
-            var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
+            //var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
 
             var programsKeys = reception.PositionManager?.Positions?
                 .Where(x => x.Record != default && x.Record.StudentKey != default && x.Record.ProgramKey != default)
                 .Select(x => x.Record.ProgramKey);
 
             var programs = (await context.Education.GetProgramsByKeys(programsKeys)).ToList();
+
+            var controlTypeKeys = programs.SelectMany(x=>x.Educations.Select(c=>c.ControlType.Key));
+
+            var controlType = context.Education.
 
             var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,null);
 
