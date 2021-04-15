@@ -21,6 +21,7 @@ namespace Service.lC
         private StudentManager student;
         private ContractManager contract;
         private EducationManager education;
+        private ControlTypeManager controlType;
 
         public Context(
             BaseHttpClient httpClient,
@@ -45,6 +46,9 @@ namespace Service.lC
         public GroupManager Group => group ?? (
             group = new GroupManager(providers.SubGroup));
 
+        public ControlTypeManager ControlType => controlType ?? (
+            controlType = new ControlTypeManager(providers.ScoreType));
+
         public PersonManager Person => person ?? (
             person = new PersonManager(
                 providers.Person, 
@@ -61,7 +65,7 @@ namespace Service.lC
                 providers.SubGroup));
 
         public EducationManager Education => education ?? (
-            education = new EducationManager( providers.Discipline) );
+            education = new EducationManager( providers.Discipline, providers.ControlType) );
     }
 
 

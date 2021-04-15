@@ -20,6 +20,7 @@ namespace Service.lC.Repository
         private IRepositoryAsync<Student, StudentDto> student;
         private PersonRepository person;
         private IRepositoryAsync<Contract, ContractDto> contract;
+        private IRepositoryAsync<ScoreType, ScoreTypeDto> scoreType;
 
         public RepositoryDepository(BaseHttpClient client, IConfiguration configuration)
         {
@@ -37,6 +38,7 @@ namespace Service.lC.Repository
         public IRepositoryAsync<Student, StudentDto> Student => student ?? (student = new GenericRepository<Student, StudentDto>(client, "lc/Student"));
         public PersonRepository Person => person ?? (person = new PersonRepository(client, "lc/Person"));
         public IRepositoryAsync<Contract, ContractDto> Contract => contract ?? (contract = new GenericRepository<Contract, ContractDto>(client, "lc/v1/Contract"));
+        public IRepositoryAsync<ScoreType, ScoreTypeDto> ScoreType => scoreType ?? (scoreType = new GenericRepository<ScoreType, ScoreTypeDto>(client, "lc/v1/Rate"));
 
     }
 }

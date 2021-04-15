@@ -8,10 +8,10 @@ namespace Service.lC.Dto
 {
     public class ScoreTypeDto : BaseDto, IConvert<ScoreTypeDto>
     {
-        public int MinRate { get; set; }
-        public int MaxRate { get; set; }
+        public int MinGrade { get; set; }
+        public int MaxGrade { get; set; }
 
-        public string Rate { get; set; }
+        public string Grade { get; set; }
 
         static ScoreTypeDto()
         {
@@ -30,9 +30,9 @@ namespace Service.lC.Dto
             {
                 Key = dto.Key,
                 Title = dto.Title,
-                MaxRate = dto.MaxRate,
-                MinRate = dto.MinRate,
-                Rate = dto.Rate
+                MaxGrade = dto.MaxGrade,
+                MinGrade = dto.MinGrade,
+                Grade = dto.Grade
             };
 
             return group;

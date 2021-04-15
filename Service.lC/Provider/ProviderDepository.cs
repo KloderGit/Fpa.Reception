@@ -21,6 +21,7 @@ namespace Service.lC.Provider
         private SubGroupProvider subGroup;
         private PersonProvider person;
         private ContractProvider contract;
+        private ScoreTypeProvider scoreType;
 
         public ProviderDepository(RepositoryDepository repositories, IManager manager)
         {
@@ -38,5 +39,6 @@ namespace Service.lC.Provider
         public StudentProvider Student => student ?? (student = new StudentProvider(repositories.Student, manager));
         public PersonProvider Person => person ?? (person = new PersonProvider(repositories.Person, manager));
         public ContractProvider Contract => contract ?? (contract = new ContractProvider(repositories.Contract, manager));
+        public ScoreTypeProvider ScoreType => scoreType ?? (scoreType = new ScoreTypeProvider(repositories.ScoreType, manager));
     }
 }
