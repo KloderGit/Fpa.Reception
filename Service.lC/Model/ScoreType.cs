@@ -6,9 +6,9 @@ namespace Service.lC.Model
 {
     public class ScoreType : Base
     {
-        public int MinRate { get; set; }
-        public int MaxRate { get; set; }
-
-        public string Rate { get; set; }
+        public Guid ParentKey { get; set; }
+        public int MaxGrade { get; set; }
+        public int MinGrade { get; set; }
+        public string Grade { get; set; }
     }
 }
