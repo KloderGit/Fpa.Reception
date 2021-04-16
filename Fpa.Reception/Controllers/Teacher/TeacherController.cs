@@ -85,9 +85,9 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var programs = (await context.Education.GetProgramsByKeys(programsKeys)).ToList();
 
-            var controlTypeKeys = programs.SelectMany(x=>x.Educations.Select(c=>c.ControlType.Key));
+            var controlTypeKeys = programs.SelectMany(x=>x.Educations.Select(c=>c.ControlType.Key)).Where(x=>x != default).Distinct();
 
-            var controlType = context.Education.
+            var controlTypes = await context.Education.GetControlTypesByKeys(controlTypeKeys);
 
             var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,null);
 

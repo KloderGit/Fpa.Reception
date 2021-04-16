@@ -20,7 +20,7 @@ namespace Service.lC.Extensions
 
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> array)
         {
-            return array == null || array.Any() == false;
+            return array == null || array?.Any() == false;
         }
     }
 }

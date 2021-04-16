@@ -45,5 +45,29 @@ namespace Service.lC.Provider
 
             return scoreTypes;
         }
+
+        public async Task<IEnumerable<ScoreType>> FilterByScoreType(IEnumerable<Guid> scoreTypeKeys)
+        {
+            if (scoreTypeKeys.IsNullOrEmpty()) return new List<ScoreType>();
+
+            var query = manager.Rate
+                        .Filter(x => x.DeletionMark == false).AndAlso();
+
+            var nodeList = new LinkedList<Guid>(scoreTypeKeys);
+            for (var node = nodeList.First; node != null; node = node.Next)
+            {
+                var value = node.Value;
+                query.Filter(x => x.ParentKey == value);
+                if (node != nodeList.Last) query.Or();
+            };
+
+            var result = await query.GetByFilter();
+
+            var keys = result?.Select(x => x.Key) ?? Enumerable.Empty<Guid>();
+
+            var scoreTypes = await Repository.GetAsync(keys);
+
+            return scoreTypes;
+        }
     }
 }

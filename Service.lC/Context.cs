@@ -47,7 +47,7 @@ namespace Service.lC
             group = new GroupManager(providers.SubGroup));
 
         public ControlTypeManager ControlType => controlType ?? (
-            controlType = new ControlTypeManager(providers.ScoreType));
+            controlType = new ControlTypeManager(providers.ControlType, providers.ScoreType));
 
         public PersonManager Person => person ?? (
             person = new PersonManager(
@@ -65,7 +65,7 @@ namespace Service.lC
                 providers.SubGroup));
 
         public EducationManager Education => education ?? (
-            education = new EducationManager( providers.Discipline, providers.ControlType) );
+            education = new EducationManager( providers.Discipline) );
     }
 
 

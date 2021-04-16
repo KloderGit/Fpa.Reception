@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.Interface;
+using Domain.Model.Education;
 using Mapster;
 using Service.lC;
 using System;
@@ -60,6 +61,20 @@ namespace Application.Component
             await lcService.Program.IncludeDisciplines(new List<Service.lC.Model.Program>() { foundedProgramQuery });
 
             var domain = foundedProgramQuery.Adapt<Domain.Education.Program>();
+
+            return domain;
+        }
+
+        public async Task<IEnumerable<ControlType>> GetControlTypesByKeys(IEnumerable<Guid> controlTypeKeys)
+        { 
+            var controlTypes = await lcService.ControlType.GetControlTypesByKeys(controlTypeKeys);
+            var castedControlTypes = controlTypes.Select(x=> new Service.lC.Model.ControlType{ Key = x.Key, Title = x.Title });
+                await lcService.ControlType.IncludeScoreType(castedControlTypes);
+
+            var scoreTypes = castedControlTypes.SelectMany(x=>x.ScoreTypes);
+                await lcService.ControlType.IncludeRateType(scoreTypes);
+
+            var domain = controlTypes.Adapt<IEnumerable<ControlType>>();
 
             return domain;
         }

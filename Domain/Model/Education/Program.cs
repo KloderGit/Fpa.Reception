@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Domain.Model.Education;
+using System.Collections.Generic;
 
 namespace Domain.Education
 {
@@ -14,6 +15,6 @@ namespace Domain.Education
     {
         public int Order { get; set; }
         public BaseInfo Discipline { get; set; }
-        public BaseInfo ControlType { get; set; }
+        public ControlType ControlType { get; set; }
     }
 }
