@@ -14,7 +14,7 @@ namespace Service.lC.Manager
     {
         private readonly ProgramProvider programProvider;
         private readonly IProvider<Base, BaseDto> disciplineProvider;
-        private readonly IProvider<Base, BaseDto> controltypeProvider;
+        private readonly IProvider<ControlType, ControlTypeDto> controltypeProvider;
         private readonly IProvider<Base, BaseDto> educationFormProvider;
         private readonly IProvider<Base, BaseDto> employeeProvider;
         private readonly GroupProvider groupProvider;
@@ -22,7 +22,7 @@ namespace Service.lC.Manager
         public ProgramManager(
             ProgramProvider programProvider,
             IProvider<Base, BaseDto> disciplineProvider,
-            IProvider<Base, BaseDto> controltypeProvider,
+            IProvider<ControlType, ControlTypeDto> controltypeProvider,
             IProvider<Base, BaseDto> educationFormProvider,
             IProvider<Base, BaseDto> employeeProvider,
             GroupProvider groupProvider

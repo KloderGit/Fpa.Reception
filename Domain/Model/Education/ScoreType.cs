@@ -6,7 +6,13 @@ namespace Domain.Model.Education
 {
     public class ControlType : BaseInfo
     { 
-        public IEnumerable<ScoreType> ScoreTypes { get; set; }
+        public IEnumerable<ScoreInfo> RateType { get; set; }
+    }
+
+    public class ScoreInfo
+    {
+        public string LineNumber { get; set; }
+        public ScoreType RateKey { get; set; }
     }
 
     public class ScoreType : BaseInfo

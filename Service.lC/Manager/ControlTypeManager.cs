@@ -12,11 +12,11 @@ namespace Service.lC.Manager
 {
     public class ControlTypeManager
     {
-        private readonly IProvider<Base, BaseDto> controlTypeProvider;
+        private readonly IProvider<ControlType, ControlTypeDto> controlTypeProvider;
         private readonly ScoreTypeProvider scoreTypeProvider;
 
         public ControlTypeManager(
-            IProvider<Base, BaseDto> controlTypeProvider,
+            IProvider<ControlType, ControlTypeDto> controlTypeProvider,
             ScoreTypeProvider scoreTypeProvider
             )
         {
@@ -24,7 +24,7 @@ namespace Service.lC.Manager
             this.scoreTypeProvider = scoreTypeProvider;
         }
 
-        public async Task<IEnumerable<Base>> GetControlTypesByKeys(IEnumerable<Guid> controlTypeKeys)
+        public async Task<IEnumerable<ControlType>> GetControlTypesByKeys(IEnumerable<Guid> controlTypeKeys)
         {
             var controlTypes = await controlTypeProvider.Repository.GetAsync(controlTypeKeys);
 
@@ -35,12 +35,24 @@ namespace Service.lC.Manager
         {
             if (controlTypes.IsNullOrEmpty()) return;
 
-            var controlTypeKeys = ReduceArray(controlTypes.Select(t => t.Key));
+            var scoreTypeKeys = controlTypes.Where(z => z.RateType != default).SelectMany(t => t.RateType.Select(k => k.RateKey.Key));
 
-            var scoreTypes = await scoreTypeProvider.FilterByControlType(controlTypeKeys);
+            scoreTypeKeys = ReduceArray(scoreTypeKeys);
+
+            var scoreTypes = await scoreTypeProvider.Repository.GetAsync(scoreTypeKeys);
 
             controlTypes.ToList()
-                .ForEach(x => x.ScoreTypes = scoreTypes.Where(g => g.ParentKey == x.Key));
+                .ForEach(x => x.RateType = x.RateType.Select(a=>GetScoreInfo(a)));
+
+
+            ControlType.ScoreInfo GetScoreInfo(ControlType.ScoreInfo info)
+            {
+                var scoreinfo = new ControlType.ScoreInfo();
+                scoreinfo.LineNumber = info.LineNumber;
+                scoreinfo.RateKey = scoreTypes.FirstOrDefault(x => x.Key == info.RateKey.Key);
+
+                return scoreinfo;
+            }
         }
 
         public async Task IncludeRateType(IEnumerable<ScoreType> scoreTypes)
@@ -52,7 +64,15 @@ namespace Service.lC.Manager
             var rateTypes = await scoreTypeProvider.FilterByScoreType(scoreTypeKeys);
 
             scoreTypes.ToList()
-                .ForEach(x => x.ScoreVariants = rateTypes.Where(g => g.ParentKey == x.Key));
+                .ForEach(x => x.ScoreVariants = GetRate(x));
+        
+            IEnumerable<Base> GetRate(ScoreType score)
+            {
+                var items = rateTypes.Where(x => x.ParentKey == score.Key)
+                    .Select(x => new Base { Key = x.Key, Title = x.Title });
+
+                return items;
+            }
         }
 
         private List<Guid> ReduceArray(IEnumerable<Guid> keys)

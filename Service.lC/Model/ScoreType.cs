@@ -11,6 +11,6 @@ namespace Service.lC.Model
         public int MinGrade { get; set; }
         public string Grade { get; set; }
 
-        public IEnumerable<Base> ScoreVariants { get; set; }
+        public IEnumerable<Base> ScoreVariants { get; set; } = new List<Base>();
     }
 }

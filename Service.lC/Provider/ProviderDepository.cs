@@ -14,7 +14,7 @@ namespace Service.lC.Provider
         private ProgramProvider program;
         private IProvider<Base, BaseDto> discipline;
         private IProvider<Base, BaseDto> educationForm;
-        private IProvider<Base, BaseDto> controlType;
+        private IProvider<ControlType, ControlTypeDto> controlType;
         private IProvider<Base, BaseDto> employee;
         private StudentProvider student;
         private GroupProvider group;
@@ -32,7 +32,7 @@ namespace Service.lC.Provider
         public ProgramProvider Program => program ?? (program = new ProgramProvider(repositories.Program, manager));
         public IProvider<Base, BaseDto> Discipline => discipline ?? (discipline = new GenericProvider<Base, BaseDto>(repositories.Discipline));
         public IProvider<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericProvider<Base, BaseDto>(repositories.EducationForm));
-        public IProvider<Base, BaseDto> ControlType => controlType ?? (controlType = new GenericProvider<Base, BaseDto>(repositories.ControlType));
+        public IProvider<ControlType, ControlTypeDto> ControlType => controlType ?? (controlType = new GenericProvider<ControlType, ControlTypeDto>(repositories.ControlType));
         public IProvider<Base, BaseDto> Employee => employee ?? (employee = new GenericProvider<Base, BaseDto>(repositories.Employee));
         public GroupProvider Group => group ?? (group = new GroupProvider(repositories.Group, manager));
         public SubGroupProvider SubGroup => subGroup ?? (subGroup = new SubGroupProvider(repositories.SubGroup, manager));

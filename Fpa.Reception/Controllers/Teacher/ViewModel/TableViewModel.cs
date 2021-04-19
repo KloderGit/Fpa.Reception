@@ -21,7 +21,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
             IEnumerable<Domain.BaseInfo> students,
             IEnumerable<Domain.BaseInfo> programs,
             IEnumerable<Domain.BaseInfo> disciplines,
-            Domain.BaseInfo controlType
+            IEnumerable<Domain.BaseInfo> controlTypes
             )
         { 
             Positions = reception?.PositionManager.Positions?
@@ -30,7 +30,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
                     .IncludeStudent(students)
                     .IncludeProgram(programs)
                     .IncludeDiscipline(disciplines)
-                    .IncludeControlType(controlType)
+                    //.IncludeControlType(controlTypes)
                 );
 
             return this;

@@ -68,10 +68,10 @@ namespace Application.Component
         public async Task<IEnumerable<ControlType>> GetControlTypesByKeys(IEnumerable<Guid> controlTypeKeys)
         { 
             var controlTypes = await lcService.ControlType.GetControlTypesByKeys(controlTypeKeys);
-            var castedControlTypes = controlTypes.Select(x=> new Service.lC.Model.ControlType{ Key = x.Key, Title = x.Title });
-                await lcService.ControlType.IncludeScoreType(castedControlTypes);
+            //var castedControlTypes = controlTypes.Select(x=> new Service.lC.Model.ControlType{ Key = x.Key, Title = x.Title });
+                await lcService.ControlType.IncludeScoreType(controlTypes);
 
-            var scoreTypes = castedControlTypes.SelectMany(x=>x.ScoreTypes);
+            var scoreTypes = controlTypes.SelectMany(x=>x.RateType.Select(s=>s.RateKey));
                 await lcService.ControlType.IncludeRateType(scoreTypes);
 
             var domain = controlTypes.Adapt<IEnumerable<ControlType>>();

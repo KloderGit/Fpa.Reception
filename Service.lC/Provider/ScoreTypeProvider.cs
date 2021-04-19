@@ -22,6 +22,7 @@ namespace Service.lC.Provider
             this.manager = manager;
         }
 
+        [Obsolete]
         public async Task<IEnumerable<ScoreType>> FilterByControlType(IEnumerable<Guid> controlTypeKeys)
         {
             if (controlTypeKeys.IsNullOrEmpty()) return new List<ScoreType>();
@@ -36,6 +37,8 @@ namespace Service.lC.Provider
                 query.Filter(x => x.ParentKey == value);
                 if (node != nodeList.Last) query.Or();
             };
+
+            var quyr = query.DebugViewQuery();
 
             var result = await query.GetByFilter();
 
