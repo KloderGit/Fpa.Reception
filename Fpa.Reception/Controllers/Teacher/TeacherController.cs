@@ -89,7 +89,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var controlTypes = await context.Education.GetControlTypesByKeys(controlTypeKeys);
 
-            var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,null);
+            var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes);
 
             return viewModel;
         }

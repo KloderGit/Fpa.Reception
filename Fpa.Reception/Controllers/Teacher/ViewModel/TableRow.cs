@@ -1,4 +1,5 @@
-﻿using reception.fitnesspro.ru.ViewModel;
+﻿using Mapster;
+using reception.fitnesspro.ru.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
         public BaseInfoViewModel Student { get; set; }
         public BaseInfoViewModel Program { get; set; }
         public BaseInfoViewModel Discipline { get; set; }
-        public BaseInfoViewModel ControlType { get; set; }
+        public TableControlTypeViewModel RateTypes { get; set; }
 
         public TableRow IncludeStudent(IEnumerable<Domain.BaseInfo> students)
         { 
@@ -56,11 +57,15 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
             return this;
         }
 
-        public TableRow IncludeControlType(Domain.BaseInfo controlType)
+        public TableRow IncludeControlType(Domain.Model.Education.ControlType control)
         { 
-            if(position.Record == default || controlType == default) return this;
+            if(position.Record == default || control == default) return this;
 
-            this.ControlType = new BaseInfoViewModel{ Key = controlType.Key, Title = controlType.Title};
+            var rates = control.Adapt<TableControlTypeViewModel>();
+
+            this.RateTypes = rates;
+
+            //this.RateTypes = rates.Select(x=> new BaseInfoViewModel{ Key = x.Key, Title = x.Title});
 
             return this;
         }
