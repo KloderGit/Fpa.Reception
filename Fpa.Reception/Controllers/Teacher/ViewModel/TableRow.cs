@@ -22,7 +22,10 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
         public BaseInfoViewModel Student { get; set; }
         public BaseInfoViewModel Program { get; set; }
         public BaseInfoViewModel Discipline { get; set; }
-        public TableControlTypeViewModel RateTypes { get; set; }
+
+        public BaseInfoViewModel Rate { get; set; }
+
+        public IEnumerable<BaseInfoViewModel> RateTypes { get; set; }
 
         public TableRow IncludeStudent(IEnumerable<Domain.BaseInfo> students)
         { 
@@ -61,11 +64,24 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
         { 
             if(position.Record == default || control == default) return this;
 
-            var rates = control.Adapt<TableControlTypeViewModel>();
+            var rates = control.RateType.SelectMany(x=>x.RateKey.ScoreVariants).ToList();
 
-            this.RateTypes = rates;
+            var didntShowUp = new Domain.BaseInfo{ Key = new Guid("736563b7-3111-4cd6-81d7-539ad92eb568"), Title = "Не явился" };
 
-            //this.RateTypes = rates.Select(x=> new BaseInfoViewModel{ Key = x.Key, Title = x.Title});
+            rates.Add(didntShowUp);
+
+            this.RateTypes = rates.Adapt<IEnumerable<BaseInfoViewModel>>();
+
+            return this;
+        }
+
+        public TableRow IncludeRate(IEnumerable<Domain.BaseInfo> rates)
+        { 
+            if(position?.Record?.Result?.RateKey == default) return this;
+
+            var rate = rates.FirstOrDefault(x=>x.Key == position.Record.Result.RateKey);
+
+            this.Rate = new BaseInfoViewModel{ Key = rate.Key, Title = rate.Title};
 
             return this;
         }

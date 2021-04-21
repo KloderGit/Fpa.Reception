@@ -75,6 +75,13 @@ namespace Service.lC.Manager
             }
         }
 
+        public async Task<IEnumerable<Base>> GetAllRates()
+        {
+            var rates = await scoreTypeProvider.GetAllRates();
+
+            return rates;
+        }
+
         private List<Guid> ReduceArray(IEnumerable<Guid> keys)
         {
             return keys

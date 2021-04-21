@@ -72,5 +72,19 @@ namespace Service.lC.Provider
 
             return scoreTypes;
         }
+
+        public async Task<IEnumerable<ScoreType>> GetAllRates()
+        {
+            var query = manager.Rate
+                        .Filter(x => x.DeletionMark == false);
+
+            var result = await query.GetByFilter();
+
+            var keys = result?.Select(x => x.Key) ?? Enumerable.Empty<Guid>();
+
+            var scoreTypes = await Repository.GetAsync(keys);
+
+            return scoreTypes;
+        }
     }
 }

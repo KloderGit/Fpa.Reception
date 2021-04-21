@@ -78,5 +78,14 @@ namespace Application.Component
 
             return domain;
         }
+
+        public async Task<IEnumerable<BaseInfo>> GetRates()
+        {
+            var dto = await lcService.ControlType.GetAllRates();
+
+            var model = dto.Adapt<IEnumerable<BaseInfo>>();
+
+            return model;
+        }
     }
 }

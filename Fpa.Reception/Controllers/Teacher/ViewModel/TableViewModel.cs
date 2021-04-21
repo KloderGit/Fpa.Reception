@@ -24,8 +24,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
             IEnumerable<Domain.BaseInfo> students,
             IEnumerable<Domain.Education.Program> programs,
             IEnumerable<Domain.BaseInfo> disciplines,
-            IEnumerable<Domain.Model.Education.ControlType> controlTypes
-            )
+            IEnumerable<Domain.Model.Education.ControlType> controlTypes,
+            IEnumerable<BaseInfo> rates)
         { 
             this.programs = programs;
 
@@ -35,6 +35,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
                     .IncludeStudent(students)
                     .IncludeProgram(programs)
                     .IncludeDiscipline(disciplines)
+                    .IncludeRate(rates)
                     .IncludeControlType(GetControl(x, controlTypes))
                 );
 

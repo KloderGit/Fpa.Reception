@@ -25,6 +25,8 @@ namespace Domain
     {
         public Guid TeacherKey { get; set; }
         //public Score Score { get; set; }
+
+        public Guid RateKey { get; set; }
         public string Comment { get; set; }
     }
 }

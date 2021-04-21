@@ -25,6 +25,5 @@ namespace Service.lC.Manager
 
             return disciplines;
         }
-
     }
 }

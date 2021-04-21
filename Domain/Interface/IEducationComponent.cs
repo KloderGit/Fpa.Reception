@@ -14,5 +14,7 @@ namespace Domain.Interface
         Task<IEnumerable<Program>> GetProgramsByKeys(IEnumerable<Guid> programKeys);        
 
         Task<Program> GetStudentEducation(Guid programKey);
+
+        Task<IEnumerable<BaseInfo>> GetRates();
     }
 }
