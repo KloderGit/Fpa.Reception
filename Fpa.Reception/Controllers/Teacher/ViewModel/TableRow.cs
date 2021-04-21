@@ -23,7 +23,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
         public BaseInfoViewModel Program { get; set; }
         public BaseInfoViewModel Discipline { get; set; }
 
-        public BaseInfoViewModel Rate { get; set; }
+        public ResultVM Result { get; set; }
 
         public IEnumerable<BaseInfoViewModel> RateTypes { get; set; }
 
@@ -81,9 +81,16 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
             var rate = rates.FirstOrDefault(x=>x.Key == position.Record.Result.RateKey);
 
-            this.Rate = new BaseInfoViewModel{ Key = rate.Key, Title = rate.Title};
+            this.Result = new ResultVM{ RateKey = rate.Key, Title = rate.Title, Comment = position?.Record?.Result?.Comment};
 
             return this;
+        }
+
+        public class ResultVM
+        {
+            public Guid RateKey { get; set; }
+            public string Title { get; set; }
+            public string Comment { get; set; }
         }
     }
 }

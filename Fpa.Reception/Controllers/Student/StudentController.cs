@@ -88,6 +88,27 @@ namespace reception.fitnesspro.ru.Controllers.Student
         }
 
         [HttpPost]
+        [Route("Result")]
+        public async Task<ActionResult> StudentResult(StudentResultViewModel model)
+        {
+            if (ModelState.IsValid == false) return BadRequest(model);
+
+            var reception = await context.Reception.GetByPosition(model.PositionKey);
+            if(reception == default) return NotFound("Рецепция с такой позицией не найдена");
+
+            var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
+            if (position == default) return NotFound("Позиция не найдена");
+
+            var result = new Domain.Result(){ TeacherKey = model.TeacherKey, RateKey = model.RateKey, Comment = model.Comment };
+
+            position.Record.Result = result;
+
+            await context.Reception.Update(reception);
+
+            return Ok();
+        }
+
+        [HttpPost]
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] SignUpViewModel model)
         {
