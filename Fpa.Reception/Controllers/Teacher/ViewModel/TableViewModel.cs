@@ -30,6 +30,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
             this.programs = programs;
 
             Positions = reception?.PositionManager.Positions?
+                .Where(x=> x != default)
                 .Select(
                     x=> new TableRow(x)
                     .IncludeStudent(students)

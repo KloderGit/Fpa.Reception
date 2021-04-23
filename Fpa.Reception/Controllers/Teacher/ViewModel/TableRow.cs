@@ -23,7 +23,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
         public BaseInfoViewModel Program { get; set; }
         public BaseInfoViewModel Discipline { get; set; }
 
-        public ResultVM Result { get; set; }
+        public ResultVm Result { get; set; }
 
         public IEnumerable<BaseInfoViewModel> RateTypes { get; set; }
 
@@ -33,7 +33,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
             var student = students.FirstOrDefault(x=>x.Key == position.Record.StudentKey);
 
-            this.Student = new BaseInfoViewModel{ Key = student.Key, Title = student.Title};
+            if (student != null) this.Student = new BaseInfoViewModel {Key = student.Key, Title = student.Title};
 
             return this;
         }
@@ -44,7 +44,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
             var program = programs.FirstOrDefault(x=>x.Key == position.Record.ProgramKey);
 
-            this.Program = new BaseInfoViewModel{ Key = program.Key, Title = program.Title};
+            if (program != null) this.Program = new BaseInfoViewModel {Key = program.Key, Title = program.Title};
 
             return this;
         }
@@ -55,7 +55,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
             var discipline = disciplines.FirstOrDefault(x=>x.Key == position.Record.DisciplineKey);
 
-            this.Discipline = new BaseInfoViewModel{ Key = discipline.Key, Title = discipline.Title};
+            if (discipline != null)
+                this.Discipline = new BaseInfoViewModel {Key = discipline.Key, Title = discipline.Title};
 
             return this;
         }
@@ -81,12 +82,14 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
             var rate = rates.FirstOrDefault(x=>x.Key == position.Record.Result.RateKey);
 
-            this.Result = new ResultVM{ RateKey = rate.Key, Title = rate.Title, Comment = position?.Record?.Result?.Comment};
+            if (rate != null)
+                this.Result = new ResultVm
+                    {RateKey = rate.Key, Title = rate.Title, Comment = position?.Record?.Result?.Comment};
 
             return this;
         }
 
-        public class ResultVM
+        public class ResultVm
         {
             public Guid RateKey { get; set; }
             public string Title { get; set; }
