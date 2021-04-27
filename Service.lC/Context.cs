@@ -65,7 +65,7 @@ namespace Service.lC
                 providers.SubGroup));
 
         public EducationManager Education => education ?? (
-            education = new EducationManager( providers.Discipline) );
+            education = new EducationManager( providers.Discipline, providers.Employee) );
     }
 
 
