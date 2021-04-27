@@ -32,10 +32,10 @@ namespace Service.MongoDB
             return _collection.AsQueryable();
         }
 
-        public virtual IEnumerable<TDocument> FilterByPath(string str, Guid guid )
+        public virtual IEnumerable<TDocument> FilterByPath(string str, Guid guid)
         {
             var filter = Builders<TDocument>.Filter.Eq(str, guid);
-            var res= _collection.Find(filter);
+            var res = _collection.Find(filter);
             return res.ToEnumerable();
         }
 
@@ -163,6 +163,13 @@ namespace Service.MongoDB
 
             var res = _collection.Find(filter);
             return res.ToEnumerable();
+        }
+
+        public virtual IEnumerable<TDocument> FilterByBson(FilterDefinition<TDocument> filter)
+        {
+            var result = _collection.Find(filter);
+
+           return result.ToEnumerable();
         }
     }
 }

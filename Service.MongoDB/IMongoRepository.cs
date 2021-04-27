@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -52,5 +53,6 @@ namespace Service.MongoDB
 
         Task DeleteManyAsync(Expression<Func<TDocument, bool>> filterExpression);
         IEnumerable<TDocument> FilterByArray(string str, IEnumerable<Guid> guids);
+        IEnumerable<TDocument> FilterByBson(FilterDefinition<TDocument> filter);
     }
 }

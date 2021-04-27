@@ -45,7 +45,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
             if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
-            if(toDate > fromDate)
+            if(toDate < fromDate)
             { 
                 var temp = toDate;
                 toDate = fromDate;

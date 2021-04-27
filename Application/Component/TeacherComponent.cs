@@ -2,6 +2,7 @@
 using Domain.Interface;
 using Mapster;
 using Service.lC;
+using Service.MongoDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,12 @@ namespace Application.Component
 {
     public class TeacherComponent : ITeacherComponent
     {
+        private readonly MongoContext database;
         private readonly Context lcService;
 
-        public TeacherComponent(Context lcService)
+        public TeacherComponent(MongoContext database, Context lcService)
         {
+            this.database = database;
             this.lcService = lcService;
         }
 
@@ -29,9 +32,13 @@ namespace Application.Component
             return domain;
         }
 
-        public Task<IEnumerable<Reception>> GetReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
+        public async Task<IEnumerable<Reception>> GetReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
         {
-            throw new NotImplementedException();
+            var foundedReceptions = await database.Receptions.GetByTeacherAndDiscipline(employeeKey, disciplineKey, fromDate, toDate);
+
+            var domain = foundedReceptions.Adapt<IEnumerable<Domain.Reception>>();
+
+            return domain;
         }
     }
 }

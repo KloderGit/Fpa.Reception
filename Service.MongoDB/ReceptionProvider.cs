@@ -1,4 +1,6 @@
-﻿using Service.MongoDB.Model;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using Service.MongoDB.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +66,21 @@ namespace Service.MongoDB
 
         public async Task<IEnumerable<Reception>> GetByTeacher(Guid teacherKey)
         {
-            var result = await Task.Run(() => Repository.FilterByPath("Event.Teachers.Key", teacherKey));
+            var result = await Task.Run(() => Repository.FilterByPath("Events.Teachers.Key", teacherKey));
+
+            return result;
+        }
+
+        public async Task<IEnumerable<Reception>> GetByTeacherAndDiscipline(Guid teacherKey, Guid disciplineKey, DateTime startAfter, DateTime endBefore)
+        {
+            var filterByTeacher = new BsonDocument("Events.Teachers.Key", teacherKey);
+            var filterByDiscipline = new BsonDocument("Events.Discipline.Key", disciplineKey);
+            var filterStartDayFurtherThen = new BsonDocument("Date",new BsonDocument("$gte", startAfter));
+            var filterStartDayEarlierThen = new BsonDocument("Date",new BsonDocument("$lte", endBefore));
+
+            var filter = new BsonDocument("$and", new BsonArray{ filterByTeacher, filterByDiscipline, filterStartDayFurtherThen, filterStartDayEarlierThen });
+
+            var result = await Task.Run(() => Repository.FilterByBson(filter).ToList());
 
             return result;
         }
