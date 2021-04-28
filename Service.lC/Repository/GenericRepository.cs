@@ -38,6 +38,26 @@ namespace Service.lC.Repository
             return result;
         }
 
+        public async Task<IEnumerable<TDomen>> GetByQueryAsync(string queryString)
+        {
+            var result = Enumerable.Empty<TDomen>();
+
+            var viewModel = new { QueryString = queryString };
+
+            var request = await http.Client.GetAsync(endpoint + "/" + "Query", viewModel);
+
+            if (request.IsSuccessStatusCode)
+            {
+                var dto = await request.GetResultAsync<IEnumerable<TDto>>();
+
+                var domain = dto.Select(x => x.ConvertTo<TDomen>(converter));
+
+                result = domain ?? result;
+            }
+
+            return result;
+        }
+
         public async Task<TDomen> GetAsync(Guid key)
         {
             TDomen result = default;

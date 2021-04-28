@@ -51,6 +51,15 @@ namespace Service.lC.Provider
 
             var programs = await Repository.GetAsync(keys);
 
+            //var query2 = manager.Program
+            //    .Filter(x => x.DeletionMark == false).And()
+            //    .Filter(x => x.Status == "Активный").And()
+            //    .Filter(x => x.Teachers.Any(t => t.TeacherKey == teacherKey));
+
+            //var generatedQueryString = query.GetQueryString();
+
+            //var result = await Repository.GetByQueryAsync(generatedQueryString);
+
             return programs;
         }
 

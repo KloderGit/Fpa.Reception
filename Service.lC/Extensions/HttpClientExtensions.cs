@@ -15,10 +15,19 @@ namespace Service.lC.Extensions
 
         public static async Task<HttpResponseMessage> GetAsync(this System.Net.Http.HttpClient client, string url, object content)
         {
-            var json = JsonConvert.SerializeObject(content, serializerSettings);
-
             var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            if (content is string)
+            {
+                var value = content as string;
+                request.Content = new StringContent(value, Encoding.UTF8, "text/plain");
+            }
+            else
+            {
+                var json = JsonConvert.SerializeObject(content, serializerSettings);
+
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
 
             var result = await client.SendAsync(request).ConfigureAwait(false);
 

@@ -9,5 +9,6 @@ namespace Service.lC.Interface
         Task<IEnumerable<TDomen>> GetAsync();
         Task<TDomen> GetAsync(Guid key);
         Task<IEnumerable<TDomen>> GetAsync(IEnumerable<Guid> keys);
+        Task<IEnumerable<TDomen>> GetByQueryAsync(string queryString);
     }
 }
