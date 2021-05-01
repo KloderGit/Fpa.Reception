@@ -21,8 +21,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<ActionResult> GetAll()
+        public ActionResult Get()
         {
             var result = context.Reception.Get();
 
@@ -77,17 +76,6 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         public async Task<ActionResult> FindByDiscipline(Guid key)
         {
             var result = await context.Reception.GetByDisciplineKey(key);
-
-            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
-
-            return Ok(viewmodel);
-        }
-
-        [HttpGet]
-        [Obsolete]
-        public ActionResult Get()
-        {
-            var result = context.Reception.Get();
 
             var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
