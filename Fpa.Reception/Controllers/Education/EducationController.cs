@@ -27,14 +27,14 @@ namespace reception.fitnesspro.ru.Controllers.Education
         EmployeeMethods employeeAction;
 
         public EducationController(IAppContext context,
-            
+
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
             AssignHttpClient assignHttpClient,
             DisciplineHttpClient disciplineHttpClient,
             EducationFormHttpClient educationFormHttpClient,
             ControlTypeHttpClient controlTypeHttpClient
-            
+
             )
         {
             this.context = context;
@@ -51,9 +51,17 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
         [HttpGet]
         [Route("GetProgramSiblings")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetSiblings(Guid daisciplineKey) // EducationStructureViewModel
+        public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetSiblings(Guid disciplineKey) // EducationStructureViewModel
         {
-            var programs = await context.Education.GetProgramsByDiscipline(daisciplineKey);
+            if (disciplineKey == default)
+            {
+                ModelState.AddModelError(nameof(disciplineKey), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
+            var programs = await context.Education.GetProgramsByDiscipline(disciplineKey);
+
+            if (programs == default) return NoContent();
 
             return programs.ToList();
         }
@@ -65,18 +73,14 @@ namespace reception.fitnesspro.ru.Controllers.Education
         [Obsolete]
         public async Task<ActionResult<IEnumerable<EducationInfoViewModel>>> FindByEmployee(Guid key)
         {
-            var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
-
             if (key == default)
             {
                 ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
                 return BadRequest(ModelState);
             }
 
-            //var prgs = await context.Teacher.GetEducation(key).ConfigureAwait(false);
-            //prgs.ToList();
+            var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-            // get programs with teacher
             var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
 
             var client2 = new EducationProgram(new Manager("Kloder", "Kaligula2"));
@@ -89,7 +93,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
                     Key = x.Key,
                     Title = x.Title,
                     EducationFormKey = x.EducationFormKey,
-                    Teachers = x.Teachers.Select(x=>x.TeacherKey),
+                    Teachers = x.Teachers.Select(x => x.TeacherKey),
                     Disciplines = x.Disciplines.Select(d => new DisciplineInfo
                     {
                         DisciplineKey = d.DisciplineKey,
@@ -99,7 +103,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             );
 
             // get program disciplines
-            var disciplineInfo = await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d=>d.DisciplineKey));
+            var disciplineInfo = await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d => d.DisciplineKey));
 
             // get teachers
             var teacherKeys = teacherPrograms.SelectMany(x => x.Teachers);
@@ -114,13 +118,14 @@ namespace reception.fitnesspro.ru.Controllers.Education
             var educationForms = await educationFormHttpClient.GetByKeys(educationFormKeys);
 
 
-            var result = teacherPrograms?.Select(x=>
+            var result = teacherPrograms?.Select(x =>
                 new EducationInfoViewModel(x)
                     .AddEducation(educationForms)
                     .AddTeachers(teachers)
                     .AddDisciplines(disciplineInfo, controlTypes)
             );
 
+            if (result == default) return NoContent();
 
             // get program groups
             // get group subgroup
@@ -135,6 +140,12 @@ namespace reception.fitnesspro.ru.Controllers.Education
         [Obsolete]
         public async Task<ActionResult<EducationStructureViewModel>> FindProgramsWithDisciplineKey(Guid key)
         {
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
             var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
             var programs = await client.FindSiblings(key);
@@ -142,9 +153,11 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             var groups = await client.FindProgramGroup(programs.Select(x => x.Key));
 
-            var subGroups = await client.FindSubgroups(groups.Select(x=>x.Key));
+            var subGroups = await client.FindSubgroups(groups.Select(x => x.Key));
 
             var viewModel = new EducationStructureViewModel(programs, groups, subGroups);
+
+            if (viewModel == default) return NoContent();
 
             return viewModel;
         }

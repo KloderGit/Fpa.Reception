@@ -23,9 +23,15 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
         [Route("GetByKeys")]
         public async Task<ActionResult<IEnumerable<Domain.Constraint>>> GetByKeys(IEnumerable<Guid> constraintKeys)
         {
-            if (constraintKeys == default) return BadRequest();
+            if (constraintKeys == default)
+            {
+                ModelState.AddModelError(nameof(constraintKeys), "Ключи запроса не указаны");
+                return BadRequest(ModelState);
+            }
 
             var result = context.Constraint.Get(constraintKeys);
+
+            if (result == default) return NoContent();
 
             return Ok(result.ToList());
         }
@@ -34,9 +40,15 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
         [Route("GetAll")]
         public async Task<ActionResult<IEnumerable<Domain.Constraint>>> GetByKey(IEnumerable<Guid> constraintKeys)
         {
-            if (constraintKeys == default) return BadRequest();
+            if (constraintKeys == default)
+            {
+                ModelState.AddModelError(nameof(constraintKeys), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
 
             var result = context.Constraint.GetAll();
+
+            if (result == default) return NoContent();
 
             return Ok(result.ToList());
         }

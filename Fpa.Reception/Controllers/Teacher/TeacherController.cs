@@ -30,6 +30,12 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetEducation")]
         public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid key)
         {
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
             var programs = await context.Teacher.GetEducation(key);
             if (programs.IsNullOrEmpty()) return NoContent();
 
@@ -40,6 +46,11 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
         {
+            if (employeeKey == default) ModelState.AddModelError(nameof(employeeKey), "Ключ преподавателя не указан");
+            if (disciplineKey == default) ModelState.AddModelError(nameof(disciplineKey), "Ключ дисциплины не указан");
+
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
             var currentYear = DateTime.Now.Year;
             var currentMonth = DateTime.Now.Month;
 
@@ -54,6 +65,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
 
+            if (receptions.IsNullOrEmpty()) return NoContent();
+
             return receptions.ToList();
         }
 
@@ -62,7 +75,14 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetTable")]
         public async Task<dynamic> GetTableFromReception([FromQuery] Guid key)
         {
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
             var reception = context.Reception.GetByKey(key);
+
             if (reception == default) return BadRequest(nameof(key));
 
             var disciplineKeys = reception.PositionManager?.Positions?
@@ -92,6 +112,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             var rates = await context.Education.GetRates();
 
             var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes,rates);
+
+            if (viewModel == default) return NoContent();
 
             return viewModel;
         }
