@@ -1,7 +1,9 @@
-﻿using Domain.Interface;
+﻿using Domain;
+using Domain.Interface;
 using Domain.Model.Education;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Student.ViewModel;
+using reception.fitnesspro.ru.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
