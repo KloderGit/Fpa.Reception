@@ -87,5 +87,14 @@ namespace Application.Component
 
             return model;
         }
+
+        public async Task<IEnumerable<BaseInfo>> GetTeachers(IEnumerable<Guid> teacherKeys)
+        {
+            var dto = await lcService.Education.GetTeachersByKeys(teacherKeys);
+
+            var model = dto.Adapt<IEnumerable<BaseInfo>>();
+
+            return model;
+        }
     }
 }

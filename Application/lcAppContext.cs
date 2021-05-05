@@ -33,7 +33,7 @@ namespace Application
         public IEducationComponent Education => education ?? (education = new EducationComponent(lcContext));
         public IPersonComponent Person => person ?? (person = new PersonComponent(lcContext));
         public IStudentComponent Student => student ?? (student = new StudentComponent(mongo, lcContext));
-        public ITeacherComponent Teacher => teacher ?? (teacher = new TeacherComponent(lcContext));
+        public ITeacherComponent Teacher => teacher ?? (teacher = new TeacherComponent(mongo, lcContext));
         public IReceptionComponent Reception => reception ?? (reception = new ReceptionComponent(mongo, lcContext));
         public IConstraintComponent Constraint => constraint ?? (constraint = new ConstraintComponent(mongo, lcContext));
         public IValidateComponent Validator => validator ?? (validator = new ValidateComponent(mongo, lcContext));

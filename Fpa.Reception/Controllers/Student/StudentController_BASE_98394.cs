@@ -24,12 +24,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetEducation")]
         public async Task<ActionResult<Domain.Education.Program>> GetEducation(Guid programKey)
         {
-            if (programKey == default)
-            {
-                ModelState.AddModelError(nameof(programKey), "Ключ запроса не указан");
-                return BadRequest(ModelState);
-            }
-
             var program = await context.Student.GetStudentEducation(programKey);
 
             if (program == default) return NoContent();
@@ -40,50 +34,18 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [HttpGet]
         [Route("GetHistory")]
         public async Task<ActionResult<dynamic>> GetHistory(Guid studentKey)
-        {
-            if (studentKey == default)
-            {
-                ModelState.AddModelError(nameof(studentKey), "Ключ запроса не указан");
-                return BadRequest(ModelState);
-            }
+        { 
+                var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
 
-            var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
-
-            var positions = receptions.SelectMany(x=>x.PositionManager.GetSignedUpStudentPosition(studentKey));
-
-            var programKeys = positions.Where(x=>x.Record != default).Select(x=>x.Record.ProgramKey).Where(x=>x != default);
-            var programs = await context.Education.GetProgramsByKeys(programKeys);
-
-            var disciplineKeys = positions.Where(x=>x.Record != default).Select(x=>x.Record.DisciplineKey).Where(x=>x != default);
-            var disciplines = await context.Education.GetDisciplinesByKeys(disciplineKeys);
-
-            var teacherKeys = positions.Where(x=>x.Record != default).Where(x=>x.Record.Result != default).Select(x=>x.Record.Result.TeacherKey).Where(x=>x != default);
-            var teachers = await context.Education.GetTeachers(teacherKeys);
-
-            var rateKeys = positions.Where(x=>x.Record != default).Where(x=>x.Record.Result != default).Select(x=>x.Record.Result.RateKey).Where(x=>x != default);
-            var rates = await context.Education.GetRates();
-
-            var viewModel = positions
-                .Select(y => new StudentHistoryViewModel
-                {
-                    DateTime = y.Time,
-                    Program = FindByKey(y?.Record?.ProgramKey, programs),
-                    Discipline = FindByKey(y?.Record?.DisciplineKey, disciplines),
-                    Teacher = FindByKey(y?.Record?.Result?.TeacherKey, teachers),
-                    Rate = FindByKey(y?.Record?.Result?.RateKey, rates),
-                    Comment = y?.Record?.Result?.Comment
+            var positions = receptions.Select(x=> new { 
+                    Date = x.Date, 
+                    Time = x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Time,
+                    Program =x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.ProgramKey,
+                    Discipline =x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.DisciplineKey,
+                    Result = x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.Result.Comment
                 });
 
-            return viewModel.ToList();
-
-            BaseInfoViewModel FindByKey(Guid? key, IEnumerable<BaseInfo> array)
-            { 
-                if(array == default) return null;
-                if(key == default || key.HasValue == false) return null;
-                var item = array.FirstOrDefault(x=>x.Key == key.Value);
-                var vm = new BaseInfoViewModel{ Key = item.Key, Title = item.Title };
-                return vm;
-            }
+            return positions.ToList();
         }
 
 
@@ -91,11 +53,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
-
-            if (ModelState.IsValid == false) return BadRequest(ModelState);
-
             var receptions = context.Student.GetReceptionsForSignUpStudent(studentKey,disciplineKey);
 
             var contract = await GetStudentContract();
@@ -117,8 +74,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
             viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
             viewModel.ForEach(x => x.CheckSignUpBefore());
             viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
-
-            if (viewModel == default) return NoContent();
 
             return viewModel;
 
@@ -157,8 +112,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] SignUpViewModel model)
         {
-            if (ModelState.IsValid == false) return BadRequest(model);
-
             var reception = await context.Reception.GetByPosition(model.PositionKey);
 
             if(reception == default) return NoContent();
@@ -181,11 +134,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Obsolete]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptionsOld(Guid studentKey, Guid disciplineKey)
         {
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
-
-            if (ModelState.IsValid == false) return BadRequest(ModelState);
-
             var contract = await GetStudentContract();
             
             var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
@@ -205,8 +153,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
             viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
             viewModel.ForEach(x => x.CheckSignUpBefore());
             viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
-
-            if (viewModel == default) return NoContent();
 
             return viewModel;
 

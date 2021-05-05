@@ -1,7 +1,9 @@
-﻿using Domain.Interface;
+﻿using Domain;
+using Domain.Interface;
 using Domain.Model.Education;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Student.ViewModel;
+using reception.fitnesspro.ru.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +42,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [HttpGet]
         [Route("GetHistory")]
         public async Task<ActionResult<dynamic>> GetHistory(Guid studentKey)
+<<<<<<< HEAD
         {
             if (studentKey == default)
             {
@@ -47,6 +50,21 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 return BadRequest(ModelState);
             }
 
+            var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
+
+            var positions = receptions.Select(x=> new { 
+                    Date = x.Date, 
+                    Time = x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Time,
+                    Program =x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.ProgramKey,
+                    Discipline =x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.DisciplineKey,
+                    Result = x.PositionManager.GetSignedUpStudentPosition(studentKey)?.Record?.Result.Comment
+                });
+
+            if (positions == default) return NoContent();
+
+            return positions.ToList();
+=======
+        { 
             var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
 
             var positions = receptions.SelectMany(x=>x.PositionManager.GetSignedUpStudentPosition(studentKey));
@@ -84,6 +102,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 var vm = new BaseInfoViewModel{ Key = item.Key, Title = item.Title };
                 return vm;
             }
+>>>>>>> master
         }
 
 
@@ -173,6 +192,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             return Ok();
         }
+
 
         #region OLD
 

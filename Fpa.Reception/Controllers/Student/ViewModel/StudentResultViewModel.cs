@@ -5,7 +5,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 {
     public class StudentResultViewModel
     {
-        [Required(ErrorMessage ="Не указано в которое записан студент")]
+        [Required(ErrorMessage ="Не указана позиция в которую записан студент")]
         public Guid PositionKey { get; set; }
         [Required(ErrorMessage ="Не указан принимающий преподаватель")]
         public Guid TeacherKey { get; set; }
