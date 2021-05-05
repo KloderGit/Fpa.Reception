@@ -64,14 +64,13 @@ namespace Service.lC.Repository
 
             var request = await http.Client.GetAsync(endpoint + "/" + key.ToString());
 
-            if (request.IsSuccessStatusCode)
-            {
-                var dto = await request.GetResultAsync<TDto>();
+            if (!request.IsSuccessStatusCode) return result;
+            
+            var dto = await request.GetResultAsync<TDto>();
 
-                var domain = dto.ConvertTo<TDomen>(converter);
+            var domain = dto.ConvertTo<TDomen>(converter);
 
-                result = domain ?? result;
-            }
+            result = domain ?? result;
 
             return result;
         }

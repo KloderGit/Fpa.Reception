@@ -21,9 +21,12 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
 
         [HttpGet]
-        public ActionResult Get()
+        [Route("GetAll")]
+        public async Task<ActionResult> GetAll()
         {
             var result = context.Reception.Get();
+
+            if (result == default) return NoContent();
 
             var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
@@ -32,11 +35,19 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
         [HttpGet]
         [Route("GetByKey")]
-        public async Task<ActionResult> GetByKey(Guid rceptionKey)
+        public async Task<ActionResult> GetByKey(Guid receptionKey)
         {
-            var result = context.Reception.Get();
+            if (receptionKey == default)
+            {
+                ModelState.AddModelError(nameof(receptionKey), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
 
-            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+            var result = context.Reception.GetByKey(receptionKey);
+
+            if (result == default) return NoContent();
+
+            var viewmodel = ReceptionViewModelConverter.ConvertDomainViewModel(result);
 
             return Ok(viewmodel);
         }
@@ -75,7 +86,28 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         [Obsolete]
         public async Task<ActionResult> FindByDiscipline(Guid key)
         {
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
             var result = await context.Reception.GetByDisciplineKey(key);
+
+            if (result == default) return NoContent();
+
+            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+
+            return Ok(viewmodel);
+        }
+
+        [HttpGet]
+        [Obsolete]
+        public ActionResult Get()
+        {
+            var result = context.Reception.Get();
+
+            if (result == default) return NoContent();
 
             var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 

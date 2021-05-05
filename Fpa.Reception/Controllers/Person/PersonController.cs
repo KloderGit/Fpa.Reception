@@ -56,6 +56,8 @@ namespace reception.fitnesspro.ru.Controllers.Person
             var bearerToken = Request.Headers[HeaderNames.Authorization];
             var token = bearerToken.ToString().Replace("Bearer ", "");
 
+            if (token == default) return BadRequest("Token is null");
+
             var user = await identityHttpClient.GetUserInfo(token);
 
             if (String.IsNullOrEmpty(user?.Email) && String.IsNullOrEmpty(user?.Phone)) return NotFound("Не заполнены контакты пользователя");

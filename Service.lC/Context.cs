@@ -8,12 +8,7 @@ namespace Service.lC
 {
     public class Context
     {
-        private readonly RepositoryDepository repositories;
         private readonly ProviderDepository providers;
-
-        private readonly BaseHttpClient client;
-        private readonly IManager lcManager;
-        private readonly IConfiguration configuration;
 
         private ProgramManager program;
         private GroupManager group;
@@ -28,44 +23,37 @@ namespace Service.lC
             IManager lcManager,
             IConfiguration configuration)
         {
-            this.client = httpClient ?? throw new System.ArgumentNullException(nameof(httpClient));
+            var client = httpClient ?? throw new System.ArgumentNullException(nameof(httpClient));
 
-            repositories = new RepositoryDepository(client, configuration);
+            var repositories = new RepositoryDepository(client, configuration);
             providers = new ProviderDepository(repositories, lcManager);
         }
 
-        public ProgramManager Program => program ?? (
-                program = new ProgramManager(
-                    providers.Program, 
-                    providers.Discipline, 
-                    providers.ControlType, 
-                    providers.EducationForm, 
-                    providers.Employee, 
-                    providers.Group));
+        public ProgramManager Program => program ??= new ProgramManager(
+            providers.Program, 
+            providers.Discipline, 
+            providers.ControlType, 
+            providers.EducationForm, 
+            providers.Employee, 
+            providers.Group);
 
-        public GroupManager Group => group ?? (
-            group = new GroupManager(providers.SubGroup));
+        public GroupManager Group => @group ??= new GroupManager(providers.SubGroup);
 
-        public ControlTypeManager ControlType => controlType ?? (
-            controlType = new ControlTypeManager(providers.ControlType, providers.ScoreType));
+        public ControlTypeManager ControlType => controlType ??= new ControlTypeManager(providers.ControlType, providers.ScoreType);
 
-        public PersonManager Person => person ?? (
-            person = new PersonManager(
-                providers.Person, 
-                providers.Student));
+        public PersonManager Person => person ??= new PersonManager(
+            providers.Person, 
+            providers.Student);
 
-        public StudentManager Student => student ?? (
-            student = new StudentManager(providers.Contract, providers.Student));
+        public StudentManager Student => student ??= new StudentManager(providers.Contract, providers.Student);
 
-        public ContractManager Contract => contract ?? (
-            contract = new ContractManager(
-                providers.Contract, 
-                providers.Program, 
-                providers.Group, 
-                providers.SubGroup));
+        public ContractManager Contract => contract ??= new ContractManager(
+            providers.Contract, 
+            providers.Program, 
+            providers.Group, 
+            providers.SubGroup);
 
-        public EducationManager Education => education ?? (
-            education = new EducationManager( providers.Discipline, providers.Employee) );
+        public EducationManager Education => education ??= new EducationManager(providers.Discipline, providers.Employee);
     }
 
 

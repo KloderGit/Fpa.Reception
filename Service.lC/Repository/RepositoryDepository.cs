@@ -28,17 +28,17 @@ namespace Service.lC.Repository
             this.configuration = configuration;
         }
 
-        public IRepositoryAsync<Program, ProgramDto> Program => program ?? (program = new GenericRepository<Program, ProgramDto>(client, "lc/Program"));
-        public IRepositoryAsync<Base, BaseDto> Discipline => discipline ?? (discipline = new GenericRepository<Base, BaseDto>(client, "lc/Discipline"));
-        public IRepositoryAsync<Base, BaseDto> EducationForm => educationForm ?? (educationForm = new GenericRepository<Base, BaseDto>(client, "lc/EducationForm"));
-        public IRepositoryAsync<ControlType, ControlTypeDto> ControlType => controlType ?? (controlType = new GenericRepository<ControlType, ControlTypeDto>(client, "lc/Control"));
-        public IRepositoryAsync<Base, BaseDto> Employee => employee ?? (employee = new GenericRepository<Base, BaseDto>(client, "lc/Employee"));
-        public IRepositoryAsync<Group, GroupDto> Group => group ?? (group = new GenericRepository<Group, GroupDto>(client, "lc/Group"));
-        public IRepositoryAsync<SubGroup, SubGroupDto> SubGroup => subGroup ?? (subGroup = new GenericRepository<SubGroup, SubGroupDto>(client, "lc/SubGroup"));
-        public IRepositoryAsync<Student, StudentDto> Student => student ?? (student = new GenericRepository<Student, StudentDto>(client, "lc/Student"));
-        public PersonRepository Person => person ?? (person = new PersonRepository(client, "lc/Person"));
-        public IRepositoryAsync<Contract, ContractDto> Contract => contract ?? (contract = new GenericRepository<Contract, ContractDto>(client, "lc/v1/Contract"));
-        public IRepositoryAsync<ScoreType, ScoreTypeDto> ScoreType => scoreType ?? (scoreType = new GenericRepository<ScoreType, ScoreTypeDto>(client, "lc/v1/Rate"));
+        public IRepositoryAsync<Program, ProgramDto> Program => program ??= new GenericRepository<Program, ProgramDto>(client, "lc/Program");
+        public IRepositoryAsync<Base, BaseDto> Discipline => discipline ??= new GenericRepository<Base, BaseDto>(client, "lc/Discipline");
+        public IRepositoryAsync<Base, BaseDto> EducationForm => educationForm ??= new GenericRepository<Base, BaseDto>(client, "lc/EducationForm");
+        public IRepositoryAsync<ControlType, ControlTypeDto> ControlType => controlType ??= new GenericRepository<ControlType, ControlTypeDto>(client, "lc/Control");
+        public IRepositoryAsync<Base, BaseDto> Employee => employee ??= new GenericRepository<Base, BaseDto>(client, "lc/Employee");
+        public IRepositoryAsync<Group, GroupDto> Group => @group ??= new GenericRepository<Group, GroupDto>(client, "lc/Group");
+        public IRepositoryAsync<SubGroup, SubGroupDto> SubGroup => subGroup ??= new GenericRepository<SubGroup, SubGroupDto>(client, "lc/SubGroup");
+        public IRepositoryAsync<Student, StudentDto> Student => student ??= new GenericRepository<Student, StudentDto>(client, "lc/Student");
+        public PersonRepository Person => person ??= new PersonRepository(client, "lc/Person");
+        public IRepositoryAsync<Contract, ContractDto> Contract => contract ??= new GenericRepository<Contract, ContractDto>(client, "lc/v1/Contract");
+        public IRepositoryAsync<ScoreType, ScoreTypeDto> ScoreType => scoreType ??= new GenericRepository<ScoreType, ScoreTypeDto>(client, "lc/v1/Rate");
 
     }
 }

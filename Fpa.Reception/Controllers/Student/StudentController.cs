@@ -26,6 +26,12 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetEducation")]
         public async Task<ActionResult<Domain.Education.Program>> GetEducation(Guid programKey)
         {
+            if (programKey == default)
+            {
+                ModelState.AddModelError(nameof(programKey), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
             var program = await context.Student.GetStudentEducation(programKey);
 
             if (program == default) return NoContent();
@@ -36,7 +42,13 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [HttpGet]
         [Route("GetHistory")]
         public async Task<ActionResult<dynamic>> GetHistory(Guid studentKey)
-        { 
+        {
+            if (studentKey == default)
+            {
+                ModelState.AddModelError(nameof(studentKey), "Ключ запроса не указан");
+                return BadRequest(ModelState);
+            }
+
             var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
 
             var positions = receptions.SelectMany(x=>x.PositionManager.GetSignedUpStudentPosition(studentKey));
@@ -81,6 +93,11 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("GetSchedule")]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
+            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
+            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
+
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
             var receptions = context.Student.GetReceptionsForSignUpStudent(studentKey,disciplineKey);
 
             var contract = await GetStudentContract();
@@ -102,6 +119,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
             viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
             viewModel.ForEach(x => x.CheckSignUpBefore());
             viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
+
+            if (viewModel == default) return NoContent();
 
             return viewModel;
 
@@ -140,6 +159,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] SignUpViewModel model)
         {
+            if (ModelState.IsValid == false) return BadRequest(model);
+
             var reception = await context.Reception.GetByPosition(model.PositionKey);
 
             if(reception == default) return NoContent();
@@ -155,7 +176,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
             return Ok();
         }
 
-
         #region OLD
 
         [HttpGet]
@@ -163,6 +183,11 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Obsolete]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptionsOld(Guid studentKey, Guid disciplineKey)
         {
+            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
+            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
+
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
             var contract = await GetStudentContract();
             
             var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
@@ -182,6 +207,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
             viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
             viewModel.ForEach(x => x.CheckSignUpBefore());
             viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
+
+            if (viewModel == default) return NoContent();
 
             return viewModel;
 
