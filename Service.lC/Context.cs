@@ -53,7 +53,7 @@ namespace Service.lC
             providers.Group, 
             providers.SubGroup);
 
-        public EducationManager Education => education ??= new EducationManager( providers.Discipline);
+        public EducationManager Education => education ??= new EducationManager(providers.Discipline, providers.Employee);
     }
 
 
