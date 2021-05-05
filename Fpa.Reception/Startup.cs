@@ -1,3 +1,4 @@
+using AggregateRequestId;
 using Application;
 using Application.Mappings;
 using Domain.Interface;
@@ -8,11 +9,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
 using reception.fitnesspro.ru.Misc;
+using Serilog;
 using Service.lC;
 using Service.MongoDB;
 using System;
@@ -31,6 +34,9 @@ namespace reception.fitnesspro.ru
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+            services.AddTransient<AggregateRequest>();
+
             new RegisterMaps();
 
             HttpClientLibrary.AddHttpClients(services, Configuration);
@@ -86,8 +92,11 @@ namespace reception.fitnesspro.ru
             return String.Format(@"{0}\swagger.xml", AppDomain.CurrentDomain.BaseDirectory);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            var logger = loggerFactory.CreateLogger(this.ToString());
+            logger.LogInformation("The Reception service application was started!");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -99,12 +108,24 @@ namespace reception.fitnesspro.ru
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
+            app.UseMiddleware<AggregateRequestIdMiddleware>();
+
+
             //app.UseSwagger();
             //app.UseSwaggerUI(c =>
             //{
             //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             //});
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .Enrich.FromLogContext()
+                .WriteTo.Async(a => a.Seq(Configuration.GetSection("Seq:ServerUrl").Value))
+                .WriteTo.Async(a => a.ColoredConsole())
+                .CreateLogger();
+
+            app.UseMiddleware<ScoppedSerilogMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
