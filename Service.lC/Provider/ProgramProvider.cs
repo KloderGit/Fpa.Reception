@@ -27,7 +27,7 @@ namespace Service.lC.Provider
         {
             var query = await manager.Program
                 .Filter(x => x.DeletionMark == false).And()
-                .Filter(x => x.Status == "Àêòèâíûé")
+                .Filter(x => x.Status == "ÐÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹")
                 .Select(x => x.Key)
                 .GetByFilter().ConfigureAwait(false);
 
@@ -42,7 +42,7 @@ namespace Service.lC.Provider
         { 
             var query = await manager.Program
                 .Filter(x => x.DeletionMark == false).And()
-                .Filter(x => x.Status == "Àêòèâíûé").And()
+                .Filter(x => x.Status == "ÐÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹").And()
                 .Filter(x => x.Teachers.Any(t => t.TeacherKey == teacherKey))
                 .Select(x => x.Key)
                 .GetByFilter().ConfigureAwait(false);
@@ -53,7 +53,7 @@ namespace Service.lC.Provider
 
             //var query2 = manager.Program
             //    .Filter(x => x.DeletionMark == false).And()
-            //    .Filter(x => x.Status == "Àêòèâíûé").And()
+            //    .Filter(x => x.Status == "????????").And()
             //    .Filter(x => x.Teachers.Any(t => t.TeacherKey == teacherKey));
 
             //var generatedQueryString = query.GetQueryString();
@@ -69,7 +69,7 @@ namespace Service.lC.Provider
 
             var query = await manager.Program
                     .Filter(x => x.DeletionMark == false).And()
-                    .Filter(x => x.Status == "Àêòèâíûé").And()
+                    .Filter(x => x.Status == "ÐÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹").And()
                     .Filter(x => x.Disciplines.Any(t => t.DisciplineKey == disciplineKey))
                     .Select(x => x.Key)
                     .GetByFilter();
@@ -89,7 +89,7 @@ namespace Service.lC.Provider
 
             var query = manager.Program
                         .Select(x => x.Key)
-                        .Filter(x => x.Status == "Àêòèâíûé").And()
+                        .Filter(x => x.Status == "ÐÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹").And()
                         .Filter(x => x.DeletionMark == false).AndAlso();
 
             var nodeList = new LinkedList<Guid>(keys);

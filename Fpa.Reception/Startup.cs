@@ -59,6 +59,8 @@ namespace reception.fitnesspro.ru
 
             services.AddControllers();
 
+            services.AddScoped<ResourseLoggingFilter>();
+
 
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
@@ -92,10 +94,10 @@ namespace reception.fitnesspro.ru
             return String.Format(@"{0}\swagger.xml", AppDomain.CurrentDomain.BaseDirectory);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var logger = loggerFactory.CreateLogger(this.ToString());
-            logger.LogInformation("The Reception service application was started!");
+            //var logger = loggerFactory.CreateLogger(this.ToString());
+            //logger.LogInformation("The Reception service application was started!");
 
             if (env.IsDevelopment())
             {

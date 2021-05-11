@@ -23,8 +23,12 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             this.reception = reception;
             this.Date = reception.Date;
             this.Positions = reception.PositionManager.Positions
-                .Where(x => x.Record == default)
-                .Select(x => new PositionViewModel { Key = x.Key, OffsetInMinutes = (int)(x.Time - Date.Date).TotalMinutes, Time = x.Time }).ToList();
+                //.Where(x => x.Record == default)
+                .Select(x => new PositionViewModel {
+                    Key = x.Key,
+                    OffsetInMinutes = (int)(x.Time - Date.Date).TotalMinutes,
+                    IsEmpty = x.Record == default,
+                    Time = x.Time }).ToList();
             this.Events = reception.Events.Select(x => new EventViewModel(x)).ToList();
         }
 
@@ -73,6 +77,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
         {
             public Guid Key { get; set; }
             public DateTime Time { get;set;}
+            public bool IsEmpty { get; set; }
             public int OffsetInMinutes { get; set; }
         }
 

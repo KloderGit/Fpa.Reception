@@ -3,6 +3,7 @@ using Application.HttpClient;
 using Domain.Interface;
 using lc.fitnesspro.library;
 using Microsoft.AspNetCore.Mvc;
+using reception.fitnesspro.ru.Misc;
 using Service.lC;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
         #region Old
 
         [HttpGet]
+        [ServiceFilter(typeof(ResourseLoggingFilter))]
+
         [Route("Program/FindByEmployee")]
         [Obsolete]
         public async Task<ActionResult<IEnumerable<EducationInfoViewModel>>> FindByEmployee(Guid key)

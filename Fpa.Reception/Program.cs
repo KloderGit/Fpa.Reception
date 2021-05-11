@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace reception.fitnesspro.ru
 {
@@ -20,6 +21,10 @@ namespace reception.fitnesspro.ru
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureLogging((context, logging) =>
+                    {
+                        logging.AddSerilog();
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }

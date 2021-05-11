@@ -2,7 +2,9 @@
 using Domain;
 using Domain.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using reception.fitnesspro.ru.Controllers.Teacher.ViewModel;
+using reception.fitnesspro.ru.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +17,12 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     public class TeacherController : ControllerBase
     {
         private readonly IAppContext context;
+        private readonly ILogger logger;
 
-        public TeacherController(IAppContext context)
+        public TeacherController(IAppContext context, ILoggerFactory loggerFactory)
         {
             this.context = context;
+            this.logger = loggerFactory.CreateLogger(this.ToString());
         }
 
         /// <summary>
@@ -27,16 +31,24 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         /// <param name="key">Method takes a key of employee</param>
         /// <returns></returns>
         [HttpGet]
+        [TypeFilter(typeof(ResourseLoggingFilter))]
         [Route("GetEducation")]
         public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid key)
         {
+            logger.LogInformation("Получен запрос на получение программ обучения по ключу - {Key} преподавателя", key);
+
             if (key == default)
             {
                 ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                logger.LogWarning("Ключ запроса не указан {@Error}", ModelState);
                 return BadRequest(ModelState);
             }
 
             var programs = await context.Teacher.GetEducation(key);
+
+            logger.LogInformation("Получено {Count} записей типа - {Type}", programs.Count(), typeof(Program).Name);
+            logger.LogDebug("Полученные данные типа {Type} - {@Result}", programs.GetType().Name, programs);
+
             if (programs.IsNullOrEmpty()) return NoContent();
 
             return programs.ToList();
@@ -44,13 +56,23 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
         [HttpGet]
         [Route("GetSchedule")]
-        public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey, Guid disciplineKey, DateTime fromDate, DateTime toDate)
+        public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey,
+            Guid disciplineKey, DateTime fromDate, DateTime toDate)
         {
+            logger.LogInformation("Получен запрос на получение рецепций для преподавателя - {EmployeeKey}, " +
+                "дисциплины - {DiscoplineKey} " +
+                "с фильтром по датам с {StartFilterDate} по {EndFilterDate}",
+                employeeKey, disciplineKey, fromDate.ToShortDateString(), toDate.ToShortDateString());
+
             if (employeeKey == default) ModelState.AddModelError(nameof(employeeKey), "Ключ преподавателя не указан");
             if (disciplineKey == default) ModelState.AddModelError(nameof(disciplineKey), "Ключ дисциплины не указан");
 
-            if (ModelState.IsValid == false) return BadRequest(ModelState);
-
+            if (ModelState.IsValid == false)
+            {
+                logger.LogWarning("Данные не указанны {@Error}", ModelState);
+                return BadRequest(ModelState);
+            }
+            
             var currentYear = DateTime.Now.Year;
             var currentMonth = DateTime.Now.Month;
 
@@ -65,6 +87,9 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
             var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
 
+            logger.LogInformation("Получено {Count} записей типа - {Type}", receptions.Count(), typeof(Domain.Reception).Name);
+            logger.LogDebug("Полученные данные типа {Type} - {@Result}", receptions.GetType().Name, receptions);
+
             if (receptions.IsNullOrEmpty()) return NoContent();
 
             return receptions.ToList();
@@ -73,11 +98,14 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
         [HttpGet]
         [Route("GetTable")]
-        public async Task<dynamic> GetTableFromReception([FromQuery] Guid key)
+        public async Task<ActionResult<TableViewModel>> GetTableFromReception([FromQuery] Guid key)
         {
+            logger.LogInformation("Получен запрос на получение рецепции-табеля по ключу - {Key} рецепции", key);
+
             if (key == default)
             {
                 ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
+                logger.LogWarning("Ключ запроса не указан {@Error}", ModelState);
                 return BadRequest(ModelState);
             }
 
@@ -112,6 +140,9 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             var rates = await context.Education.GetRates();
 
             var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes,rates);
+
+            logger.LogInformation("Получена рецепция-табель");
+            logger.LogDebug("Полученны данные - {@Result}", viewModel);
 
             if (viewModel == default) return NoContent();
 
