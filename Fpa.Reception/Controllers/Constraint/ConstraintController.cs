@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Domain.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using reception.fitnesspro.ru.Misc;
 
 namespace reception.fitnesspro.ru.Controllers.Constraint
@@ -16,10 +17,12 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
     public class ConstraintController : ControllerBase
     {
         private readonly IAppContext context;
+        private readonly ILogger logger;
 
-        public ConstraintController(IAppContext context)
+        public ConstraintController(IAppContext context, ILoggerFactory loggerFactory)
         {
             this.context = context;
+            this.logger = loggerFactory.CreateLogger(this.ToString());
         }
 
         [HttpGet]
@@ -32,22 +35,38 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
                 return BadRequest(ModelState);
             }
 
-            var result = context.Constraint.Get(constraintKeys);
+            try
+            {
+                var result = context.Constraint.Get(constraintKeys);
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            return Ok(result.ToList());
+                return Ok(result.ToList());
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpGet]
         [Route("GetAll")]
         public async Task<ActionResult<IEnumerable<Domain.Constraint>>> GetAll()
         {
-            var result = context.Constraint.GetAll();
+            try
+            {
+                var result = context.Constraint.GetAll();
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            return Ok(result.ToList());
+                return Ok(result.ToList());
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpPost]
@@ -56,9 +75,17 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
         {
             if (constraint.Validate() != true) return BadRequest("Для ограничения не указана дисциплина");
 
-            context.Constraint.Store(constraint);
+            try
+            {
+                context.Constraint.Store(constraint);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
     }
 }

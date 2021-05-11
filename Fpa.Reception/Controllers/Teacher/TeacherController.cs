@@ -43,11 +43,20 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 return BadRequest(ModelState);
             }
 
-            var programs = await context.Teacher.GetEducation(key);
+            try
+            {
+                var programs = await context.Teacher.GetEducation(key);
 
-            if (programs.IsNullOrEmpty()) return NoContent();
+                if (programs.IsNullOrEmpty()) return NoContent();
 
-            return programs.ToList();
+                return programs.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+
         }
 
         [HttpGet]
@@ -55,11 +64,6 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey,
             Guid disciplineKey, DateTime fromDate, DateTime toDate)
         {
-            logger.LogInformation("Получен запрос на получение рецепций для преподавателя - {EmployeeKey}, " +
-                "дисциплины - {DiscoplineKey} " +
-                "с фильтром по датам с {StartFilterDate} по {EndFilterDate}",
-                employeeKey, disciplineKey, fromDate.ToShortDateString(), toDate.ToShortDateString());
-
             if (employeeKey == default) ModelState.AddModelError(nameof(employeeKey), "Ключ преподавателя не указан");
             if (disciplineKey == default) ModelState.AddModelError(nameof(disciplineKey), "Ключ дисциплины не указан");
 
@@ -68,27 +72,33 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 logger.LogWarning("Данные не указанны {@Error}", ModelState);
                 return BadRequest(ModelState);
             }
-            
-            var currentYear = DateTime.Now.Year;
-            var currentMonth = DateTime.Now.Month;
 
-            if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
-            if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
-            if(toDate < fromDate)
-            { 
-                var temp = toDate;
-                toDate = fromDate;
-                fromDate = temp;
+            try
+            {
+                var currentYear = DateTime.Now.Year;
+                var currentMonth = DateTime.Now.Month;
+
+                if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+                if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
+                if(toDate < fromDate)
+                { 
+                    var temp = toDate;
+                    toDate = fromDate;
+                    fromDate = temp;
+                }
+
+                var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
+
+                if (receptions.IsNullOrEmpty()) return NoContent();
+
+                return receptions.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
             }
 
-            var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
-
-            logger.LogInformation("Получено {Count} записей типа - {Type}", receptions.Count(), typeof(Domain.Reception).Name);
-            logger.LogDebug("Полученные данные типа {Type} - {@Result}", receptions.GetType().Name, receptions);
-
-            if (receptions.IsNullOrEmpty()) return NoContent();
-
-            return receptions.ToList();
         }
 
 
@@ -103,41 +113,51 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 return BadRequest(ModelState);
             }
 
-            var reception = context.Reception.GetByKey(key);
+            try
+            {
 
-            if (reception == default) return BadRequest(nameof(key));
+                var reception = context.Reception.GetByKey(key);
 
-            var disciplineKeys = reception.PositionManager?.Positions?
-                .Where(x => x.Record != default && x.Record.StudentKey != default)
-                .Select(x=>x.Record.DisciplineKey); // Select keys from all signed up students for cases manually signed up students
+                if (reception == default) return BadRequest(nameof(key));
 
-            var discipline = (await context.Education.GetDisciplinesByKeys(disciplineKeys)).ToList();
+                var disciplineKeys = reception.PositionManager?.Positions?
+                    .Where(x => x.Record != default && x.Record.StudentKey != default)
+                    .Select(x=>x.Record.DisciplineKey); // Select keys from all signed up students for cases manually signed up students
 
-            var studentsKeys = reception.PositionManager?.Positions?
-                .Where(x => x.Record != default && x.Record.StudentKey != default)
-                .Select(x => x.Record.StudentKey);
+                var discipline = (await context.Education.GetDisciplinesByKeys(disciplineKeys)).ToList();
 
-            var students = (await context.Student.GetStudents(studentsKeys)).ToList();
+                var studentsKeys = reception.PositionManager?.Positions?
+                    .Where(x => x.Record != default && x.Record.StudentKey != default)
+                    .Select(x => x.Record.StudentKey);
 
-            //var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
+                var students = (await context.Student.GetStudents(studentsKeys)).ToList();
 
-            var programsKeys = reception.PositionManager?.Positions?
-                .Where(x => x.Record != default && x.Record.StudentKey != default && x.Record.ProgramKey != default)
-                .Select(x => x.Record.ProgramKey);
+                //var persons = (await context.Person.GetByStudent(studentsKeys)).ToList();
 
-            var programs = (await context.Education.GetProgramsByKeys(programsKeys)).ToList();
+                var programsKeys = reception.PositionManager?.Positions?
+                    .Where(x => x.Record != default && x.Record.StudentKey != default && x.Record.ProgramKey != default)
+                    .Select(x => x.Record.ProgramKey);
 
-            var controlTypeKeys = programs.SelectMany(x=>x.Educations.Select(c=>c.ControlType.Key)).Where(x=>x != default).Distinct();
+                var programs = (await context.Education.GetProgramsByKeys(programsKeys)).ToList();
 
-            var controlTypes = await context.Education.GetControlTypesByKeys(controlTypeKeys);
+                var controlTypeKeys = programs.SelectMany(x=>x.Educations.Select(c=>c.ControlType.Key)).Where(x=>x != default).Distinct();
 
-            var rates = await context.Education.GetRates();
+                var controlTypes = await context.Education.GetControlTypesByKeys(controlTypeKeys);
 
-            var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes,rates);
+                var rates = await context.Education.GetRates();
 
-            if (viewModel == default) return NoContent();
+                var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes,rates);
 
-            return viewModel;
+                if (viewModel == default) return NoContent();
+
+                return viewModel;
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+            
         }
 
     }
