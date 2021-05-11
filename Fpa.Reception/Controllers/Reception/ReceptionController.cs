@@ -6,6 +6,7 @@ using reception.fitnesspro.ru.Misc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace reception.fitnesspro.ru.Controllers.Reception
 {
@@ -16,24 +17,34 @@ namespace reception.fitnesspro.ru.Controllers.Reception
     public class ReceptionController : ControllerBase
     {
         private readonly IAppContext context;
+        private readonly ILogger logger;
 
-        public ReceptionController(IAppContext context)
+        public ReceptionController(IAppContext context, ILoggerFactory loggerFactory)
         {
             this.context = context;
+            this.logger = loggerFactory.CreateLogger(this.ToString());
         }
-
-
+        
         [HttpGet]
         [Route("GetAll")]
         public async Task<ActionResult> GetAll()
         {
-            var result = context.Reception.Get();
+            try
+            {
+                var result = context.Reception.Get();
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+                var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
-            return Ok(viewmodel);
+                return Ok(viewmodel);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+            
         }
 
         [HttpGet]
@@ -46,13 +57,21 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 return BadRequest(ModelState);
             }
 
-            var result = context.Reception.GetByKey(receptionKey);
+            try
+            {
+                var result = context.Reception.GetByKey(receptionKey);
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            var viewmodel = ReceptionViewModelConverter.ConvertDomainViewModel(result);
+                var viewmodel = ReceptionViewModelConverter.ConvertDomainViewModel(result);
 
-            return Ok(viewmodel);
+                return Ok(viewmodel);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpPost]
@@ -61,11 +80,19 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         {
             if (ModelState.IsValid == false) return BadRequest(model);
 
-            var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
+            try
+            {
+                var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            context.Reception.Create(item);
+                context.Reception.Create(item);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
 
@@ -77,11 +104,20 @@ namespace reception.fitnesspro.ru.Controllers.Reception
         {
             if (ModelState.IsValid == false) return BadRequest(model);
 
-            var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
+            try
+            {
+                var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-            context.Reception.Create(item);
+                context.Reception.Create(item);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+         
         }
 
         [HttpGet]
@@ -95,26 +131,43 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 return BadRequest(ModelState);
             }
 
-            var result = await context.Reception.GetByDisciplineKey(key);
+            try
+            {
+                var result = await context.Reception.GetByDisciplineKey(key);
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+                var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
-            return Ok(viewmodel);
+                return Ok(viewmodel);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+           
         }
 
         [HttpGet]
         [Obsolete]
         public ActionResult Get()
         {
-            var result = context.Reception.Get();
+            try
+            {
+                var result = context.Reception.Get();
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
+                var viewmodel = result.Select(x => ReceptionViewModelConverter.ConvertDomainViewModel(x));
 
-            return Ok(viewmodel);
+                return Ok(viewmodel);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
         #endregion

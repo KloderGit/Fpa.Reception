@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace reception.fitnesspro.ru.Controllers.Education
 {
@@ -19,6 +20,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
     public class EducationController : ControllerBase
     {
         private readonly IAppContext context;
+        private readonly ILogger logger;
 
         private EmployeeHttpClient employeeHttpClient;
         private ProgramHttpClient programHttpClient;
@@ -29,7 +31,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
         EmployeeMethods employeeAction;
 
-        public EducationController(IAppContext context,
+        public EducationController(IAppContext context, ILoggerFactory loggerFactory,
 
             EmployeeHttpClient employeeHttpClient,
             ProgramHttpClient programHttpClient,
@@ -41,6 +43,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             )
         {
             this.context = context;
+            this.logger = loggerFactory.CreateLogger(this.ToString());
 
             this.employeeHttpClient = employeeHttpClient;
             this.programHttpClient = programHttpClient;
@@ -62,11 +65,19 @@ namespace reception.fitnesspro.ru.Controllers.Education
                 return BadRequest(ModelState);
             }
 
-            var programs = await context.Education.GetProgramsByDiscipline(disciplineKey);
+            try
+            {
+                var programs = await context.Education.GetProgramsByDiscipline(disciplineKey);
 
-            if (programs == default) return NoContent();
+                if (programs == default) return NoContent();
 
-            return programs.ToList();
+                return programs.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
         #region Old
@@ -82,6 +93,9 @@ namespace reception.fitnesspro.ru.Controllers.Education
                 return BadRequest(ModelState);
             }
 
+
+            try
+            {
             var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
             var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
@@ -135,6 +149,13 @@ namespace reception.fitnesspro.ru.Controllers.Education
             // get limits
 
             return result.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+            
         }
 
 
@@ -149,20 +170,29 @@ namespace reception.fitnesspro.ru.Controllers.Education
                 return BadRequest(ModelState);
             }
 
-            var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
+            try
+            {
+                var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-            var programs = await client.FindSiblings(key);
-            if (programs == null || programs.Any() == false) return NoContent();
+                var programs = await client.FindSiblings(key);
+                if (programs == null || programs.Any() == false) return NoContent();
 
-            var groups = await client.FindProgramGroup(programs.Select(x => x.Key));
+                var groups = await client.FindProgramGroup(programs.Select(x => x.Key));
 
-            var subGroups = await client.FindSubgroups(groups.Select(x => x.Key));
+                var subGroups = await client.FindSubgroups(groups.Select(x => x.Key));
 
-            var viewModel = new EducationStructureViewModel(programs, groups, subGroups);
+                var viewModel = new EducationStructureViewModel(programs, groups, subGroups);
 
-            if (viewModel == default) return NoContent();
+                if (viewModel == default) return NoContent();
 
-            return viewModel;
+                return viewModel;
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+            
         }
 
         #endregion
