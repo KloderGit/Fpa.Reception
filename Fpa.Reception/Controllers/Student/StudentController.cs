@@ -3,6 +3,7 @@ using Domain.Interface;
 using Domain.Model.Education;
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Student.ViewModel;
+using reception.fitnesspro.ru.Misc;
 using reception.fitnesspro.ru.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 namespace reception.fitnesspro.ru.Controllers.Student
 {
     [Route("[controller]")]
+    [TypeFilter(typeof(ResourseLoggingFilter))]
+    [TypeFilter(typeof(LoggedResultFilterAttribute))]
     [ApiController]
     public class StudentController : ControllerBase
     {
@@ -168,6 +171,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
             var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
 
             if (position == default) return NotFound(nameof(model.PositionKey));
+
+            if (position.Record != default) return BadRequest("Выбранное время занято");
 
             position.Record = new Domain.Record { DisciplineKey = model.DisciplineKey, ProgramKey = model.ProgramKey, StudentKey = model.StudentKey };
 

@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Domain.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using reception.fitnesspro.ru.Misc;
 
 namespace reception.fitnesspro.ru.Controllers.Constraint
 {
     [Route("[controller]")]
+    [TypeFilter(typeof(ResourseLoggingFilter))]
+    [TypeFilter(typeof(LoggedResultFilterAttribute))]
     [ApiController]
     public class ConstraintController : ControllerBase
     {
@@ -38,14 +41,8 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ActionResult<IEnumerable<Domain.Constraint>>> GetByKey(IEnumerable<Guid> constraintKeys)
+        public async Task<ActionResult<IEnumerable<Domain.Constraint>>> GetAll()
         {
-            if (constraintKeys == default)
-            {
-                ModelState.AddModelError(nameof(constraintKeys), "Ключ запроса не указан");
-                return BadRequest(ModelState);
-            }
-
             var result = context.Constraint.GetAll();
 
             if (result == default) return NoContent();

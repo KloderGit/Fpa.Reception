@@ -16,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 using Domain.Interface;
 using Service.lC;
 using Application.Component;
+using reception.fitnesspro.ru.Misc;
 
 namespace reception.fitnesspro.ru.Controllers.Person
 {
@@ -23,6 +24,8 @@ namespace reception.fitnesspro.ru.Controllers.Person
     /// Физ лицо 1С
     /// </summary>
     [Route("[controller]")]
+    [TypeFilter(typeof(ResourseLoggingFilter))]
+    [TypeFilter(typeof(LoggedResultFilterAttribute))]
     [ApiController]
     public class PersonController : ControllerBase
     {

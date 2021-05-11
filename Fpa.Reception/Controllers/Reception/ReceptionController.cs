@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using reception.fitnesspro.ru.Controllers.Reception.Converter;
 using reception.fitnesspro.ru.Controllers.Reception.ViewModel;
+using reception.fitnesspro.ru.Misc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 namespace reception.fitnesspro.ru.Controllers.Reception
 {
     [Route("[controller]")]
+    [TypeFilter(typeof(ResourseLoggingFilter))]
+    [TypeFilter(typeof(LoggedResultFilterAttribute))]
     [ApiController]
     public class ReceptionController : ControllerBase
     {

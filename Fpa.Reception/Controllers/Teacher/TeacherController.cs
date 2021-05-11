@@ -14,6 +14,8 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 {
     [ApiController]
     [Route("[controller]")]
+    [TypeFilter(typeof(ResourseLoggingFilter))]
+    [TypeFilter(typeof(LoggedResultFilterAttribute))]
     public class TeacherController : ControllerBase
     {
         private readonly IAppContext context;
@@ -31,12 +33,9 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         /// <param name="key">Method takes a key of employee</param>
         /// <returns></returns>
         [HttpGet]
-        [TypeFilter(typeof(ResourseLoggingFilter))]
         [Route("GetEducation")]
         public async Task<ActionResult<IEnumerable<Domain.Education.Program>>> GetEducationByEmployeeKey(Guid key)
         {
-            logger.LogInformation("Получен запрос на получение программ обучения по ключу - {Key} преподавателя", key);
-
             if (key == default)
             {
                 ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
@@ -45,9 +44,6 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             }
 
             var programs = await context.Teacher.GetEducation(key);
-
-            logger.LogInformation("Получено {Count} записей типа - {Type}", programs.Count(), typeof(Program).Name);
-            logger.LogDebug("Полученные данные типа {Type} - {@Result}", programs.GetType().Name, programs);
 
             if (programs.IsNullOrEmpty()) return NoContent();
 
@@ -100,8 +96,6 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         [Route("GetTable")]
         public async Task<ActionResult<TableViewModel>> GetTableFromReception([FromQuery] Guid key)
         {
-            logger.LogInformation("Получен запрос на получение рецепции-табеля по ключу - {Key} рецепции", key);
-
             if (key == default)
             {
                 ModelState.AddModelError(nameof(key), "Ключ запроса не указан");
@@ -140,9 +134,6 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             var rates = await context.Education.GetRates();
 
             var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes,rates);
-
-            logger.LogInformation("Получена рецепция-табель");
-            logger.LogDebug("Полученны данные - {@Result}", viewModel);
 
             if (viewModel == default) return NoContent();
 

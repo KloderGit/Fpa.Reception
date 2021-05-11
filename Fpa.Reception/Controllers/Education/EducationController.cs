@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 namespace reception.fitnesspro.ru.Controllers.Education
 {
     [Route("[controller]")]
+    [TypeFilter(typeof(ResourseLoggingFilter))]
+    [TypeFilter(typeof(LoggedResultFilterAttribute))]
     [ApiController]
     public class EducationController : ControllerBase
     {
@@ -70,8 +72,6 @@ namespace reception.fitnesspro.ru.Controllers.Education
         #region Old
 
         [HttpGet]
-        [ServiceFilter(typeof(ResourseLoggingFilter))]
-
         [Route("Program/FindByEmployee")]
         [Obsolete]
         public async Task<ActionResult<IEnumerable<EducationInfoViewModel>>> FindByEmployee(Guid key)
