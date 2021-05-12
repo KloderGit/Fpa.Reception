@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
+using reception.fitnesspro.ru.ViewModel;
 
 namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 {
@@ -17,11 +19,13 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
         public List<EventViewModel> Events { get; set; } = new List<EventViewModel>();
 
+        public Guid ReceptionKey { get; set; }
 
         public DisciplineReceptionViewModel(Domain.Reception reception)
         {
             this.reception = reception;
             this.Date = reception.Date;
+            ReceptionKey = reception.Key;
             this.Positions = reception.PositionManager.Positions
                 //.Where(x => x.Record == default)
                 .Select(x => new PositionViewModel {
@@ -89,11 +93,14 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             {
                 this.@event = @event;
                 DisciplineKey = @event.Discipline.Key;
+                Teachers = @event.Teachers;
             }
 
             public List<string> EventRejectReasons { get; set; } = new List<string>();
 
             public Guid DisciplineKey { get; set; }
+
+            public IEnumerable<BaseInfo> Teachers { get; set; }
 
 
             public void CheckSignUpBefore()
