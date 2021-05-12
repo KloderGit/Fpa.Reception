@@ -3,6 +3,7 @@ using reception.fitnesspro.ru.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 {
@@ -63,9 +64,10 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
         public TableRow IncludeControlType(Domain.Model.Education.ControlType control)
         { 
-            if(position.Record == default || control == default) return this;
-
-            var rates = control.RateType.SelectMany(x=>x.RateKey.ScoreVariants).ToList();
+            //if(position.Record == default || control == default) return this;
+            
+            var rates = control?.RateType?.SelectMany(x=>x.RateKey.ScoreVariants).ToList();
+            rates ??= new List<BaseInfo>();
 
             var didntShowUp = new Domain.BaseInfo{ Key = new Guid("736563b7-3111-4cd6-81d7-539ad92eb568"), Title = "Не явился" };
 

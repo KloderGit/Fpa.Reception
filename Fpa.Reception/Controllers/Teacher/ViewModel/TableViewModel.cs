@@ -30,28 +30,32 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
             this.programs = programs;
 
             Positions = reception?.PositionManager.Positions?
-                .Where(x=> x != default)
+                .Where(x => x != default)
                 .Select(
-                    x=> new TableRow(x)
-                    .IncludeStudent(students)
-                    .IncludeProgram(programs)
-                    .IncludeDiscipline(disciplines)
-                    .IncludeRate(rates)
-                    .IncludeControlType(GetControl(x, controlTypes))
-                );
+                    x => new TableRow(x)
+                        .IncludeStudent(students)
+                        .IncludeProgram(programs)
+                        .IncludeDiscipline(disciplines)
+                        .IncludeRate(rates)
+                    //.IncludeControlType(GetControl(x, controlTypes))
+                ).ToList();
+            
+            Positions.Where(x=>x.Student != default).ToList()
+                .ForEach(x=>x.IncludeControlType( GetControl(x.Discipline.Key, x.Program.Key, controlTypes)) );
 
             return this;
 
-            Domain.Model.Education.ControlType GetControl(Position position, IEnumerable<Domain.Model.Education.ControlType> controlTypes)
+            Domain.Model.Education.ControlType GetControl(Guid disciplineKey, Guid programKey,
+                IEnumerable<Domain.Model.Education.ControlType> controlTypes)
             { 
-                if(position == default || position.Record == default || position.Record.DisciplineKey == default) return null;
+                if(disciplineKey == default || programKey == default) return null;
 
-                var prg = programs.FirstOrDefault(x=>x.Key == position.Record.ProgramKey);
+                var prg = programs.FirstOrDefault(x=>x.Key == programKey);
 
-                var edu = prg.Educations.FirstOrDefault(x=>x.Discipline.Key == position.Record.DisciplineKey);
+                var edu = prg.Educations.FirstOrDefault(x=>x.Discipline.Key == disciplineKey);
 
-                var controlKey = programs.FirstOrDefault(x=>x.Key == position.Record.ProgramKey)
-                    .Educations.FirstOrDefault(x=>x.Discipline.Key == position.Record.DisciplineKey).ControlType.Key;
+                var controlKey = programs.FirstOrDefault(x=>x.Key == programKey)
+                    .Educations.FirstOrDefault(x=>x.Discipline.Key == disciplineKey).ControlType.Key;
 
                 if(controlKey == default) return null;
 
