@@ -84,6 +84,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 var viewModel = positions
                     .Select(y => new StudentHistoryViewModel
                     {
+                        PositionKey = y.Key,
                         DateTime = y.Time,
                         Program = FindByKey(y?.Record?.ProgramKey, programs),
                         Discipline = FindByKey(y?.Record?.DisciplineKey, disciplines),

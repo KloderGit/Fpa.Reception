@@ -8,6 +8,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 {
     public class StudentHistoryViewModel
     {
+        public Guid PositionKey { get; set; }
         public DateTime DateTime { get; set; }
         public BaseInfoViewModel Program { get; set; }
         public BaseInfoViewModel Discipline { get; set; }
