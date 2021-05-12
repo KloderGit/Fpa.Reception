@@ -19,23 +19,29 @@ namespace reception.fitnesspro.ru.Misc
 
 
         }
+
         public void OnResultExecuted(ResultExecutedContext context)
         {
             if (context.Result is BadRequestObjectResult)
             {
-                _logger.LogWarning("Ошибка. Запрос не выполнен");
+                var result = context.Result as BadRequestObjectResult;
+                
+                _logger.LogWarning("Ошибка. Запрос не выполнен. Сообщение причины - {Message}", result.Value);
                 return;
             }
 
-            var result = ((ObjectResult)context.Result).Value;
-
-            if (result == default)
+            if (context.Result is ObjectResult)
             {
-                _logger.LogInformation("Нулевой результат запроса");
-            }
+                var result = ((ObjectResult)context.Result).Value;
 
-            _logger.LogInformation("Получен результат запроса");
-            _logger.LogDebug("Получен результат запроса {@Result}", result);
+                if (result == default)
+                {
+                    _logger.LogInformation("Нулевой результат запроса");
+                }
+
+                _logger.LogInformation("Получен результат запроса");
+                _logger.LogDebug("Получен результат запроса {@Result}", result);
+            }
         }
     }
 }

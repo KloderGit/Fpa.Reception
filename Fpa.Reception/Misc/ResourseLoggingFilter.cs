@@ -24,7 +24,10 @@ namespace reception.fitnesspro.ru.Misc
         {
             var arguments = context.ActionArguments;
 
-            _logger.LogInformation("Получен запрос с аргументами - {@Argument}", arguments);
+            foreach (var argument in context.ActionArguments)
+            {
+                _logger.LogInformation("Получен запрос с аргументами - {Name} - {@Argument}", argument.Key, argument.Value);
+            }
         }
     }
 }

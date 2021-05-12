@@ -95,6 +95,34 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
         }
 
+        [HttpGet]
+        [Route("MakePositionFree")]
+        public async Task<ActionResult> MakePositionFree(Guid positionKey)
+        {
+            if (positionKey == default) return BadRequest(nameof(positionKey));
+
+            try
+            {
+                var reception = await context.Reception.GetByPosition(positionKey);
+
+                if(reception == default) return NoContent();
+
+                var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == positionKey);
+
+                if (position == default) return NotFound(nameof(positionKey));
+                
+                position.Record = null;
+
+                await context.Reception.Update(reception);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
 
         #region OLD implementation
 
