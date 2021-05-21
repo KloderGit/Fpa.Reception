@@ -85,23 +85,23 @@ namespace Test
 
         }
 
-        [TestMethod]
-        public void TestMethod2()
-        {
-            var lcManager = new Manager("kloder", "Kaligula2");
-
-            var http = new HttpClient();
-            http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
-            var baseHttp = new BaseHttpClient(http);
-
-            var context = new Context(baseHttp, lcManager, null);
-
-            //var progs = context.Program.FilterByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
-            //    progs = context.Program.IncludeDisciplines(progs).Result;
-            //    progs = context.Program.IncludeEducationForm(progs).Result;
-            //    progs = context.Program.IncludeTeachers(progs).Result;
-            //    progs = context.Program.IncludeGroups(progs).Result;
-        }
+        // [TestMethod]
+        // public void TestMethod2()
+        // {
+        //     var lcManager = new Manager("kloder", "Kaligula2");
+        //
+        //     var http = new HttpClient();
+        //     http.BaseAddress = new Uri("https://api.fitness-pro.ru/");
+        //     var baseHttp = new BaseHttpClient(http);
+        //
+        //     var context = new Context(baseHttp, lcManager, null);
+        //
+        //     //var progs = context.Program.FilterByTeacher(new Guid("f9d94670-5fb3-11eb-8138-0cc47a4b75cc")).Result;
+        //     //    progs = context.Program.IncludeDisciplines(progs).Result;
+        //     //    progs = context.Program.IncludeEducationForm(progs).Result;
+        //     //    progs = context.Program.IncludeTeachers(progs).Result;
+        //     //    progs = context.Program.IncludeGroups(progs).Result;
+        // }
 
 
 
@@ -123,10 +123,10 @@ namespace Test
                 Date = DateTime.Now,
                 IsActive = true,
                 Key = Guid.NewGuid(),
-                Histories = new List<History> { new History { Object = Guid.NewGuid(), Action = " создал ", Subject = Guid.NewGuid(), DateTime = DateTime.UtcNow } },
+                Histories = new List<History> { new History { Object = Guid.NewGuid(), Action = " пїЅпїЅпїЅпїЅпїЅпїЅ ", Subject = Guid.NewGuid(), DateTime = DateTime.UtcNow } },
                 Events = new List<Event> {
                          new Event {
-                          Teachers = new List<BaseInfo>{ new BaseInfo { Key = Guid.NewGuid(), Title = "Меркурьев" }, new BaseInfo { Key = Guid.NewGuid(), Title = "Калашников" } },
+                          Teachers = new List<BaseInfo>{ new BaseInfo { Key = Guid.NewGuid(), Title = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ" }, new BaseInfo { Key = Guid.NewGuid(), Title = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ" } },
                            Discipline =  new BaseInfo { Key = Guid.NewGuid(), Title = "Anatomy" },
                              Restrictions = new List<PayloadRestriction>{ new PayloadRestriction { Program = Guid.NewGuid(), Group = Guid.NewGuid(), SubGroup = Guid.NewGuid(),
                                  Option = new PayloadOption{

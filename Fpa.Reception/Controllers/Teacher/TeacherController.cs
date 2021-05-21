@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Service.Schedule.MySql;
+using Service.Schedule.MySql.Model;
 
 namespace reception.fitnesspro.ru.Controllers.Teacher
 {
@@ -19,11 +21,13 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
     public class TeacherController : ControllerBase
     {
         private readonly IAppContext context;
+        private readonly IScheduleService schedule;
         private readonly ILogger logger;
 
-        public TeacherController(IAppContext context, ILoggerFactory loggerFactory)
+        public TeacherController(IAppContext context, ILoggerFactory loggerFactory, IScheduleService schedule)
         {
             this.context = context;
+            this.schedule = schedule;
             this.logger = loggerFactory.CreateLogger(this.ToString());
         }
 
@@ -60,7 +64,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         }
 
         [HttpGet]
-        [Route("GetSchedule")]
+        [Route("GetReceptions")]
         public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetScheduleFromReceptions(Guid employeeKey,
             Guid disciplineKey, DateTime fromDate, DateTime toDate)
         {
@@ -158,6 +162,24 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 return new StatusCodeResult(500);
             }
             
+        }
+
+
+        [HttpGet]
+        [Route("GetSchedule")]
+        public async Task<ActionResult<IEnumerable<EventInfo>>> GetScheduleFromService(Guid teacherId)
+        {
+            try
+            {
+                var result = await schedule.TeacherSchedule(70);
+
+                return result.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
     }

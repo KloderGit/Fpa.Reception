@@ -6,17 +6,28 @@ using System.Collections.Generic;
 namespace Service.MongoDB.Model
 {
     [BsonIgnoreExtraElements]
-    [BsonCollection("Constraints")]
-
-    public class Constraint : IDocument
+    [BsonCollection("BaseConstraints")]
+    public class BaseConstraintDto : IDocument
     {
         public ObjectId Id { get; set; }
+        public DateTime CreatedAt { get; }
         public Guid Key { get; set; } = Guid.NewGuid();
         public Guid ProgramKey { get; set; }
         public Guid DisciplineKey { get; set; }
-        public int ActiveForDays { get; set; }
-        public int AllowedAttemptCount { get; set; }
-        public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; }
-        public DateTime CreatedAt { get; } = DateTime.Now;
+        public int AllowedAttempts { get; set; }
+        public IEnumerable<BaseInfo> DependsOn { get; set; }
+        public bool CheckContract { get; set; }
+        public int SignUpBeforeMinutes { get; set; }
+        public int SignOutBeforeMinutes { get; set; }
+        
+        public UISettings UISettings { get; set; }
+    }
+
+    public class UISettings
+    {
+        public PositionTypeDto PositionType { get; set; }
+        public IEnumerable<BaseInfo> Teachers { get; set; }
+        public int OncePerMinutes { get; set; }
+        public int StudentsNumber { get; set; }
     }
 }

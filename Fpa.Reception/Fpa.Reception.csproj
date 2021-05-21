@@ -36,6 +36,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Service.Schedule.MySql\Service.Schedule.MySql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\Misc" />
   </ItemGroup>
 
 

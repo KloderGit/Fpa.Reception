@@ -19,6 +19,8 @@ using Serilog;
 using Service.lC;
 using Service.MongoDB;
 using System;
+using MySqlConnector;
+using Service.Schedule.MySql;
 
 namespace reception.fitnesspro.ru
 {
@@ -48,6 +50,9 @@ namespace reception.fitnesspro.ru
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
             services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+            
+            services.AddTransient<MySqlConnection>(_ => new MySqlConnection(Configuration["ScheduleMySql:ConnectionString"]));
+            services.AddTransient<IScheduleService, ScheduleService>();
 
             services.AddHttpClient<BaseHttpClient>(c =>
             {
@@ -124,7 +129,7 @@ namespace reception.fitnesspro.ru
                 .ReadFrom.Configuration(Configuration)
                 .Enrich.FromLogContext()
                 .WriteTo.Async(a => a.Seq(Configuration.GetSection("Seq:ServerUrl").Value))
-                .WriteTo.Async(a => a.ColoredConsole())
+                //.WriteTo.Async(a => a.ColoredConsole())
                 .CreateLogger();
 
             app.UseMiddleware<ScoppedSerilogMiddleware>();

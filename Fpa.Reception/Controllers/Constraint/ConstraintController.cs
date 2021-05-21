@@ -68,24 +68,24 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
                 return new StatusCodeResult(500);
             }
         }
-
-        [HttpPost]
-        [Route("Add")]
-        public async Task<ActionResult> AddConstraint(Domain.Constraint constraint)
-        {
-            if (constraint.Validate() != true) return BadRequest("Для ограничения не указана дисциплина");
-
-            try
-            {
-                context.Constraint.Store(constraint);
-
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
-                return new StatusCodeResult(500);
-            }
-        }
+        //
+        // [HttpPost]
+        // [Route("Add")]
+        // public async Task<ActionResult> AddConstraint(Domain.Constraint constraint)
+        // {
+        //     if (constraint.Validate() != true) return BadRequest("Для ограничения не указана дисциплина");
+        //
+        //     try
+        //     {
+        //         context.Constraint.Store(constraint);
+        //
+        //         return Ok();
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+        //         return new StatusCodeResult(500);
+        //     }
+        // }
     }
 }

@@ -6,8 +6,11 @@ namespace Domain.Interface
 {
     public interface IConstraintComponent
     {
-        IEnumerable<Constraint> Get(IEnumerable<Guid> constraintKeys);
-        IEnumerable<Constraint> GetAll();
-        void Store(Constraint constraint);
+        IEnumerable<BaseConstraint> Get(IEnumerable<Guid> constraintKeys);
+        BaseConstraint GetByKey(Guid key);
+        IEnumerable<Domain.BaseConstraint> Find(Guid? programKey, Guid disciplineKey);
+        IEnumerable<BaseConstraint> GetAll();
+        Guid Store(BaseConstraint constraint);
+        void Update(BaseConstraint constraint);
     }
 }
