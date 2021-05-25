@@ -171,7 +171,11 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
         {
             try
             {
-                var result = await schedule.TeacherSchedule(70);
+                var setting = await context.Setting.GetTeacherSettings(teacherId);
+
+                if(setting == default) return NotFound();
+
+                var result = await schedule.TeacherSchedule(setting.ScheduleTeacherId);
 
                 return result.ToList();
             }

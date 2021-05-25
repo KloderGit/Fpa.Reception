@@ -136,5 +136,14 @@ namespace Application.Component
 
             if(setting != default) await database.Settings.Teacher.DeleteOneAsync(x=>x.Id == setting.Id);
         }
+
+        public async Task<TeacherSetting> GetTeacherSettings(Guid serviceTeacherKey)
+        {
+            var setting = await database.Settings.Teacher.FindOneAsync(x=>x.ServiceTeacherKey == serviceTeacherKey);
+
+            var model = setting.Adapt<TeacherSetting>();
+
+            return model;
+        }
     }
 }

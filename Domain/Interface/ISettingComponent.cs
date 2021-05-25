@@ -11,7 +11,7 @@ namespace Domain.Interface
         Task<IEnumerable<Tuple<int, string>>> GetAllScheduleTeachers();
         Task<IEnumerable<BaseInfo>> GetAllServiceTeachers();
         Task<IEnumerable<TeacherSetting>> GetAllTeacherSettings();
-
+        Task<TeacherSetting> GetTeacherSettings(Guid serviceTeacherKey);
         Task<Guid> AddTeacherSettings(TeacherSetting model);
         Task UpdateTeacherSettings(TeacherSetting model);
         Task DeleteTeacherSettings(Guid key);
