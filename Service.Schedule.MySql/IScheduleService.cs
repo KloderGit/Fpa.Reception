@@ -6,6 +6,7 @@ namespace Service.Schedule.MySql
 {
     public interface IScheduleService
     {
+        Task<IEnumerable<TeacherInfo>> GetTeachers();
         Task<IEnumerable<EventInfo>> TeacherSchedule(int teacherId);
     }
 }

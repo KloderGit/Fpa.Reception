@@ -16,6 +16,43 @@ namespace Service.Schedule.MySql
             this.connection = connection;
         }
 
+        public async Task<IEnumerable<TeacherInfo>> GetTeachers()
+        {
+            var teachers = new List<TeacherInfo>();
+
+            await connection.OpenAsync();
+
+            using (var cmd = new MySqlCommand())
+            {
+                var query = @"SELECT teacherID, teacherName FROM teacher";
+
+                cmd.Connection = connection;
+                cmd.CommandText = query;
+                await cmd.ExecuteNonQueryAsync();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var table = new DataTable();
+                    table.Load(reader);
+
+                    foreach (DataRow row in table.Rows)
+                    {
+                        var teacher = new TeacherInfo
+                        {
+                            Id = String.IsNullOrEmpty(row[0].ToString()) ? 0: (int)row[0],
+                            Title = String.IsNullOrEmpty(row[1].ToString()) ? "" : (string)row[1]
+                        };
+
+                        teachers.Add(teacher);
+                    }
+                }
+            }
+
+            await connection.CloseAsync();
+
+            return teachers;
+        }
+
         public async Task<IEnumerable<EventInfo>> TeacherSchedule(int teacherId)
         {
             string sqlExpression = "shedule_of_teacher";
@@ -36,7 +73,7 @@ namespace Service.Schedule.MySql
                 {
                     var table = new DataTable();
                     table.Load(reader);
-                    
+
                     foreach (DataRow row in table.Rows)
                     {
                         var @event = new EventInfo
@@ -51,14 +88,14 @@ namespace Service.Schedule.MySql
                             Place = String.IsNullOrEmpty(row[8].ToString()) ? "" : (string)row[8],
                             Education = String.IsNullOrEmpty(row[9].ToString()) ? "" : (string)row[9],
                         };
-                        
+
                         events.Add(@event);
                     }
                 }
             }
 
             await connection.CloseAsync();
-            
+
             return events;
         }
     }

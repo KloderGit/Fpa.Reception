@@ -37,7 +37,7 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
 
             try
             {
-                var result = context.Constraint.Get(constraintKeys);
+                var result = context.Setting.Get(constraintKeys);
 
                 if (result == default) return NoContent();
 
@@ -56,7 +56,7 @@ namespace reception.fitnesspro.ru.Controllers.Constraint
         {
             try
             {
-                var result = context.Constraint.GetAll();
+                var result = context.Setting.GetAll();
 
                 if (result == default) return NoContent();
 

@@ -22,11 +22,18 @@ namespace Service.lC.Manager
             this.employeeProvider = employeeProvider;
         }
 
-        public async Task<IEnumerable<Base>> GetDisciplinesByKeys( IEnumerable<Guid> disciplineKeys)
+        public async Task<IEnumerable<Base>> GetDisciplinesByKeys(IEnumerable<Guid> disciplineKeys)
         {
             var disciplines = await disciplineProvider.Repository.GetAsync(disciplineKeys);
 
             return disciplines;
+        }
+
+        public async Task<IEnumerable<Base>> GetAllTeachers()
+        {
+            var teachers = await employeeProvider.Repository.GetAsync();
+
+            return teachers;
         }
 
         public async Task<IEnumerable<Base>> GetTeachersByKeys(IEnumerable<Guid> teacherKeys)

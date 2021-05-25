@@ -14,6 +14,7 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Service.lC\Service.lC.csproj" />
     <ProjectReference Include="..\Service.MongoDB\Service.MongoDB.csproj" />
+    <ProjectReference Include="..\Service.Schedule.MySql\Service.Schedule.MySql.csproj" />
   </ItemGroup>
 
 </Project>

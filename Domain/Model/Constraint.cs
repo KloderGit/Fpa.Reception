@@ -33,7 +33,7 @@ namespace Domain
 
     public class UISettings
     {
-        public PositionType PositionType { get; set; }
+        public IEnumerable<PositionType> PositionTypes { get; set; }
         public IEnumerable<BaseInfo> Teachers { get; set; }
         public int OncePerMinutes { get; set; }
         public int StudentsNumber { get; set; }

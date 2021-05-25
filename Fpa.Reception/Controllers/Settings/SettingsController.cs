@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using Domain.Interface;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using reception.fitnesspro.ru.Misc;
@@ -24,7 +25,7 @@ namespace reception.fitnesspro.ru.Controllers.Settings
             this.context = context;
             this.logger = loggerFactory.CreateLogger(this.ToString());
         }
-        
+
         [HttpPost]
         [Route("Disciplines")]
         public async Task<ActionResult> AddDisciplineSettings(BaseConstraint model)
@@ -33,17 +34,21 @@ namespace reception.fitnesspro.ru.Controllers.Settings
 
             try
             {
-                var result = context.Constraint.Store(model);
+                var result = context.Setting.Store(model);
 
                 return Ok(result.ToString());
             }
+            catch (ArgumentException e)
+            { 
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
-        
+
         [HttpPost]
         [Route("Disciplines/Update")]
         public async Task<ActionResult> EditDisciplineSettings(BaseConstraint model)
@@ -52,23 +57,23 @@ namespace reception.fitnesspro.ru.Controllers.Settings
 
             try
             {
-                context.Constraint.Update(model);
+                context.Setting.Update(model);
                 return Ok();
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
-        
+
         [HttpGet]
         [Route("Disciplines")]
         public async Task<ActionResult<IEnumerable<Domain.BaseConstraint>>> GetAllDisciplineSettings()
         {
             try
             {
-                var result = context.Constraint.GetAll();
+                var result = context.Setting.GetAll();
 
                 if (result == default) return NoContent();
 
@@ -76,11 +81,11 @@ namespace reception.fitnesspro.ru.Controllers.Settings
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
-        
+
         [HttpGet]
         [Route("Disciplines/GetByKeys")]
         public async Task<ActionResult<IEnumerable<Domain.BaseConstraint>>> GetDisciplineSettingsByKeys(IEnumerable<Guid> constraintKeys)
@@ -93,7 +98,7 @@ namespace reception.fitnesspro.ru.Controllers.Settings
 
             try
             {
-                var result = context.Constraint.Get(constraintKeys);
+                var result = context.Setting.Get(constraintKeys);
 
                 if (result == default) return NoContent();
 
@@ -101,11 +106,11 @@ namespace reception.fitnesspro.ru.Controllers.Settings
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
-        
+
         [HttpGet]
         [Route("Disciplines/GetByKey")]
         public async Task<ActionResult<Domain.BaseConstraint>> GetDisciplineSettingsByKey(Guid key)
@@ -118,7 +123,7 @@ namespace reception.fitnesspro.ru.Controllers.Settings
 
             try
             {
-                var result = context.Constraint.GetByKey(key);
+                var result = context.Setting.GetByKey(key);
 
                 if (result == default) return NoContent();
 
@@ -126,11 +131,11 @@ namespace reception.fitnesspro.ru.Controllers.Settings
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
-        
+
         [HttpGet]
         [Route("Disciplines/Find")]
         public async Task<ActionResult<Domain.BaseConstraint>> FindDisciplineSettings(Guid? programKey, Guid disciplineKey)
@@ -143,15 +148,141 @@ namespace reception.fitnesspro.ru.Controllers.Settings
 
             try
             {
-                var result = context.Constraint.Find(programKey, disciplineKey);
+                var result = context.Setting.Find(programKey, disciplineKey);
 
                 if (result == default) return NoContent();
+
+                return Ok(result.First());
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+
+        [HttpGet]
+        [Route("Teachers/GetAllFromSchedule")]
+        public async Task<ActionResult> GetAllScheduleTeachers()
+        {
+            try
+            {
+                var result = await context.Setting.GetAllScheduleTeachers();
+
+                var viewModel = result.Select(x => new GetAllTeacherSettingViewModel
+                {
+                    Id = x.Item1,
+                    Title = x.Item2
+                });
+
+                return Ok(viewModel);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("Teachers/GetAllFromService")]
+        public async Task<ActionResult> GetAllServiceTeachers()
+        {
+            try
+            {
+                var result = await context.Setting.GetAllServiceTeachers();
 
                 return Ok(result);
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("Teachers")]
+        public async Task<ActionResult> GetAllTeacherSettings()
+        {
+            try
+            {
+                var result = await context.Setting.GetAllTeacherSettings();
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("Teachers")]
+        public async Task<ActionResult> AddTeacherSettings(AddTeacherSettingViewModel viewModel)
+        {
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
+            try
+            {
+                var model = viewModel.Adapt<TeacherSetting>();
+
+                var result = await context.Setting.AddTeacherSettings(model);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("Teachers/Update")]
+        public async Task<ActionResult> UpdateTeacherSettings(UpdateTeacherSettingViewModel viewModel)
+        {
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
+            try
+            {
+                var model = viewModel.Adapt<TeacherSetting>();
+
+                await context.Setting.UpdateTeacherSettings(model);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("Teachers/Delete")]
+        public async Task<ActionResult> DeleteTeacherSettings(Guid key)
+        {
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указаны");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await context.Setting.DeleteTeacherSettings(key);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }

@@ -5,14 +5,32 @@ namespace Service.MongoDB
 {
     public class MongoContext
     {
-        private readonly IMongoDbSettings settings;
+        private readonly IMongoDbSettings options;
 
         private ReceptionProvider receptions;
         private IMongoRepository<BaseConstraintDto> constraints;
+        private Settings settings;
 
-        public MongoContext(IMongoDbSettings settings) => this.settings = settings;
+        public MongoContext(IMongoDbSettings options) => this.options = options;
 
-        public ReceptionProvider Receptions => receptions ??= new ReceptionProvider(new MongoRepository<Reception>(settings));
-        public IMongoRepository<BaseConstraintDto> Constraints => constraints ??= new MongoRepository<BaseConstraintDto>(settings);
+        public ReceptionProvider Receptions => receptions ??= new ReceptionProvider(new MongoRepository<Reception>(options));
+        public IMongoRepository<BaseConstraintDto> Constraints => constraints ??= new MongoRepository<BaseConstraintDto>(options);
+
+        public Settings Settings => settings ??= new Settings(options);
+    }
+
+    public class Settings
+    {
+        private readonly IMongoDbSettings options;
+
+        public Settings(IMongoDbSettings options)
+        {
+            this.options = options;
+        }
+
+        IMongoRepository<TeacherSetting> teacher;
+
+        public IMongoRepository<TeacherSetting> Teacher => teacher ??= new MongoRepository<TeacherSetting>(options);
+
     }
 }

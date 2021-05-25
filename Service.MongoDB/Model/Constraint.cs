@@ -25,7 +25,7 @@ namespace Service.MongoDB.Model
 
     public class UISettings
     {
-        public PositionTypeDto PositionType { get; set; }
+        public IEnumerable<PositionTypeDto> PositionTypes { get; set; }
         public IEnumerable<BaseInfo> Teachers { get; set; }
         public int OncePerMinutes { get; set; }
         public int StudentsNumber { get; set; }
