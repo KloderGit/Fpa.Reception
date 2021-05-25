@@ -235,6 +235,10 @@ namespace reception.fitnesspro.ru.Controllers.Settings
 
                 return Ok(result);
             }
+            catch (ArgumentException e)
+            { 
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
                 logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);

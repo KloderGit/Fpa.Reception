@@ -110,6 +110,10 @@ namespace Application.Component
 
         public async Task<Guid> AddTeacherSettings(TeacherSetting model)
         {
+            var dubles = database.Settings.Teacher.FilterBy(x=>x.ScheduleTeacherId == model.ScheduleTeacherId && x.ServiceTeacherKey == model.ServiceTeacherKey);
+
+            if(dubles.IsNullOrEmpty() == false) throw new ArgumentException("Настройки для преподавателя уже существуют.");
+
             model.Key = Guid.NewGuid();
 
             var dto = model.Adapt<Service.MongoDB.Model.TeacherSetting>();

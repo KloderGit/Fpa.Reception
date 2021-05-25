@@ -173,7 +173,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             {
                 var setting = await context.Setting.GetTeacherSettings(teacherId);
 
-                if(setting == default) return NotFound();
+                if(setting == default) return NoContent();
 
                 var result = await schedule.TeacherSchedule(setting.ScheduleTeacherId);
 
