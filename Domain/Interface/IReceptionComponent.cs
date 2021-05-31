@@ -14,6 +14,8 @@ namespace Domain.Interface
         Reception GetByKey(Guid key);
         Task<Reception> GetByPosition(Guid positionKey);
 
+        Task<IEnumerable<Reception>> GetForPeriod(Guid? teacherKey, Guid? disciplineKey, DateTime startAfter, DateTime endBefore);
+
         [Obsolete]
         Task<IEnumerable<Reception>> GetByDisciplineKey(Guid discilineKey);
     }

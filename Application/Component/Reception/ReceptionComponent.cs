@@ -79,6 +79,15 @@ namespace Application.Component
             return result;
         }
 
+        public async Task<IEnumerable<Reception>> GetForPeriod(Guid? teacherKey, Guid? disciplineKey, DateTime startAfter, DateTime endBefore)
+        {
+            var dto = await database.Receptions.GetReceptionsForPeriod(teacherKey,disciplineKey,startAfter,endBefore);
+
+            var result = dto.Adapt<IEnumerable<Reception>>();
+
+            return result;
+        }
+
         #endregion
     }
 }

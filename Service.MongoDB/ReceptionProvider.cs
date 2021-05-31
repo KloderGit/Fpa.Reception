@@ -82,8 +82,39 @@ namespace Service.MongoDB
 
             Expression<Func<Reception, bool>> queryExpression = (a) => a.Events.Any(e => e.Teachers.Any(t => t.Key == teacherKey)
                                                                                  && e.Discipline.Key == disciplineKey)
-                                                                 && a.Date > startAfter 
+                                                                 && a.Date > startAfter
                                                                  && a.Date < endBefore;
+
+            var result = await Task.Run(() => Repository.FilterByBson(queryExpression).ToList());
+
+            return result;
+        }
+
+        public async Task<IEnumerable<Reception>> GetReceptionsForPeriod(Guid? teacherKey, Guid? disciplineKey, DateTime startAfter, DateTime endBefore)
+        {
+            Expression<Func<Reception, bool>> queryExpression = (a) => a.Date >= startAfter && a.Date <= endBefore;
+
+            if (teacherKey.HasValue)
+            {
+                queryExpression = (a) => a.Events.Any(e => e.Teachers.Any(t => t.Key == teacherKey))
+                                     && a.Date >= startAfter
+                                     && a.Date <= endBefore;
+            }
+
+            if (disciplineKey.HasValue)
+            {
+                queryExpression = (a) => a.Events.Any(e => e.Discipline.Key == disciplineKey)
+                                                     && a.Date >= startAfter
+                                                     && a.Date <= endBefore;
+            }
+
+            if (disciplineKey.HasValue && teacherKey.HasValue)
+            {
+                queryExpression = (a) => a.Events.Any(e => e.Teachers.Any(t => t.Key == teacherKey)
+                                                                     && e.Discipline.Key == disciplineKey)
+                                                     && a.Date >= startAfter
+                                                     && a.Date <= endBefore;
+            }
 
             var result = await Task.Run(() => Repository.FilterByBson(queryExpression).ToList());
 

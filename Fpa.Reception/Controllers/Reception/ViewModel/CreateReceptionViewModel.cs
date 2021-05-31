@@ -17,7 +17,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
         public IEnumerable<EventViewModel> Events { get; set; }
 
         [Required(ErrorMessage = "Вариант записи не определен")]
-        public PositionType Type { get; set; }
+        public PositionType PositionType { get; set; }
 
         public IEnumerable<DateTime> Times { get; set; }
     }

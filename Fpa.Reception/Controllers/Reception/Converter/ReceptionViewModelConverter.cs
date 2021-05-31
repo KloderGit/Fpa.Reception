@@ -19,7 +19,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception.Converter
                 Events = viewModel.Events?.Adapt<IEnumerable<Event>>().ToList(),
                 PositionManager = new PositionManager
                 {
-                    LimitType = viewModel.Type,
+                    LimitType = viewModel.PositionType,
                     Positions = viewModel.Times?.Select(t =>
                         new Position { Key = Guid.NewGuid(), IsActive = true, Time = t }
                     ).ToList()

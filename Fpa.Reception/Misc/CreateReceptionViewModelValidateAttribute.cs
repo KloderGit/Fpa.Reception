@@ -20,7 +20,7 @@ namespace reception.fitnesspro.ru.Misc
 
             var isValid = true;
 
-            if ((p.Type != PositionType.Free) && (p.Times == null || p.Times.Any() == false))
+            if ((p.PositionType != PositionType.Free) && (p.Times == null || p.Times.Any() == false))
             {
                 isValid = false;
             }

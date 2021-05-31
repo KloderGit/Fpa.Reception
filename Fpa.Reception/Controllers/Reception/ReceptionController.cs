@@ -7,6 +7,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using Application.Extensions;
 
 namespace reception.fitnesspro.ru.Controllers.Reception
 {
@@ -123,6 +125,43 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 return new StatusCodeResult(500);
             }
         }
+
+
+        [HttpGet]
+        [Route("GetReceptionsForPeriod")]
+        public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetReceptionsForPeriod(Guid? employeeKey,
+            Guid? disciplineKey, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var currentYear = DateTime.Now.Year;
+                var currentMonth = DateTime.Now.Month;
+
+                if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+                if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
+                if(toDate < fromDate)
+                { 
+                    var temp = toDate;
+                    toDate = fromDate;
+                    fromDate = temp;
+                }
+
+                var receptions = await context.Reception.GetForPeriod(employeeKey, disciplineKey, fromDate, toDate);
+
+                if (receptions.IsNullOrEmpty()) return NoContent();
+
+                return receptions.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+
+        }
+
+
+
 
         #region OLD implementation
 
