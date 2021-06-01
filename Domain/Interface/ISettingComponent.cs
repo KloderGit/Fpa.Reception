@@ -22,5 +22,14 @@ namespace Domain.Interface
         IEnumerable<BaseConstraint> GetAll();
         Guid Store(BaseConstraint constraint);
         void Update(BaseConstraint constraint);
+
+        Task<IEnumerable<ScheduleProgramInfo>> GetAllScheduleGroups();
+        Task<IEnumerable<Domain.Education.Program>> GetAllServiceGroups();
+        Task<IEnumerable<GroupSettings>> GetAllGroupSettings();
+        Task<GroupSettings> GetGroupSettings(Guid groupSettingKey);
+        Task<GroupSettings> FindGroupSettings(Guid serviceGroupKey);
+        Task<Guid> AddGroupSettings(GroupSettings model);
+        Task UpdateGroupSettings(GroupSettings model);
+        Task DeleteGroupSettings(Guid key);
     }
 }

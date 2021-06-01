@@ -17,4 +17,10 @@ namespace Domain
         public Guid Key { get; set; }
         public string Title { get; set; }
     }
+
+    public class BaseSchedule
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+    }
 }

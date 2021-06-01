@@ -7,10 +7,10 @@ namespace Domain
     public abstract class Constraint
     {
         public Guid Key { get; set; }
-        
+
         public Guid ProgramKey { get; set; }
         public Guid DisciplineKey { get; set; }
-        
+
         [Obsolete]
         public virtual bool Validate()
         {
@@ -27,7 +27,7 @@ namespace Domain
         public bool CheckContract { get; set; }
         public int SignUpBeforeMinutes { get; set; }
         public int SignOutBeforeMinutes { get; set; }
-        
+
         public UISettings UISettings { get; set; }
     }
 
@@ -39,10 +39,20 @@ namespace Domain
         public int StudentsNumber { get; set; }
     }
 
-    public class GroupConstraint : Constraint
+    public class GroupSettings
     {
-        public Guid GroupKey { get; set; }
-        public DateTime AfterDate { get; set; }
-        public DateTime BeforeDate { get; set; }
+        public Guid Key { get; set; }
+        public BaseInfo Program { get; set; }
+        public BaseInfo Group { get; set; }
+        public string DiscordLink { get; set; }
+        public int ScheduleGroupId { get; set; }
+        public IEnumerable<EventPeriodConstraint> DisciplineLimits { get;set; }
+
+        public class EventPeriodConstraint
+        {
+            public BaseInfo Discipline { get; set; }
+            public DateTime StartPeriod { get; set; }
+            public DateTime FinishPeriod { get; set; }
+        }
     }
 }

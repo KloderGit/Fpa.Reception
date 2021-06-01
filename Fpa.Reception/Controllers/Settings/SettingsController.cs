@@ -39,7 +39,7 @@ namespace reception.fitnesspro.ru.Controllers.Settings
                 return Ok(result.ToString());
             }
             catch (ArgumentException e)
-            { 
+            {
                 return BadRequest(e.Message);
             }
             catch (Exception e)
@@ -236,7 +236,7 @@ namespace reception.fitnesspro.ru.Controllers.Settings
                 return Ok(result);
             }
             catch (ArgumentException e)
-            { 
+            {
                 return BadRequest(e.Message);
             }
             catch (Exception e)
@@ -283,6 +283,164 @@ namespace reception.fitnesspro.ru.Controllers.Settings
                 await context.Setting.DeleteTeacherSettings(key);
 
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+
+        [HttpGet]
+        [Route("Groups")]
+        public async Task<ActionResult> GetAllGroupSettings()
+        {
+            try
+            {
+                var result = await context.Setting.GetAllGroupSettings();
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("Groups/GetByKey")]
+        public async Task<ActionResult> GetGroupSettingsByKey(Guid groupSettingKey)
+        {
+            try
+            {
+                var result = await context.Setting.GetGroupSettings(groupSettingKey);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("Groups/FindByGroupKey")]
+        public async Task<ActionResult> FindGroupSettingsByGroupKey(Guid groupKey)
+        {
+            try
+            {
+                var result = await context.Setting.FindGroupSettings(groupKey);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("Groups")]
+        public async Task<ActionResult> AddGroupSettings(GroupSettingViewModel viewModel)
+        {
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
+            try
+            {
+                var model = viewModel.Adapt<GroupSettings>();
+
+                var result = await context.Setting.AddGroupSettings(model);
+
+                return Ok(result);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("Groups/Update")]
+        public async Task<ActionResult> UpdateGroupSettings(GroupSettingViewModel viewModel)
+        {
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
+            try
+            {
+                var model = viewModel.Adapt<GroupSettings>();
+
+                await context.Setting.UpdateGroupSettings(model);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("Groups/Delete")]
+        public async Task<ActionResult> DeleteGroupSettings(Guid key)
+        {
+            if (key == default)
+            {
+                ModelState.AddModelError(nameof(key), "Ключ запроса не указаны");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await context.Setting.DeleteGroupSettings(key);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("Groups/GetAllFromSchedule")]
+        public async Task<ActionResult> GetAllScheduleGroups()
+        {
+            try
+            {
+                var result = await context.Setting.GetAllScheduleGroups();
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("Groups/GetAllFromService")]
+        public async Task<ActionResult> GetAllServiceGroups()
+        {
+            try
+            {
+                var programs = await context.Setting.GetAllServiceGroups();
+
+                var result = programs.Adapt<IEnumerable<GroupFromServiceViewModel>>();
+
+                return Ok(result);
             }
             catch (Exception e)
             {

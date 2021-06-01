@@ -1,8 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Service.MongoDB.Model
 {
@@ -15,5 +13,6 @@ namespace Service.MongoDB.Model
         public Guid Key { get; set; } = Guid.NewGuid();
         public Guid ServiceTeacherKey { get; set; }
         public int ScheduleTeacherId { get; set; }
+        public bool IsEntireAreaShown { get; set; }
     }
 }

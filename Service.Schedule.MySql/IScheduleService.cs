@@ -8,5 +8,7 @@ namespace Service.Schedule.MySql
     {
         Task<IEnumerable<TeacherInfo>> GetTeachers();
         Task<IEnumerable<EventInfo>> TeacherSchedule(int teacherId);
+
+        Task<IEnumerable<ProgramInfo>> GetGroups();
     }
 }

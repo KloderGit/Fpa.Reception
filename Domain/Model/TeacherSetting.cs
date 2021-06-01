@@ -9,5 +9,6 @@ namespace Domain
         public Guid Key { get; set; }
         public Guid ServiceTeacherKey { get; set; }
         public int ScheduleTeacherId { get; set; }
+        public bool IsEntireAreaShown { get; set; }
     }
 }

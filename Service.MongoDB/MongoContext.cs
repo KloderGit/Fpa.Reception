@@ -29,8 +29,10 @@ namespace Service.MongoDB
         }
 
         IMongoRepository<TeacherSetting> teacher;
+        IMongoRepository<GroupSettings> group;
 
         public IMongoRepository<TeacherSetting> Teacher => teacher ??= new MongoRepository<TeacherSetting>(options);
+        public IMongoRepository<GroupSettings> Group => group ??= new MongoRepository<GroupSettings>(options);
 
     }
 }

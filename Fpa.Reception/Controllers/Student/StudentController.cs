@@ -123,18 +123,16 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             try
             {
-                var receptions = context.Student.GetReceptionsForSignUpStudent(studentKey,disciplineKey);
-
                 var contract = await GetStudentContract();
             
                 var disciplineReceptions = await context.Student.GetReceptionsForSignUpStudent(studentKey, disciplineKey);
 
-                var filtered = disciplineReceptions
+                var filteredForContractEducation = disciplineReceptions
                     .Where(x => x.IsForProgram(contract.EducationProgram.Key))
                     .Where(x => x.IsForGroup(contract.Group.Key))
                     .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
 
-                var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
+                var viewModel = filteredForContractEducation.Select(x => new DisciplineReceptionViewModel(x)).ToList();
 
                 viewModel.ForEach(x => x.CheckContractExpired(contract));
                 viewModel.ForEach(x => x.CheckEmptyPlaces());

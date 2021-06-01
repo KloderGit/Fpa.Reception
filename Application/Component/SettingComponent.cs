@@ -9,6 +9,7 @@ using Service.MongoDB;
 using Service.Schedule.MySql;
 using System.Threading.Tasks;
 using Application.Extensions;
+using Domain.Model;
 
 namespace Application.Component
 {
@@ -57,9 +58,9 @@ namespace Application.Component
 
         public Guid Store(BaseConstraint constraint)
         {
-            var dubles = database.Constraints.FilterBy(x=>x.ProgramKey == constraint.ProgramKey && x.DisciplineKey == constraint.DisciplineKey);
+            var dubles = database.Constraints.FilterBy(x => x.ProgramKey == constraint.ProgramKey && x.DisciplineKey == constraint.DisciplineKey);
 
-            if(dubles.IsNullOrEmpty() == false) throw new ArgumentException("Настройки для Программы и дисциплины уже существуют.");
+            if (dubles.IsNullOrEmpty() == false) throw new ArgumentException("Настройки для Программы и дисциплины уже существуют.");
 
             constraint.Key = Guid.NewGuid();
             var dto = constraint.Adapt<Service.MongoDB.Model.BaseConstraintDto>();
@@ -110,9 +111,9 @@ namespace Application.Component
 
         public async Task<Guid> AddTeacherSettings(TeacherSetting model)
         {
-            var dubles = database.Settings.Teacher.FilterBy(x=>x.ScheduleTeacherId == model.ScheduleTeacherId && x.ServiceTeacherKey == model.ServiceTeacherKey);
+            var dubles = database.Settings.Teacher.FilterBy(x => x.ScheduleTeacherId == model.ScheduleTeacherId && x.ServiceTeacherKey == model.ServiceTeacherKey);
 
-            if(dubles.IsNullOrEmpty() == false) throw new ArgumentException("Настройки для преподавателя уже существуют.");
+            if (dubles.IsNullOrEmpty() == false) throw new ArgumentException("Настройки для преподавателя уже существуют.");
 
             model.Key = Guid.NewGuid();
 
@@ -138,16 +139,115 @@ namespace Application.Component
         {
             var setting = await Task.FromResult(database.Settings.Teacher.FindOne(x => x.Key == key));
 
-            if(setting != default) await database.Settings.Teacher.DeleteOneAsync(x=>x.Id == setting.Id);
+            if (setting != default) await database.Settings.Teacher.DeleteOneAsync(x => x.Id == setting.Id);
         }
 
         public async Task<TeacherSetting> GetTeacherSettings(Guid serviceTeacherKey)
         {
-            var setting = await database.Settings.Teacher.FindOneAsync(x=>x.ServiceTeacherKey == serviceTeacherKey);
+            var setting = await database.Settings.Teacher.FindOneAsync(x => x.ServiceTeacherKey == serviceTeacherKey);
 
             var model = setting.Adapt<TeacherSetting>();
 
             return model;
+        }
+
+
+
+        public async Task<IEnumerable<GroupSettings>> GetAllGroupSettings()
+        {
+            var settings = await Task.FromResult(database.Settings.Group.AsQueryable());
+
+            var result = settings.Adapt<IEnumerable<GroupSettings>>();
+
+            return result;
+        }
+
+        public async Task<GroupSettings> GetGroupSettings(Guid entityKey)
+        {
+            var setting = await database.Settings.Group.FindOneAsync(x => x.Key == entityKey);
+
+            var model = setting.Adapt<GroupSettings>();
+
+            return model;
+        }
+
+        public async Task<Guid> AddGroupSettings(GroupSettings model)
+        {
+            var dubles = await FindGroupSettings(model.Group.Key);
+
+            if (dubles != default) throw new ArgumentException("Настройки для группы уже существуют.");
+
+            model.Key = Guid.NewGuid();
+
+            var dto = model.Adapt<Service.MongoDB.Model.GroupSettings>();
+
+            database.Settings.Group.InsertOne(dto);
+
+            var result = await Task.FromResult(database.Settings.Group.FindOne(x => x.Key == dto.Key));
+
+            return result.Key;
+        }
+
+        public async Task UpdateGroupSettings(GroupSettings model)
+        {
+            var dto = await Task.FromResult(database.Settings.Group.FindOne(x => x.Key == model.Key));
+
+            var resultDto = model.Adapt(dto);
+
+            database.Settings.Group.ReplaceOne(resultDto);
+        }
+
+        public async Task DeleteGroupSettings(Guid key)
+        {
+            var setting = await Task.FromResult(database.Settings.Group.FindOne(x => x.Key == key));
+
+            if (setting != default) await database.Settings.Group.DeleteOneAsync(x => x.Id == setting.Id);
+        }
+
+        public async Task<GroupSettings> FindGroupSettings(Guid serviceGroupKey)
+        {
+            var setting = await database.Settings.Group.FindOneAsync(x => x.Group.Key == serviceGroupKey);
+
+            var model = setting.Adapt<GroupSettings>();
+
+            return model;
+        }
+
+        public async Task<IEnumerable<ScheduleProgramInfo>> GetAllScheduleGroups()
+        {
+            var dto = await schedule.GetGroups();
+
+            var result = dto.Adapt<IEnumerable<ScheduleProgramInfo>>();
+
+            return result;
+        }
+
+        
+        public async Task<IEnumerable<Domain.Education.Program>> GetAllServiceGroups()
+        {
+            var programManager = lcService.Program;
+
+            var programs = await programManager.GetAll();
+            await programManager.IncludeGroups(programs);
+
+            var result = programs.Select(x=>GetProgram(x)).Where(x=>x != null);
+
+            var model = result.Adapt<IEnumerable<Domain.Education.Program>>();
+
+            return model;
+
+            Service.lC.Model.Program GetProgram(Service.lC.Model.Program program)
+            {
+                var groups = program.Groups.Where(g => g.Finish > DateTime.Now);
+
+                if (groups != default && groups.Count() > 0)
+                {
+                    program.Groups = groups;
+                    return program;
+                }
+
+                return null;
+            }
         }
     }
 }

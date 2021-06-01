@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace reception.fitnesspro.ru.Controllers.Settings
 {
@@ -18,6 +15,7 @@ namespace reception.fitnesspro.ru.Controllers.Settings
         public Guid ServiceTeacherKey { get; set; }
         [Required]
         public int ScheduleTeacherId { get; set; }
+        public bool IsEntireAreaShown { get; set; }
     }
 
     public class UpdateTeacherSettingViewModel
@@ -28,5 +26,6 @@ namespace reception.fitnesspro.ru.Controllers.Settings
         public Guid ServiceTeacherKey { get; set; }
         [Required]
         public int ScheduleTeacherId { get; set; }
+        public bool IsEntireAreaShown { get; set; }
     }
 }
