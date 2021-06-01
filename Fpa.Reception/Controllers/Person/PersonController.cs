@@ -39,8 +39,8 @@ namespace reception.fitnesspro.ru.Controllers.Person
 
         public PersonController(
             IAppContext context, ILoggerFactory loggerFactory,
-            
-            PersonHttpClient personHttpClient, 
+
+            PersonHttpClient personHttpClient,
             EmployeeHttpClient employeeHttpClient,
             IdentityHttpClient identityHttpClient,
             AssignHttpClient assignHttpClient)
@@ -52,7 +52,7 @@ namespace reception.fitnesspro.ru.Controllers.Person
             this.identityHttpClient = identityHttpClient;
             this.assignHttpClient = assignHttpClient;
             personAction = new PersonMethods(personHttpClient);
-            employeeAction = new EmployeeMethods(employeeHttpClient,assignHttpClient);
+            employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
         }
 
         [HttpGet]
@@ -71,31 +71,32 @@ namespace reception.fitnesspro.ru.Controllers.Person
 
                 if (String.IsNullOrEmpty(user?.Email) && String.IsNullOrEmpty(user?.Phone)) return NotFound("Не заполнены контакты пользователя");
 
-                var personGuidArray = await personAction.GetByContacts(new List<string>{user.Phone}, new List<string>{user.Email} );
+                var personGuidArray = await personAction.GetByContacts(new List<string> { user.Phone }, new List<string> { user.Email });
 
-                if(personGuidArray.IsNullOrEmpty()) return NoContent();
+                if (personGuidArray.IsNullOrEmpty()) return NoContent();
 
                 var employees = await employeeAction.GetByPersonKey(personGuidArray);
 
-                var viewModel = personGuidArray.Select(p=> new PersonViewModel{ 
-                    PersonKey = p, 
+                var viewModel = personGuidArray.Select(p => new PersonViewModel
+                {
+                    PersonKey = p,
                     EmployeeKey = employees.IsNullOrEmpty() ? Guid.Empty :
-                        employees.Any(x=>x.PersonKey == p) ? employees.First(x=>x.PersonKey == p).Key : Guid.Empty
+                        employees.Any(x => x.PersonKey == p) ? employees.First(x => x.PersonKey == p).Key : Guid.Empty
                 });
 
                 return viewModel.ToList();
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-            
+
         }
 
         [HttpPost]
         [Route("Info")]
-        public async Task<ActionResult<IEnumerable<Domain.Education.Person>>> GetInfo([FromBody]IEnumerable<Guid> keys)
+        public async Task<ActionResult<IEnumerable<Domain.Education.Person>>> GetInfo([FromBody] IEnumerable<Guid> keys)
         {
             try
             {
@@ -105,12 +106,28 @@ namespace reception.fitnesspro.ru.Controllers.Person
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("FindByQuery")]
+        public async Task<ActionResult<IEnumerable<Domain.Education.Person>>> Find(string filter)
+        {
+            try
+            {
+                var persons = await context.Person.FindByQuery(filter);
+
+                return persons.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
 
         }
-
     }
 
 

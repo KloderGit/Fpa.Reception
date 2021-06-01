@@ -35,28 +35,19 @@ namespace Service.lC.Provider
             return persons.ToList();
         }
 
-        //public async Task<Person> FindByStudent(Guid studentKey)
-        //{
-        //    if (studentKey == default) throw new ArgumentNullException(nameof(studentKey));
+        public async Task<IEnumerable<Person>> FindByQuery(string marker)
+        {
+            var queryString = @$"?$format=json&$filter=substringof('{marker}', КонтактнаяИнформация/НомерТелефона) "
+                                + @$"or substringof('{marker}', КонтактнаяИнформация/АдресЭП) "
+                                + @$"or substringof('{marker}', Description)"
+                                + "&$select=Ref_Key, Description, ЛогинСкайп, "
+                                + "КонтактнаяИнформация/НомерТелефона, КонтактнаяИнформация/АдресЭП";
 
-        //    var studentQuery = manager.Student
-        //                .Select(x => x.PersonKey)
-        //                .Filter(x => x.DeletionMark == false).And()
-        //                .Filter(x => x.Key == studentKey);
-        //    var foundedStudent = await studentQuery.GetByFilter();
+            var repository = Repository as Service.lC.Repository.PersonRepository;
 
-        //    if (foundedStudent.IsNullOrEmpty()) return null;
+            var persons = await repository.GetByQueryAsync(queryString);
 
-        //    var personQuery = manager.Person
-        //        .Select(x => x.Key)
-        //        .Filter(x => x.DeletionMark == false).And()
-        //        .Filter(x => x.Key == foundedStudent.FirstOrDefault().Key);
-        //    var person = await personQuery.GetByFilter();
-
-        //    var contracts = await Repository.GetAsync(keys);
-
-        //    return contracts;
-
-        //}
+            return persons;
+        }
     }
 }

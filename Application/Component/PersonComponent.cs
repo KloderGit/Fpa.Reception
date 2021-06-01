@@ -29,16 +29,16 @@ namespace Application.Component
             var programPipe = lcService.Program;
 
             var persons = await personsPipe.Get(personKeys);
-                await personsPipe.IncludeStudents(persons);
-                await studentsPipe.IncludeContracts(persons.SelectMany(x => x.Students));
+            await personsPipe.IncludeStudents(persons);
+            await studentsPipe.IncludeContracts(persons.SelectMany(x => x.Students));
 
             var contracts = persons.SelectMany(p => p.Students.SelectMany(s => s.Contract));
-                await contractPipe.IncludePrograms(contracts);
-                await contractPipe.IncludeGroup(contracts);
-                await contractPipe.IncludeSubGroup(contracts);
+            await contractPipe.IncludePrograms(contracts);
+            await contractPipe.IncludeGroup(contracts);
+            await contractPipe.IncludeSubGroup(contracts);
 
             var programs = contracts.Select(x => x.EducationProgram).Cast<Service.lC.Model.Program>().ToList();
-                await programPipe.IncludeEducationForm(programs);
+            await programPipe.IncludeEducationForm(programs);
 
             var domen = persons.Adapt<IEnumerable<Domain.Education.Person>>().ToList();
 
@@ -59,6 +59,32 @@ namespace Application.Component
             var result = dto.Adapt<IEnumerable<Domain.Education.Person>>();
 
             return result;
+        }
+
+        public async Task<IEnumerable<Domain.Education.Person>> FindByQuery(string queryString)
+        {
+            var personsQuery = await lcService.Person.FindByQuery(queryString);
+            var persons = personsQuery.ToList();
+
+            await lcService.Person.IncludeStudents(persons);
+            await lcService.Student.IncludeContracts(persons.ToList().SelectMany(x => x.Students));
+
+            var contracts = persons.SelectMany(p => p.Students.SelectMany(s => s.Contract));
+            await lcService.Contract.IncludePrograms(contracts);
+            await lcService.Contract.IncludeGroup(contracts);
+            await lcService.Contract.IncludeSubGroup(contracts);
+
+            var programs = contracts.Select(x => x.EducationProgram).Cast<Service.lC.Model.Program>().ToList();
+            await lcService.Program.IncludeEducationForm(programs);
+
+            var domen = persons.Adapt<IEnumerable<Domain.Education.Person>>().ToList();
+
+            domen.ForEach(d =>
+                d.Students.ToList().ForEach(
+                    s => s.Educations.ToList().ForEach(
+                        e => e.EducationForm = (programs.FirstOrDefault(p => p.Key == e.EducationProgram.Key).EducationForm).Adapt<BaseInfo>())));
+
+            return domen;
         }
     }
 }

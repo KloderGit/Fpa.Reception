@@ -42,6 +42,13 @@ namespace Service.lC.Manager
             return persons;
         }
 
+        public async Task<IEnumerable<Person>> FindByQuery(string queryString)
+        {
+            var persons = await personProvider.FindByQuery(queryString);
+
+            return persons;
+        }
+
         public async Task<IEnumerable<Person>> FindByStudents(IEnumerable<Guid> studentKeys)
         {
             var students = await studentProvider.Repository.GetAsync(studentKeys);
@@ -59,7 +66,7 @@ namespace Service.lC.Manager
             var students = await studentProvider.FilterByPerson(personKeys);
 
             persons.ToList()
-                .ForEach(x => x.Students = students.Where(s=>s.Owner == x.Key));
+                .ForEach(x => x.Students = students.Where(s => s.Owner == x.Key));
         }
 
 
