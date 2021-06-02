@@ -144,7 +144,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                     .Where(x => x.Record != default && x.Record.StudentKey == studentKey && x.Record.DisciplineKey == disciplineKey)
                     .Where(x => x.Record.Result == default).ToList();
 
-                if (filledByStudent.Count() > 0) EventRejectReasons.Add("There is alredy one record on appropriate discipline");
+                if (filledByStudent.Count() > 0) EventRejectReasons.Add("There is already one record on appropriate discipline");
             }
 
             public void CheckDependencies()

@@ -160,9 +160,6 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
         }
 
-
-
-
         #region OLD implementation
 
         [HttpPost]

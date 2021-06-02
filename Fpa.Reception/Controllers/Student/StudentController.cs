@@ -48,7 +48,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
@@ -67,18 +67,18 @@ namespace reception.fitnesspro.ru.Controllers.Student
             {
                 var receptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
 
-                var positions = receptions.SelectMany(x=>x.PositionManager.GetSignedUpStudentPosition(studentKey));
+                var positions = receptions.SelectMany(x => x.PositionManager.GetSignedUpStudentPosition(studentKey));
 
-                var programKeys = positions.Where(x=>x.Record != default).Select(x=>x.Record.ProgramKey).Where(x=>x != default);
+                var programKeys = positions.Where(x => x.Record != default).Select(x => x.Record.ProgramKey).Where(x => x != default);
                 var programs = await context.Education.GetProgramsByKeys(programKeys);
 
-                var disciplineKeys = positions.Where(x=>x.Record != default).Select(x=>x.Record.DisciplineKey).Where(x=>x != default);
+                var disciplineKeys = positions.Where(x => x.Record != default).Select(x => x.Record.DisciplineKey).Where(x => x != default);
                 var disciplines = await context.Education.GetDisciplinesByKeys(disciplineKeys);
 
-                var teacherKeys = positions.Where(x=>x.Record != default).Where(x=>x.Record.Result != default).Select(x=>x.Record.Result.TeacherKey).Where(x=>x != default);
+                var teacherKeys = positions.Where(x => x.Record != default).Where(x => x.Record.Result != default).Select(x => x.Record.Result.TeacherKey).Where(x => x != default);
                 var teachers = await context.Education.GetTeachers(teacherKeys);
 
-                var rateKeys = positions.Where(x=>x.Record != default).Where(x=>x.Record.Result != default).Select(x=>x.Record.Result.RateKey).Where(x=>x != default);
+                var rateKeys = positions.Where(x => x.Record != default).Where(x => x.Record.Result != default).Select(x => x.Record.Result.RateKey).Where(x => x != default);
                 var rates = await context.Education.GetRates();
 
                 var viewModel = positions
@@ -97,16 +97,16 @@ namespace reception.fitnesspro.ru.Controllers.Student
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
 
             BaseInfoViewModel FindByKey(Guid? key, IEnumerable<BaseInfo> array)
-            { 
-                if(array == default) return null;
-                if(key == default || key.HasValue == false) return null;
-                var item = array.FirstOrDefault(x=>x.Key == key.Value);
-                var vm = new BaseInfoViewModel{ Key = item.Key, Title = item.Title };
+            {
+                if (array == default) return null;
+                if (key == default || key.HasValue == false) return null;
+                var item = array.FirstOrDefault(x => x.Key == key.Value);
+                var vm = new BaseInfoViewModel { Key = item.Key, Title = item.Title };
                 return vm;
             }
         }
@@ -117,14 +117,14 @@ namespace reception.fitnesspro.ru.Controllers.Student
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
             if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
+            if (disciplineKey == default) ModelState.AddModelError(nameof(disciplineKey), "Ключ дисциплины не указан");
 
             if (ModelState.IsValid == false) return BadRequest(ModelState);
 
             try
             {
                 var contract = await GetStudentContract();
-            
+
                 var disciplineReceptions = await context.Student.GetReceptionsForSignUpStudent(studentKey, disciplineKey);
 
                 var filteredForContractEducation = disciplineReceptions
@@ -149,10 +149,10 @@ namespace reception.fitnesspro.ru.Controllers.Student
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-            
+
             async Task<Contract> GetStudentContract()
             {
                 var allStudentContract = await context.Student.GetContracts(studentKey);
@@ -168,16 +168,17 @@ namespace reception.fitnesspro.ru.Controllers.Student
         public async Task<ActionResult> StudentResult(StudentResultViewModel model)
         {
             if (ModelState.IsValid == false) return BadRequest(model);
-            
+
             try
             {
                 var reception = await context.Reception.GetByPosition(model.PositionKey);
-                if(reception == default) return NotFound("Рецепция с такой позицией не найдена");
+                if (reception == default) return NotFound("Рецепция с такой позицией не найдена");
 
                 var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
                 if (position == default) return NotFound("Позиция не найдена");
 
-                var result = new Domain.Result(){ TeacherKey = model.TeacherKey, RateKey = model.RateKey, Comment = model.Comment };
+                var result = new Domain.Result() { TeacherKey = model.TeacherKey, RateKey = model.RateKey, Comment = model.Comment };
+                if (model.RateKey == default) result = null;
 
                 position.Record.Result = result;
 
@@ -187,7 +188,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
@@ -202,7 +203,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             {
                 var reception = await context.Reception.GetByPosition(model.PositionKey);
 
-                if(reception == default) return NoContent();
+                if (reception == default) return NoContent();
 
                 var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == model.PositionKey);
 
@@ -218,65 +219,113 @@ namespace reception.fitnesspro.ru.Controllers.Student
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-           
         }
 
-        #region OLD
 
         [HttpGet]
-        [Route("GetReceptions")]
-        [Obsolete]
-        public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptionsOld(Guid studentKey, Guid disciplineKey)
+        [Route("GetSignedUpPositions")]
+        public async Task<ActionResult> StudentsSignedUpPositions(Guid studentKey, Guid disciplineKey, Guid programKey)
         {
             if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
+            if (disciplineKey == default) ModelState.AddModelError(nameof(disciplineKey), "Ключ дисциплины не указан");
+            if (programKey == default) ModelState.AddModelError(nameof(programKey), "Ключ программы не указан");
 
             if (ModelState.IsValid == false) return BadRequest(ModelState);
 
             try
             {
-                var contract = await GetStudentContract();
-            
-                var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
+                var studentReceptions = await context.Student.GetReceptionsWithSignedUpStudent(studentKey);
 
-                var filtered = disciplineReceptions
-                    .Where(x => x.IsForProgram(contract.EducationProgram.Key))
-                    .Where(x => x.IsForGroup(contract.Group.Key))
-                    .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
+                var receptions = studentReceptions.Where(x => x.PositionManager.GetSignedUpStudentPosition(studentKey)
+                                                                .Any(p => p.Record.StudentKey == studentKey
+                                                                    && p.Record.ProgramKey == programKey
+                                                                    && p.Record.DisciplineKey == disciplineKey
+                                                                    && p.Record.Result == default));
 
-                var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
+                if (receptions == default) return NoContent();
 
-                viewModel.ForEach(x => x.CheckContractExpired(contract));
-                viewModel.ForEach(x => x.CheckEmptyPlaces());
-                viewModel.ForEach(x => x.CheckIsNotInPast());
-                viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
-                viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student));
-                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
-                viewModel.ForEach(x => x.CheckSignUpBefore());
-                viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
+                var result = receptions.Select(x =>
+                    new
+                    {
+                        Date = x.Date,
+                        Positions = GetPositionWithOutResult(x.PositionManager.GetSignedUpStudentPosition(studentKey))
+                    });
 
-                if (viewModel == default) return NoContent();
+                return Ok(result);
 
-                return viewModel;
+                IEnumerable<Position> GetPositionWithOutResult(IEnumerable<Position> positions)
+                {
+                    return positions.Where(p => p.Record.StudentKey == studentKey
+                                              && p.Record.ProgramKey == programKey
+                                              && p.Record.DisciplineKey == disciplineKey
+                                              && p.Record.Result == default);
+                }
+
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
-            }
+    }
+}
 
-            async Task<Contract> GetStudentContract()
-            {
-                var allStudentContract = await context.Student.GetContracts(studentKey);
-                var contract = allStudentContract//.Where(x => x.ExpiredDate > DateTime.Now.Date)
-                    .FirstOrDefault(x => x.ExpiredDate == allStudentContract.Max(d => d.ExpiredDate));
 
-                return contract;
-            }
-        }
+#region OLD
+
+[HttpGet]
+[Route("GetReceptions")]
+[Obsolete]
+public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptionsOld(Guid studentKey, Guid disciplineKey)
+{
+    if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
+    if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
+
+    if (ModelState.IsValid == false) return BadRequest(ModelState);
+
+    try
+    {
+        var contract = await GetStudentContract();
+
+        var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
+
+        var filtered = disciplineReceptions
+            .Where(x => x.IsForProgram(contract.EducationProgram.Key))
+            .Where(x => x.IsForGroup(contract.Group.Key))
+            .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
+
+        var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
+
+        viewModel.ForEach(x => x.CheckContractExpired(contract));
+        viewModel.ForEach(x => x.CheckEmptyPlaces());
+        viewModel.ForEach(x => x.CheckIsNotInPast());
+        viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
+        viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student));
+        viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
+        viewModel.ForEach(x => x.CheckSignUpBefore());
+        viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
+
+        if (viewModel == default) return NoContent();
+
+        return viewModel;
+    }
+    catch (Exception e)
+    {
+        logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+        return new StatusCodeResult(500);
+    }
+
+    async Task<Contract> GetStudentContract()
+    {
+        var allStudentContract = await context.Student.GetContracts(studentKey);
+        var contract = allStudentContract//.Where(x => x.ExpiredDate > DateTime.Now.Date)
+            .FirstOrDefault(x => x.ExpiredDate == allStudentContract.Max(d => d.ExpiredDate));
+
+        return contract;
+    }
+}
 
         #endregion
     }
