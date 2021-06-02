@@ -15,9 +15,11 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
         {
             this.reception = reception;
             this.ReceptionKey = reception.Key;
+            this.Events = reception.Events?.Select(x=>x.Discipline);
         }
 
         public Guid ReceptionKey { get; set; }
+        public IEnumerable<BaseInfo> Events { get; set; }
         public IEnumerable<TableRow> Positions { get; set; }
 
         public TableViewModel IncludePositions(
