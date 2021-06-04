@@ -8,6 +8,7 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using reception.fitnesspro.ru.Misc;
+using reception.fitnesspro.ru.ViewModel;
 
 namespace reception.fitnesspro.ru.Controllers.Settings
 {
@@ -441,6 +442,35 @@ namespace reception.fitnesspro.ru.Controllers.Settings
                 var result = programs.Adapt<IEnumerable<GroupFromServiceViewModel>>();
 
                 return Ok(result);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProgramInfo")]
+        public async Task<ActionResult<IEnumerable<ProgramInfoViewModel>>> GetProgramInfo(Guid? teacherKey)
+        {
+            try
+            {
+                var programs = await context.Education.GetProgramInfo(teacherKey);
+
+                if (programs == default) return NoContent();
+
+                var result = programs.Select(x =>
+                    new ProgramInfoViewModel
+                    {
+                        Key = x.Key,
+                        Title = x.Title,
+                        Groups = x.Groups?.Adapt<IEnumerable<BaseInfoViewModel>>(),
+                        Educations = x.Educations?.Select(d => d.Discipline).Adapt<IEnumerable<BaseInfoViewModel>>()
+                    }
+                );
+
+                return result.ToList();
             }
             catch (Exception e)
             {

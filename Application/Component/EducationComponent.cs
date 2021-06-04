@@ -21,16 +21,16 @@ namespace Application.Component
         }
 
         public async Task<IEnumerable<Domain.Education.Program>> GetProgramsByDiscipline(Guid disciplineKey)
-        { 
+        {
             var programManager = lcService.Program;
 
             var programs = await programManager.FilterByDiscipline(disciplineKey);
-                await programManager.IncludeTeachers(programs);
-                await programManager.IncludeGroups(programs);
+            await programManager.IncludeTeachers(programs);
+            await programManager.IncludeGroups(programs);
 
             var groupManager = lcService.Group;
             var groups = programs.SelectMany(x => x.Groups);
-                await groupManager.IncludeSubGroups(groups);
+            await groupManager.IncludeSubGroups(groups);
 
             var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
 
@@ -66,13 +66,13 @@ namespace Application.Component
         }
 
         public async Task<IEnumerable<ControlType>> GetControlTypesByKeys(IEnumerable<Guid> controlTypeKeys)
-        { 
+        {
             var controlTypes = await lcService.ControlType.GetControlTypesByKeys(controlTypeKeys);
             //var castedControlTypes = controlTypes.Select(x=> new Service.lC.Model.ControlType{ Key = x.Key, Title = x.Title });
-                await lcService.ControlType.IncludeScoreType(controlTypes);
+            await lcService.ControlType.IncludeScoreType(controlTypes);
 
-            var scoreTypes = controlTypes.SelectMany(x=>x.RateType.Select(s=>s.RateKey));
-                await lcService.ControlType.IncludeRateType(scoreTypes);
+            var scoreTypes = controlTypes.SelectMany(x => x.RateType.Select(s => s.RateKey));
+            await lcService.ControlType.IncludeRateType(scoreTypes);
 
             var domain = controlTypes.Adapt<IEnumerable<ControlType>>();
 
@@ -95,6 +95,27 @@ namespace Application.Component
             var model = dto.Adapt<IEnumerable<BaseInfo>>();
 
             return model;
+        }
+
+        public async Task<IEnumerable<Domain.Education.Program>> GetProgramInfo(Guid? teacherKey)
+        {
+            var programs = Enumerable.Empty<lcService.Model.Program>();
+
+            if (teacherKey.HasValue && teacherKey.Value != default)
+            {
+                programs = await lcService.Program.FilterByTeacher(teacherKey.Value);
+            }
+            else
+            {
+                programs = await lcService.Program.GetAll();
+            }
+
+            await lcService.Program.IncludeGroups(programs);
+            await lcService.Program.IncludeDisciplines(programs);
+
+            var domain = programs.Adapt<IEnumerable<Domain.Education.Program>>();
+
+            return domain;
         }
     }
 }

@@ -13,6 +13,8 @@ namespace Domain.Interface
         Task<IEnumerable<Program>> GetProgramsByDiscipline(Guid disciplineKey);
         Task<IEnumerable<Program>> GetProgramsByKeys(IEnumerable<Guid> programKeys);        
 
+        Task<IEnumerable<Program>> GetProgramInfo(Guid? teacherKey);     
+
         Task<Program> GetStudentEducation(Guid programKey);
 
         Task<IEnumerable<BaseInfo>> GetRates();
