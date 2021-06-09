@@ -37,7 +37,9 @@ namespace Service.lC
             providers.Employee, 
             providers.Group);
 
-        public GroupManager Group => @group ??= new GroupManager(providers.SubGroup);
+        public GroupManager Group => @group ??= new GroupManager(
+            providers.Group,
+            providers.SubGroup);
 
         public ControlTypeManager ControlType => controlType ??= new ControlTypeManager(providers.ControlType, providers.ScoreType);
 

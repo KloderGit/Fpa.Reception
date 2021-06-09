@@ -1,6 +1,7 @@
 using Application.Component;
 using Application.Mappings;
 using Domain;
+using Domain.Model;
 using lc.fitnesspro.library;
 using Mapster;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,6 +30,34 @@ namespace Test
             public int AllowedAttemptCount { get; set; }
             public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; }
         }
+
+
+        [TestMethod]
+        public void TetsAttemptsCount()
+        {
+            var item = new StudentSetting(Guid.NewGuid());
+            var discId = Guid.NewGuid();
+            item.AddDiscipline(discId, 8, 6, null);
+
+            var i = item.GetRestSignUpCount(discId);
+
+            item.AddSignUpAttempts(discId, 2);
+
+            var ii = item.GetRestSignUpCount(discId);
+
+            var dd = item.GetRestSignOutCount(discId);
+
+            item.SubtractSignOutAttempt(discId);
+
+            var ddd = item.GetRestSignOutCount(discId);
+
+            var dt = item.GetSignUpLastDate(discId);
+
+            //item.AddSignUpAttempts(Guid.NewGuid(), 2);
+
+            var nl = item.GetRestSignOutCount(Guid.NewGuid());
+        }
+
 
 
         [TestMethod]
@@ -222,7 +251,6 @@ namespace Test
 
 
         }
-
 
 
     }

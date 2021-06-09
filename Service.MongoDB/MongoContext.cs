@@ -28,9 +28,11 @@ namespace Service.MongoDB
             this.options = options;
         }
 
+        IMongoRepository<StudentSetting> student;
         IMongoRepository<TeacherSetting> teacher;
         IMongoRepository<GroupSettings> group;
 
+        public IMongoRepository<StudentSetting> Student => student ??= new MongoRepository<StudentSetting>(options);
         public IMongoRepository<TeacherSetting> Teacher => teacher ??= new MongoRepository<TeacherSetting>(options);
         public IMongoRepository<GroupSettings> Group => group ??= new MongoRepository<GroupSettings>(options);
 

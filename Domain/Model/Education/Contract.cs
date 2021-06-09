@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Domain.Model.Education
@@ -13,6 +14,13 @@ namespace Domain.Model.Education
         public BaseInfo EducationProgram { get; set; }
         public BaseInfo Group { get; set; }
         public BaseInfo SubGroup { get; set; }
+
+        public bool IsContractForStudent(Guid studentKey)
+        {
+            if(Students == default || Students.Any() == false) return false;
+
+            return Students.Any(x=>x == studentKey);
+        }
 
         public bool IsContractExpiredForDay(DateTime date)
         {

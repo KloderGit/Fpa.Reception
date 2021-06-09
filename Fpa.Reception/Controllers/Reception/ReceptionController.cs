@@ -26,7 +26,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             this.context = context;
             this.logger = loggerFactory.CreateLogger(this.ToString());
         }
-        
+
         [HttpGet]
         [Route("GetAll")]
         public async Task<ActionResult> GetAll()
@@ -43,10 +43,10 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-            
+
         }
 
         [HttpGet]
@@ -71,7 +71,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
@@ -92,7 +92,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
@@ -107,21 +107,48 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             {
                 var reception = await context.Reception.GetByPosition(positionKey);
 
-                if(reception == default) return NoContent();
+                if (reception == default) return NoContent();
 
                 var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == positionKey);
 
+                var disciplineKey = position.Record.DisciplineKey;
+                var programKey = position.Record.ProgramKey;
+                var studentKey = position.Record.StudentKey;
+
                 if (position == default) return NotFound(nameof(positionKey));
-                
+
                 position.Record = null;
 
                 await context.Reception.Update(reception);
+
+
+                var studentSetting = await context.Setting.GetStudentSetting(disciplineKey);
+
+                if (studentSetting == default)
+                {
+                    var constraints = context.Setting.Find(programKey, disciplineKey).FirstOrDefault();
+
+                    if (constraints != default)
+                    {
+                        studentSetting = new Domain.Model.StudentSetting(studentKey);
+                        studentSetting.AddDiscipline(constraints.DisciplineKey, constraints.SignUpBeforeMinutes, constraints.SignOutBeforeMinutes, null);
+
+                        studentSetting.SubtractSignOutAttempt(disciplineKey);
+
+                        await context.Setting.AddStudentSetting(studentSetting);
+                    }
+                }
+                else
+                {
+                    studentSetting.SubtractSignOutAttempt(disciplineKey);
+                    await context.Setting.UpdateStudentSetting(studentSetting);
+                }
 
                 return Ok();
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
@@ -137,10 +164,10 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 var currentYear = DateTime.Now.Year;
                 var currentMonth = DateTime.Now.Month;
 
-                if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
-                if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
-                if(toDate < fromDate)
-                { 
+                if (fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+                if (toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear, currentMonth));
+                if (toDate < fromDate)
+                {
                     var temp = toDate;
                     toDate = fromDate;
                     fromDate = temp;
@@ -154,7 +181,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
 
@@ -178,10 +205,10 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-         
+
         }
 
         [HttpGet]
@@ -207,10 +234,10 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-           
+
         }
 
         [HttpGet]
@@ -229,7 +256,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }

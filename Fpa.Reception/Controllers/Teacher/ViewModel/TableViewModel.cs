@@ -56,8 +56,16 @@ namespace reception.fitnesspro.ru.Controllers.Teacher.ViewModel
 
                 var edu = prg.Educations.FirstOrDefault(x=>x.Discipline.Key == disciplineKey);
 
-                var controlKey = programs.FirstOrDefault(x=>x.Key == programKey)
-                    .Educations.FirstOrDefault(x=>x.Discipline.Key == disciplineKey).ControlType.Key;
+                var program = programs.ToList().FirstOrDefault(x=>x.Key == programKey);
+                if(program == default) return null;
+                var discipline = program.Educations.FirstOrDefault(x=>x.Discipline.Key == disciplineKey);
+                if(discipline == default) return null;
+                var controlKey = discipline.ControlType.Key;
+
+
+
+                //var controlKey = programs.ToList().FirstOrDefault(x=>x.Key == programKey)
+                //    .Educations.FirstOrDefault(x=>x.Discipline.Key == disciplineKey).ControlType?.Key;
 
                 if(controlKey == default) return null;
 

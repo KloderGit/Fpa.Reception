@@ -10,13 +10,23 @@ namespace Service.lC.Manager
 {
     public class GroupManager
     {
+        private readonly GroupProvider groupProvider;
         private readonly SubGroupProvider subGroupProvider;
 
         public GroupManager(
+            GroupProvider groupProvider,
             SubGroupProvider subGroupProvider
             )
         {
+            this.groupProvider = groupProvider;
             this.subGroupProvider = subGroupProvider;
+        }
+
+        public async Task<IEnumerable<Group>> GetGroups(IEnumerable<Guid> groupsKeys)
+        {
+            var groups = await groupProvider.Repository.GetAsync(groupsKeys);
+
+            return groups;
         }
 
         public async Task IncludeSubGroups(IEnumerable<Group> groups)

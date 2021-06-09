@@ -222,7 +222,7 @@ namespace Application.Component
             return result;
         }
 
-        
+
         public async Task<IEnumerable<Domain.Education.Program>> GetAllServiceGroups()
         {
             var programManager = lcService.Program;
@@ -230,7 +230,7 @@ namespace Application.Component
             var programs = await programManager.GetAll();
             await programManager.IncludeGroups(programs);
 
-            var result = programs.Select(x=>GetProgram(x)).Where(x=>x != null);
+            var result = programs.Select(x => GetProgram(x)).Where(x => x != null);
 
             var model = result.Adapt<IEnumerable<Domain.Education.Program>>();
 
@@ -248,6 +248,58 @@ namespace Application.Component
 
                 return null;
             }
+        }
+
+
+
+        public async Task<StudentSetting> GetStudentSetting(Guid studentKey)
+        {
+            var setting = await database.Settings.Student.FindOneAsync(x => x.StudentKey == studentKey);
+
+            if(setting == default) return null;
+
+            var model = new StudentSetting(setting.StudentKey);
+            setting.DisciplineSettings.ToList().ForEach(x => model.AddDiscipline(x.DisciplineKey, x.SignUpCount, x.SignOutCount, x.LastDaySetting));
+
+            return model;
+        }
+
+        public async Task<Guid> AddStudentSetting(StudentSetting model)
+        {
+            var setting = await database.Settings.Student.FindOneAsync(x => x.StudentKey == model.StudentKey);
+
+            if (setting != default) throw new ArgumentException("Настройки для студента уже существуют.");
+
+            var dto = new Service.MongoDB.Model.StudentSetting();
+            dto.Key = Guid.NewGuid();
+            dto.StudentKey = model.StudentKey;
+            dto.DisciplineSettings = model.DisciplineSettings.Select(x => new Service.MongoDB.Model.DisciplineSetting
+            {
+                DisciplineKey = x.disciplineKey,
+                SignUpCount = x.GetRestSignUpCount(),
+                SignOutCount = x.GetRestSignOutCount(),
+                LastDaySetting = x.GetSignUpLastDate()
+            });
+
+            database.Settings.Student.InsertOne(dto);
+
+            var result = await Task.FromResult(database.Settings.Student.FindOne(x => x.Key == dto.Key));
+
+            return result.Key;
+        }
+
+        public async Task UpdateStudentSetting(StudentSetting model)
+        {
+            var dto = await database.Settings.Student.FindOneAsync(x => x.StudentKey == model.StudentKey);
+            dto.DisciplineSettings = model.DisciplineSettings.Select(x => new Service.MongoDB.Model.DisciplineSetting
+            {
+                DisciplineKey = x.disciplineKey,
+                SignUpCount = x.GetRestSignUpCount(),
+                SignOutCount = x.GetRestSignOutCount(),
+                LastDaySetting = x.GetSignUpLastDate()
+            });
+
+            database.Settings.Student.ReplaceOne(dto);
         }
     }
 }

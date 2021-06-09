@@ -117,5 +117,12 @@ namespace Application.Component
 
             return domain;
         }
+
+        public async Task<IEnumerable<Domain.Education.Group>> GetGroupsByKeys(IEnumerable<Guid> groupKeys)
+        {
+            var groups = await lcService.Group.GetGroups(groupKeys);
+
+            return groups.Adapt<IEnumerable<Domain.Education.Group>>();
+        }
     }
 }

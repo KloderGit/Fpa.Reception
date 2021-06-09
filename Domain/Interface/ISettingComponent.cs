@@ -31,5 +31,8 @@ namespace Domain.Interface
         Task<Guid> AddGroupSettings(GroupSettings model);
         Task UpdateGroupSettings(GroupSettings model);
         Task DeleteGroupSettings(Guid key);
+        Task<StudentSetting> GetStudentSetting(Guid studentKey);
+        Task<Guid> AddStudentSetting(StudentSetting model);
+        Task UpdateStudentSetting(StudentSetting model);
     }
 }

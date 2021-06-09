@@ -36,9 +36,9 @@ namespace Service.lC.Manager
             return contract;
         }
 
-        public async Task<IEnumerable<Contract>> GetByStudent(Guid studentKey)
+        public async Task<IEnumerable<Contract>> GetByStudents(IEnumerable<Guid> studentsKeys)
         {
-            var contracts = await contractProvider.FilterByStudent(new List<Guid> { studentKey });
+            var contracts = await contractProvider.FilterByStudent(studentsKeys);
 
             return contracts;
         }

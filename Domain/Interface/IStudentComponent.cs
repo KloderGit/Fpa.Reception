@@ -11,7 +11,8 @@ namespace Domain.Interface
         Task<Program> GetStudentEducation(Guid programKey);
         Task<IEnumerable<Reception>> GetReceptionsForSignUpStudent(Guid studentKey, Guid programKey);
         Task<IEnumerable<Student>> GetStudents(IEnumerable<Guid> studentKeys);
-        Task<IEnumerable<Contract>> GetContracts(Guid studentKey);
+        Task<IEnumerable<Contract>> GetContracts(IEnumerable<Guid> studentsKeys);
         Task<IEnumerable<Reception>> GetReceptionsWithSignedUpStudent(Guid studentKey);
+        Task<Contract> GetContract(Guid studentKey);
     }
 }

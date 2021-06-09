@@ -12,6 +12,7 @@ namespace Domain.Interface
         Task<IEnumerable<BaseInfo>> GetDisciplinesByKeys(IEnumerable<Guid> disciplineKeys);
         Task<IEnumerable<Program>> GetProgramsByDiscipline(Guid disciplineKey);
         Task<IEnumerable<Program>> GetProgramsByKeys(IEnumerable<Guid> programKeys);        
+        Task<IEnumerable<Group>> GetGroupsByKeys(IEnumerable<Guid> groupKeys);
 
         Task<IEnumerable<Program>> GetProgramInfo(Guid? teacherKey);     
 

@@ -23,9 +23,9 @@ namespace Application.Component
         }
 
         public async Task<Domain.Education.Program> GetStudentEducation(Guid programKey)
-        { 
+        {
             var foundedProgramQuery = await lcservice.Program.GetProgram(programKey);
-            await lcservice.Program.IncludeDisciplines(new List<Service.lC.Model.Program>(){ foundedProgramQuery });
+            await lcservice.Program.IncludeDisciplines(new List<Service.lC.Model.Program>() { foundedProgramQuery });
 
             var domain = foundedProgramQuery.Adapt<Domain.Education.Program>();
 
@@ -76,11 +76,23 @@ namespace Application.Component
             return result;
         }
 
-        public async Task<IEnumerable<Contract>> GetContracts(Guid studentKey)
+        public async Task<IEnumerable<Contract>> GetContracts(IEnumerable<Guid> studentKey)
         {
-            var dto = await lcservice.Contract.GetByStudent(studentKey);
+            var dto = await lcservice.Contract.GetByStudents(studentKey);
 
             var result = dto.Adapt<IEnumerable<Contract>>();
+
+            return result;
+        }
+
+        public async Task<Contract> GetContract(Guid studentKey)
+        {
+            var fountContracts = await lcservice.Contract.GetByStudents( new List<Guid>{ studentKey });
+
+            var dto = fountContracts
+                      .FirstOrDefault(x => x.ExpiredDate == fountContracts.Max(d => d.ExpiredDate));
+
+            var result = dto.Adapt<Contract>();
 
             return result;
         }
