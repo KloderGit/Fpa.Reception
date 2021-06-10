@@ -295,7 +295,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
         }
 
 
-        [HttpGet]
+        [HttpPost]
         [Route("StudentInfo")]
         public async Task<ActionResult> StudentInfo(IEnumerable<Guid> studentsKeys)
         {

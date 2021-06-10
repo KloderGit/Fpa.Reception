@@ -167,11 +167,11 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
         [HttpGet]
         [Route("GetSchedule")]
-        public async Task<ActionResult<IEnumerable<EventInfo>>> GetScheduleFromService(Guid teacherId)
+        public async Task<ActionResult<IEnumerable<EventInfo>>> GetScheduleFromService(Guid teacherKey)
         {
             try
             {
-                var setting = await context.Setting.GetTeacherSettings(teacherId);
+                var setting = await context.Setting.GetTeacherSettings(teacherKey);
 
                 if(setting == default) return NoContent();
 
