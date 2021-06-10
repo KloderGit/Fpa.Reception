@@ -92,6 +92,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
             var record = new RecordInfo
             {
+                PositionKey = position.Key,
                 DateTime = position.Time,
                 Result = position?.Record?.Result == default ? null : new ResultInfo(position),
                 SignUpAttempt = currentSetting?.GetRestSignUpCount().Value,
@@ -160,6 +161,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
         public class RecordInfo
         {
+            public Guid PositionKey { get; set; }
             public DateTime DateTime { get; set; }
             public ResultInfo Result { get; set; }
             public int? SignUpAttempt { get; set; }
