@@ -5,9 +5,8 @@ using System.Linq;
 
 namespace Domain
 {
-    public class Reception
+    public class Reception : KeyEntity
     {
-        public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
         public PositionManager PositionManager { get; set; }
@@ -49,10 +48,6 @@ namespace Domain
         {
             return PositionManager.HasEmptyPlaces();
         }
-
-
-
-
 
         public TConverted ConvertToType<TConverted>(Func<Reception, TConverted> function )
         {

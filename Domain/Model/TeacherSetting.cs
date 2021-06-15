@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Domain
 {
-    public class TeacherSetting
+    public class TeacherSetting : KeyEntity
     {
-        public Guid Key { get; set; }
         public Guid ServiceTeacherKey { get; set; }
         public int ScheduleTeacherId { get; set; }
         public bool IsEntireAreaShown { get; set; }

@@ -2,25 +2,34 @@
 
 namespace Domain
 {
-    public class BaseInfo
+    public class KeyEntity
     {
-        public BaseInfo()
+        public KeyEntity(){}
+        public KeyEntity(Guid key)
+        {
+            Key = key;
+        }
+        public Guid Key { get; set; }
+    }
+
+    public class BaseInfo : KeyEntity
+    {
+        public BaseInfo() : base()
         {
         }
 
         public BaseInfo(Guid key, string title)
+           : base(key)
         {
-            Key = key;
             Title = title;
         }
 
-        public Guid Key { get; set; }
-        public string Title { get; set; }
-    }
+    public string Title { get; set; }
+}
 
-    public class BaseSchedule
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-    }
+public class BaseSchedule
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+}
 }

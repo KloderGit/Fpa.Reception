@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Domain.Model.Education
 {
-    public class Contract
+    public class Contract : KeyEntity
     {
         public IEnumerable<Guid> Students { get; set; }
         public DateTime ExpiredDate { get; set; }

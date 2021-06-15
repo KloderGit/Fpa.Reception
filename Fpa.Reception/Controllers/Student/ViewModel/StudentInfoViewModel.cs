@@ -37,10 +37,10 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
         IEnumerable<StudentInfo> CreateStudentInfo(BaseInfo student, IEnumerable<Domain.Reception> receptions, IEnumerable<StudentSetting> settings)
         {
 
-            var studentReception = receptions.Where(x => x.PositionManager.GetSignedUpStudentPosition(student.Key).Any());
+            var studentReception = receptions.Where(x => x.PositionManager.GetSignedUpStudentPosition(student.Key).Any()).ToList();
             var studentSetting = settings.FirstOrDefault(x => x.StudentKey == student.Key);
 
-            var allStudentPositions = studentReception.SelectMany(x => x.PositionManager.GetSignedUpStudentPosition(student.Key));
+            var allStudentPositions = studentReception.SelectMany(x => x.PositionManager.GetSignedUpStudentPosition(student.Key)).ToList();
 
             var listOfPrograms = allStudentPositions.Select(x => x.Record.ProgramKey).Distinct();
 

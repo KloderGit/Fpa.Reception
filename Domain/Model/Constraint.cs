@@ -4,10 +4,8 @@ using System.Text;
 
 namespace Domain
 {
-    public abstract class Constraint
+    public abstract class Constraint : KeyEntity
     {
-        public Guid Key { get; set; }
-
         public Guid ProgramKey { get; set; }
         public Guid DisciplineKey { get; set; }
 

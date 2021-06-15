@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Domain.Model;
 using System.Collections;
+using Domain.Infrastructure;
 
 namespace reception.fitnesspro.ru.Controllers.Student
 {
@@ -299,6 +300,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
         [Route("StudentInfo")]
         public async Task<ActionResult> StudentInfo(IEnumerable<Guid> studentsKeys)
         {
+            studentsKeys = studentsKeys.Distinct();
+
             if (studentsKeys == default) ModelState.AddModelError(nameof(studentsKeys), "Ключи студента не указаны");
             if (ModelState.IsValid == false) return BadRequest(ModelState);
 
@@ -309,7 +312,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             await Task.WhenAll(studentTask, receptionTask, contractTask, studentSettingTask);
 
             var students = await studentTask;
-            var receptions = await receptionTask;
+            var receptions = (await receptionTask).ToList();
             var contracts = await contractTask;
             var studentSettings = await studentSettingTask;
 
@@ -318,7 +321,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             var groupTask = GetGroups(contracts);
             await Task.WhenAll(programTask, disciplineTask);
 
-            var programs = await programTask;
+            var programs = (await programTask).ToList();
             var disciplines = await disciplineTask;
             var groups = await groupTask;
             var controlTypes = await GetControlTypes(receptions, studentsKeys, programs);
@@ -389,7 +392,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
                     if(controlTypeKey.HasValue && controlTypeKey.Value != default) controlKeys.Add(controlTypeKey.Value);
                 }
 
-                var controlTypes = await context.Education.GetControlTypesByKeys(controlKeys);
+                var controlTypes = await context.Education.GetControlTypesByKeys(controlKeys.Distinct());
 
                 return controlTypes;
             }
@@ -424,6 +427,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
                     contracts.Add(contract);
                 }
 
+                var result = contracts.Distinct(new KeyEqualityComparer<Contract>());
+
                 return contracts;
             }
 
@@ -440,7 +445,8 @@ namespace reception.fitnesspro.ru.Controllers.Student
                     var reception = await task;
                     receptionTasksResult.Add(reception);
                 }
-                var receptions = receptionTasksResult.SelectMany(x => x.Select(y => y)).ToList();
+
+                var receptions = receptionTasksResult.SelectMany(x => x.Select(y => y)).ToList().Distinct(new KeyEqualityComparer<Domain.Reception>());
 
                 return receptions;
             }

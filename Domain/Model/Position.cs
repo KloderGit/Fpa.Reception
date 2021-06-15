@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace Domain
 {
-    public class Position
+    public class Position : KeyEntity
     {
-        public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Time { get; set; }
         public Record Record { get; set; }
