@@ -28,18 +28,26 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             ReceptionKey = reception.Key;
             this.Positions = reception.PositionManager.Positions
                 //.Where(x => x.Record == default)
-                .Select(x => new PositionViewModel {
+                .Select(x => new PositionViewModel
+                {
                     Key = x.Key,
                     OffsetInMinutes = (int)(x.Time - Date.Date).TotalMinutes,
                     IsEmpty = x.Record == default,
-                    Time = x.Time }).ToList();
+                    Time = x.Time
+                }).ToList();
             this.Events = reception.Events.Select(x => new EventViewModel(x)).ToList();
         }
 
 
-        public void CheckContractExpired(Contract contract)
+        public void CheckContractExpired(Contract contract, IEnumerable<BaseConstraint> commonSettings)
         {
-            if (contract.IsContractExpiredForDay(reception.Date)) CommonRejectReasons.Add("The contract has expired");
+            if(contract == default) CommonRejectReasons.Add("The student`s contract was'nt found");
+
+            // Срок договора не истек
+            if (contract.IsContractExpiredForDay(reception.Date) == false) return;
+
+            // Срок договора истек - проверяем переопределяют ли настройки дисциплин в рецепции правило - не проверять договор
+            Events.ForEach(x => x.CheckContractExpired(contract, commonSettings, reception.Date));
         }
 
         public void CheckIsNotInPast()
@@ -80,7 +88,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
         public class PositionViewModel
         {
             public Guid Key { get; set; }
-            public DateTime Time { get;set;}
+            public DateTime Time { get; set; }
             public bool IsEmpty { get; set; }
             public int OffsetInMinutes { get; set; }
         }
@@ -102,6 +110,25 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
             public IEnumerable<BaseInfo> Teachers { get; set; }
 
+            public void CheckContractExpired(Contract contract, IEnumerable<BaseConstraint> commonSettings, DateTime date)
+            {
+                var programKey = contract.EducationProgram.Key;
+                var groupKey = contract.Group.Key;
+                var subGroupKey = contract.SubGroup.Key;
+
+                var eventRule = @event.GetRestriction(programKey, groupKey, subGroupKey);
+
+                if (eventRule != default && eventRule.Option.CheckContractExpired == false) return;
+
+                // Если настроек на непроверку контракта в рецепии не существует пробуем проверить общие
+                // if(commonSettings != default) ...
+                //var commonRulesIsContractChecking = commonSettings.FirstOrDefault(
+                //                            x=> x.DisciplineKey == @event.Discipline.Key &&
+                //                            (x.ProgramKey == default || x.ProgramKey == programKey));
+                // if(commonRulesIsContractChecking.CheckContract == false) return;
+
+                if (contract.IsContractExpiredForDay(date)) EventRejectReasons.Add("The contract has expired");
+            }
 
             public void CheckSignUpBefore()
             {
@@ -149,7 +176,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
             public void CheckDependencies()
             {
-                
+
             }
 
         }

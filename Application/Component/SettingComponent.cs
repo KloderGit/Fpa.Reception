@@ -42,6 +42,13 @@ namespace Application.Component
             return dto.Adapt<IEnumerable<Domain.BaseConstraint>>();
         }
 
+        public IEnumerable<Domain.BaseConstraint> FindCommonSettingsByDiscipline(Guid disciplineKey)
+        {
+            var dto = database.Constraints.FilterBy(x => x.DisciplineKey == disciplineKey);
+
+            return dto.Adapt<IEnumerable<Domain.BaseConstraint>>();
+        }
+
         public IEnumerable<Domain.BaseConstraint> Get(IEnumerable<Guid> constraintKeys)
         {
             var dto = database.Constraints.FilterByArray("Key", constraintKeys);
@@ -256,7 +263,7 @@ namespace Application.Component
         {
             var setting = await database.Settings.Student.FindOneAsync(x => x.StudentKey == studentKey);
 
-            if(setting == default) return null;
+            if (setting == default) return null;
 
             var model = new StudentSetting(setting.StudentKey);
             setting.DisciplineSettings.ToList().ForEach(x => model.AddDiscipline(x.DisciplineKey, x.SignUpCount, x.SignOutCount, x.LastDaySetting));

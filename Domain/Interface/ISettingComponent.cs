@@ -34,5 +34,6 @@ namespace Domain.Interface
         Task<StudentSetting> GetStudentSetting(Guid studentKey);
         Task<Guid> AddStudentSetting(StudentSetting model);
         Task UpdateStudentSetting(StudentSetting model);
+        IEnumerable<BaseConstraint> FindCommonSettingsByDiscipline(Guid disciplineKey);
     }
 }

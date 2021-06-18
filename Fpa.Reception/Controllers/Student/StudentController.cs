@@ -126,23 +126,24 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
             try
             {
-                var contract = await GetStudentContract();
+                var contract = await context.Student.GetContract(studentKey);
+                var studentSetting = await context.Setting.GetStudentSetting(studentKey);
+                var commonDisciplineSettings = context.Setting.FindCommonSettingsByDiscipline(disciplineKey);
 
-                var disciplineReceptions = await context.Student.GetReceptionsForSignUpStudent(studentKey, disciplineKey);
-
-                var filteredForContractEducation = disciplineReceptions
+                var allDisciplineReceptions = await context.Student.GetReceptionsForSignUpStudent(studentKey, disciplineKey);
+                var filteredReceptionsForContractEducation = allDisciplineReceptions
                     .Where(x => x.IsForProgram(contract.EducationProgram.Key))
                     .Where(x => x.IsForGroup(contract.Group.Key))
                     .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
 
-                var viewModel = filteredForContractEducation.Select(x => new DisciplineReceptionViewModel(x)).ToList();
+                var viewModel = filteredReceptionsForContractEducation.Select(x => new DisciplineReceptionViewModel(x)).ToList();
 
-                viewModel.ForEach(x => x.CheckContractExpired(contract));
+                viewModel.ForEach(x => x.CheckContractExpired(contract, commonDisciplineSettings));
                 viewModel.ForEach(x => x.CheckEmptyPlaces());
                 viewModel.ForEach(x => x.CheckIsNotInPast());
-                viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
-                viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student));
-                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
+                viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract)); // ToDo
+                viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student)); //Todo
+                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception)); // ToDo
                 viewModel.ForEach(x => x.CheckSignUpBefore());
                 viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
 
@@ -154,13 +155,6 @@ namespace reception.fitnesspro.ru.Controllers.Student
             {
                 logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
-            }
-
-            async Task<Contract> GetStudentContract()
-            {
-                var contract = await context.Student.GetContract(studentKey);
-
-                return contract;
             }
         }
 
@@ -494,7 +488,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
 
-                viewModel.ForEach(x => x.CheckContractExpired(contract));
+                viewModel.ForEach(x => x.CheckContractExpired(contract, null));
                 viewModel.ForEach(x => x.CheckEmptyPlaces());
                 viewModel.ForEach(x => x.CheckIsNotInPast());
                 viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
