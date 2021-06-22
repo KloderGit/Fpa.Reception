@@ -46,16 +46,24 @@ namespace Application.Component
             return domen.FirstOrDefault();
         }
 
-        public void Create(Reception reception)
+        public async Task<Reception> Create(Reception reception)
         {
             var dto = reception.Adapt<Service.MongoDB.Model.Reception>();
                 
             database.Receptions.Repository.InsertOne(dto);
+
+            var serviceReception = await database.Receptions.GetByKeyAsync(reception.Key);
+
+            var domen = reception.Adapt<Domain.Reception>();
+
+            return domen;
         }
 
         public async Task Update(Reception reception)
         {
             var serviceReception = await database.Receptions.GetByKeyAsync(reception.Key);
+
+            if(serviceReception == default) throw new ArgumentException("Рецепция не обнаружена");
 
             var dto = reception.Adapt(serviceReception);
                 
@@ -64,7 +72,7 @@ namespace Application.Component
 
         public void Delete(Guid key)
         {
-            throw new NotImplementedException();
+            database.Receptions.Repository.DeleteOne(x=>x.Key == key);
         }
 
         #region OLd

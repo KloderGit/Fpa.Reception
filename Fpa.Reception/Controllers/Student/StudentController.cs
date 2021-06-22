@@ -313,7 +313,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             var programTask = GetPrograms(receptions, studentsKeys);
             var disciplineTask = GetDisciplines(receptions, studentsKeys);
             var groupTask = GetGroups(contracts);
-            await Task.WhenAll(programTask, disciplineTask);
+            await Task.WhenAll(programTask, disciplineTask,groupTask);
 
             var programs = (await programTask).ToList();
             var disciplines = await disciplineTask;

@@ -6,7 +6,7 @@ namespace Domain.Interface
 {
     public interface IReceptionComponent
     {
-        void Create(Reception reception);
+        Task<Reception> Create(Reception reception);
         Task Update(Reception reception);
         void Delete(Guid key);
 

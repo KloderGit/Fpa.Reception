@@ -86,9 +86,9 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             {
                 var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-                context.Reception.Create(item);
+                var result = await context.Reception.Create(item);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -187,6 +187,80 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
         }
 
+        [HttpDelete]
+        [Route("Delete")]
+        public ActionResult DeleteReception(Guid receptionKey)
+        {
+            try
+            {
+                var reception = context.Reception.GetByKey(receptionKey);
+
+                if (reception == default) return NoContent();
+
+                context.Reception.Delete(receptionKey);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpPut]
+        [Route("Update")]
+        public async Task<ActionResult> UpdateReception(Domain.Reception model)
+        {
+            if (model == default || model.Key == default) return BadRequest(nameof(model));
+
+            try
+            {
+                await context.Reception.Update(model);
+
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                logger.LogWarning(e, e.Message);
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("ChangeDate")]
+        public async Task<ActionResult> ChangeReceptionDate(ChangeDateViewModel viewModel)
+        {
+            if (ModelState.IsValid == false) return BadRequest(ModelState);
+
+            try
+            {
+                var reception = context.Reception.GetByKey(viewModel.ReceptionKey);
+                if (reception == default) return NoContent();
+
+                reception.ChangeData(viewModel.Date);
+
+                await context.Reception.Update(reception);
+
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                logger.LogWarning(e, e.Message);
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
         #region OLD implementation
 
         [HttpPost]
@@ -199,9 +273,9 @@ namespace reception.fitnesspro.ru.Controllers.Reception
             {
                 var item = new Domain.Reception().ConvertFromType(ReceptionViewModelConverter.ConvertViewModelToDomain, model);
 
-                context.Reception.Create(item);
+                var result = await context.Reception.Create(item);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception e)
             {

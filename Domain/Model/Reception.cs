@@ -49,7 +49,24 @@ namespace Domain
             return PositionManager.HasEmptyPlaces();
         }
 
-        public TConverted ConvertToType<TConverted>(Func<Reception, TConverted> function )
+        public void ClearRecords()
+        {
+            PositionManager.Positions.ToList().ForEach(x => x.Record = null);
+        }
+
+        public void ChangeData(DateTime date)
+        {
+            this.Date = date.Date;
+            PositionManager.Positions.ToList().ForEach(x => x.Time = MakePositionTime(x.Time));
+
+            DateTime MakePositionTime(DateTime dateTime)
+            {
+                var newDateTime = Date.AddHours(dateTime.Hour).AddMinutes(dateTime.Minute);
+                return newDateTime;
+            }
+        }
+
+        public TConverted ConvertToType<TConverted>(Func<Reception, TConverted> function)
         {
             var result = function(this);
 
