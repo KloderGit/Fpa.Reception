@@ -77,7 +77,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
                 var positions = allStudentPositionsByProgram.Where(x => x.Record.DisciplineKey == disciplineKey);
 
-                disciplineInfo.Records = positions.Select(x => GetRecord(x, studentSetting)).ToList();
+                disciplineInfo.Records = positions.Select(x => GetRecord(x, receptions, studentSetting)).ToList();
 
                 eventInfos.Add(disciplineInfo);
             }
@@ -85,13 +85,16 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             return eventInfos;
         }
 
-        RecordInfo GetRecord(Position position, StudentSetting setting)
+        RecordInfo GetRecord(Position position, IEnumerable<Domain.Reception> receptions, StudentSetting setting)
         {
             if (position.Record == default) return null;
             var currentSetting = setting?.DisciplineSettings?.FirstOrDefault(x => x.disciplineKey == position.Record.DisciplineKey);
 
+            var reception = receptions.FirstOrDefault(x=>x.PositionManager.Positions.Any(p=>p.Key == position.Key));
+
             var record = new RecordInfo
             {
+                ReceptionKey = reception.Key,
                 PositionKey = position.Key,
                 DateTime = position.Time,
                 Result = position?.Record?.Result == default ? null : new ResultInfo(position),
@@ -161,6 +164,7 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 
         public class RecordInfo
         {
+            public Guid ReceptionKey { get; set; }
             public Guid PositionKey { get; set; }
             public DateTime DateTime { get; set; }
             public ResultInfo Result { get; set; }
