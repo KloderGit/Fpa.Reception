@@ -74,7 +74,7 @@ namespace Service.Schedule.MySql
                     {
                         Id = elemt.FirstOrDefault().ProgramId,
                         Title = elemt.FirstOrDefault().ProgramTitle,
-                        Groups = elemt.Select(x=> new GroupInfo{ Id = x.GroupId, Title = x.GroupTitle })
+                        Groups = elemt.Select(x => new GroupInfo { Id = x.GroupId, Title = x.GroupTitle })
                     };
 
                     result.Add(item);
@@ -122,11 +122,11 @@ namespace Service.Schedule.MySql
             return teachers;
         }
 
-        public async Task<IEnumerable<EventInfo>> TeacherSchedule(int teacherId)
+        public async Task<IEnumerable<TeacherEventInfo>> TeacherSchedule(int teacherId)
         {
             string sqlExpression = "shedule_of_teacher";
 
-            var events = new List<EventInfo>();
+            var events = new List<TeacherEventInfo>();
 
             await connection.OpenAsync();
 
@@ -145,7 +145,7 @@ namespace Service.Schedule.MySql
 
                     foreach (DataRow row in table.Rows)
                     {
-                        var @event = new EventInfo
+                        var @event = new TeacherEventInfo
                         {
                             Title = String.IsNullOrEmpty(row[0].ToString()) ? "" : (string)row[0],
                             IsCanceled = !String.IsNullOrEmpty(row[1].ToString()) && (bool)row[1],
@@ -166,6 +166,66 @@ namespace Service.Schedule.MySql
             await connection.CloseAsync();
 
             return events;
+        }
+
+        public async Task<IEnumerable<GroupEventInfo>> GroupSchedule(int groupId)
+        {
+            string sqlExpression = "timeline_groups_all_subgroups";
+
+            var events = new List<GroupEventInfo>();
+
+            await connection.OpenAsync();
+
+            try
+            {
+                using (var cmd = new MySqlCommand())
+                {
+                    cmd.Connection = connection;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = sqlExpression;
+                    cmd.Parameters.AddWithValue("@n_group", groupId);
+                    await cmd.ExecuteNonQueryAsync();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var table = new DataTable();
+                        table.Load(reader);
+
+                        foreach (DataRow row in table.Rows)
+                        {
+                            var @event = new GroupEventInfo
+                            {
+                                Title = String.IsNullOrEmpty(row[0].ToString()) ? "" : (string)row[0],
+                                Teachers = String.IsNullOrEmpty(row[1].ToString()) ? null : GetTeachers(row[1].ToString()),
+                                Place = String.IsNullOrEmpty(row[2].ToString()) ? "" : (string)row[2],
+                                BeginDate = String.IsNullOrEmpty(row[4].ToString()) ? default : DateTime.Parse(row[4].ToString()),
+                                MonthNumber = String.IsNullOrEmpty(row[5].ToString()) ? "" : (string)row[5],
+                                StartTime = String.IsNullOrEmpty(row[6].ToString()) ? "" : (string)row[6],
+                                FinishTime = String.IsNullOrEmpty(row[7].ToString()) ? "" : (string)row[7],
+                                SubGroups = String.IsNullOrEmpty(row[9].ToString()) ? 0 : int.Parse(row[9].ToString()),
+                                IsCanceled = !String.IsNullOrEmpty(row[10].ToString()) && (bool)row[10],
+                            };
+
+                            events.Add(@event);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+            await connection.CloseAsync();
+
+            return events;
+
+            IEnumerable<string> GetTeachers(string teachers)
+            {
+                var array = teachers.Split(',').Select(x=>x.Trim());
+                return array;
+            }
         }
 
         internal class ProrgamQueryResult

@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Service.Schedule.MySql.Model;
+using Service.Schedule.MySql;
 
 namespace reception.fitnesspro.ru.Controllers.Education
 {
@@ -28,7 +30,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
         private readonly DisciplineHttpClient disciplineHttpClient;
         private readonly EducationFormHttpClient educationFormHttpClient;
         private readonly ControlTypeHttpClient controlTypeHttpClient;
-
+        private readonly IScheduleService schedule;
         EmployeeMethods employeeAction;
 
         public EducationController(IAppContext context, ILoggerFactory loggerFactory,
@@ -38,8 +40,8 @@ namespace reception.fitnesspro.ru.Controllers.Education
             AssignHttpClient assignHttpClient,
             DisciplineHttpClient disciplineHttpClient,
             EducationFormHttpClient educationFormHttpClient,
-            ControlTypeHttpClient controlTypeHttpClient
-
+            ControlTypeHttpClient controlTypeHttpClient, 
+            IScheduleService schedule
             )
         {
             this.context = context;
@@ -51,7 +53,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             this.disciplineHttpClient = disciplineHttpClient;
             this.educationFormHttpClient = educationFormHttpClient;
             this.controlTypeHttpClient = controlTypeHttpClient;
-
+            this.schedule = schedule;
             employeeAction = new EmployeeMethods(employeeHttpClient, assignHttpClient);
         }
 
@@ -75,10 +77,33 @@ namespace reception.fitnesspro.ru.Controllers.Education
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }
+
+
+        [HttpGet]
+        [Route("GetGroupSchedule")]
+        public async Task<ActionResult<IEnumerable<GroupEventInfo>>> GetGroupScheduleFromService(Guid groupKey)
+        {
+            try
+            {
+                var setting = await context.Setting.GetGroupSettings(groupKey);
+
+                if (setting == default) return NoContent();
+
+                var result = await schedule.GroupSchedule(setting.ScheduleGroupId);
+
+                return result.ToList();
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
+        }
+
 
         #region Old
 
@@ -96,66 +121,66 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             try
             {
-            var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
+                var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-            var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
+                var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
 
-            var client2 = new EducationProgram(new Manager("Kloder", "Kaligula2"));
+                var client2 = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-            var teacherProgramSource = await client2.Find(teacherProgramKeys).ConfigureAwait(false);
+                var teacherProgramSource = await client2.Find(teacherProgramKeys).ConfigureAwait(false);
 
-            var teacherPrograms = teacherProgramSource.Select(x =>
-                new ProgramDto
-                {
-                    Key = x.Key,
-                    Title = x.Title,
-                    EducationFormKey = x.EducationFormKey,
-                    Teachers = x.Teachers.Select(x => x.TeacherKey),
-                    Disciplines = x.Disciplines.Select(d => new DisciplineInfo
+                var teacherPrograms = teacherProgramSource.Select(x =>
+                    new ProgramDto
                     {
-                        DisciplineKey = d.DisciplineKey,
-                        ControlTypeKey = d.ControlTypeKey
-                    })
-                }
-            );
+                        Key = x.Key,
+                        Title = x.Title,
+                        EducationFormKey = x.EducationFormKey,
+                        Teachers = x.Teachers.Select(x => x.TeacherKey),
+                        Disciplines = x.Disciplines.Select(d => new DisciplineInfo
+                        {
+                            DisciplineKey = d.DisciplineKey,
+                            ControlTypeKey = d.ControlTypeKey
+                        })
+                    }
+                );
 
-            // get program disciplines
-            var disciplineInfo = await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d => d.DisciplineKey));
+                // get program disciplines
+                var disciplineInfo = await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d => d.DisciplineKey));
 
-            // get teachers
-            var teacherKeys = teacherPrograms.SelectMany(x => x.Teachers);
-            var teachers = await employeeAction.GetByKeys(teacherKeys);
+                // get teachers
+                var teacherKeys = teacherPrograms.SelectMany(x => x.Teachers);
+                var teachers = await employeeAction.GetByKeys(teacherKeys);
 
-            // get controltypes
-            var controlTypeKeys = teacherPrograms.SelectMany(x => x.Disciplines).Select(x => x.ControlTypeKey).Where(x => x != default);
-            var controlTypes = await controlTypeHttpClient.GetByKeys(controlTypeKeys);
+                // get controltypes
+                var controlTypeKeys = teacherPrograms.SelectMany(x => x.Disciplines).Select(x => x.ControlTypeKey).Where(x => x != default);
+                var controlTypes = await controlTypeHttpClient.GetByKeys(controlTypeKeys);
 
-            // get program education forms
-            var educationFormKeys = teacherPrograms.Select(x => x.EducationFormKey).Where(e => e != default);
-            var educationForms = await educationFormHttpClient.GetByKeys(educationFormKeys);
+                // get program education forms
+                var educationFormKeys = teacherPrograms.Select(x => x.EducationFormKey).Where(e => e != default);
+                var educationForms = await educationFormHttpClient.GetByKeys(educationFormKeys);
 
 
-            var result = teacherPrograms?.Select(x =>
-                new EducationInfoViewModel(x)
-                    .AddEducation(educationForms)
-                    .AddTeachers(teachers)
-                    .AddDisciplines(disciplineInfo, controlTypes)
-            );
+                var result = teacherPrograms?.Select(x =>
+                    new EducationInfoViewModel(x)
+                        .AddEducation(educationForms)
+                        .AddTeachers(teachers)
+                        .AddDisciplines(disciplineInfo, controlTypes)
+                );
 
-            if (result == default) return NoContent();
+                if (result == default) return NoContent();
 
-            // get program groups
-            // get group subgroup
-            // get limits
+                // get program groups
+                // get group subgroup
+                // get limits
 
-            return result.ToList();
+                return result.ToList();
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-            
+
         }
 
 
@@ -189,10 +214,10 @@ namespace reception.fitnesspro.ru.Controllers.Education
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-            
+
         }
 
         #endregion
