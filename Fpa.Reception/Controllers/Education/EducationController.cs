@@ -89,7 +89,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
         {
             try
             {
-                var setting = await context.Setting.GetGroupSettings(groupKey);
+                var setting = await context.Setting.FindGroupSettings(groupKey);
 
                 if (setting == default) return NoContent();
 
