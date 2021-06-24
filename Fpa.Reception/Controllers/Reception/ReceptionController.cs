@@ -111,18 +111,18 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
                 var position = reception?.PositionManager.Positions.FirstOrDefault(x => x.Key == positionKey);
 
+                if (position == default || position.Record == default) return NoContent();
+
                 var disciplineKey = position.Record.DisciplineKey;
                 var programKey = position.Record.ProgramKey;
                 var studentKey = position.Record.StudentKey;
-
-                if (position == default) return NotFound(nameof(positionKey));
 
                 position.Record = null;
 
                 await context.Reception.Update(reception);
 
 
-                var studentSetting = await context.Setting.GetStudentSetting(disciplineKey);
+                var studentSetting = await context.Setting.GetStudentSetting(studentKey);
 
                 if (studentSetting == default)
                 {
@@ -140,6 +140,20 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 }
                 else
                 {
+                    if (studentSetting.IsDisciplineSettingExists(disciplineKey) == false)
+                    {
+                        var constraints = context.Setting.Find(programKey, disciplineKey).FirstOrDefault();
+
+                        if (constraints != default)
+                        {
+                            studentSetting.AddDiscipline(constraints.DisciplineKey, constraints.SignUpBeforeMinutes, constraints.SignOutBeforeMinutes, null);
+                        }
+                        else
+                        {
+                            studentSetting.AddDiscipline(disciplineKey, 5, 5, null);
+                        }
+                    }
+
                     studentSetting.SubtractSignOutAttempt(disciplineKey);
                     await context.Setting.UpdateStudentSetting(studentSetting);
                 }

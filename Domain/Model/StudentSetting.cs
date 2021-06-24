@@ -80,6 +80,14 @@ namespace Domain.Model
             return disciplineSetting.GetSignUpLastDate();
         }
 
+        public bool IsDisciplineSettingExists(Guid disciplineKey)
+        {
+            var disciplineSetting = DisciplineSettings.Find(x => x.disciplineKey == disciplineKey);
+
+            return disciplineSetting != default;
+        }
+
+
         private DisciplineSetting FindDisciplineSetting(Guid disciplineKey)
         {
             var disciplineSetting = DisciplineSettings.Find(x => x.disciplineKey == disciplineKey);

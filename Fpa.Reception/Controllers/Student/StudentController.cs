@@ -228,6 +228,20 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 }
                 else
                 {
+                    if (studentSetting.IsDisciplineSettingExists(model.DisciplineKey) == false)
+                    {
+                        var constraints = context.Setting.Find(model.ProgramKey, model.DisciplineKey).FirstOrDefault();
+
+                        if (constraints != default)
+                        {
+                            studentSetting.AddDiscipline(constraints.DisciplineKey, constraints.SignUpBeforeMinutes, constraints.SignOutBeforeMinutes, null);
+                        }
+                        else
+                        {
+                            studentSetting.AddDiscipline(model.DisciplineKey, 5, 5, null);
+                        }
+                    }
+
                     studentSetting.SubtractSignUpAttempt(model.DisciplineKey);
                     await context.Setting.UpdateStudentSetting(studentSetting);
                 }
@@ -313,7 +327,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             var programTask = GetPrograms(receptions, studentsKeys);
             var disciplineTask = GetDisciplines(receptions, studentsKeys);
             var groupTask = GetGroups(contracts);
-            await Task.WhenAll(programTask, disciplineTask,groupTask);
+            await Task.WhenAll(programTask, disciplineTask, groupTask);
 
             var programs = (await programTask).ToList();
             var disciplines = await disciplineTask;
@@ -380,10 +394,10 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 foreach (var pair in controlKeysTuples)
                 {
-                    var program = programs?.FirstOrDefault(x=>x.Key == pair.Item2);
+                    var program = programs?.FirstOrDefault(x => x.Key == pair.Item2);
                     var controlTypeKey = program.FindControlTypeKey(pair.Item1);
 
-                    if(controlTypeKey.HasValue && controlTypeKey.Value != default) controlKeys.Add(controlTypeKey.Value);
+                    if (controlTypeKey.HasValue && controlTypeKey.Value != default) controlKeys.Add(controlTypeKey.Value);
                 }
 
                 var controlTypes = await context.Education.GetControlTypesByKeys(controlKeys.Distinct());
