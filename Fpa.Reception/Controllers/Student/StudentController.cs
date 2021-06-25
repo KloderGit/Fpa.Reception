@@ -462,7 +462,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
             async Task<IEnumerable<StudentSetting>> GetStudentSettings(IEnumerable<Guid> studentsKeys)
             {
                 var studentSettingTasks = new List<Task<StudentSetting>>();
-                studentsKeys.ToList().ForEach(x => context.Setting.GetStudentSetting(x));
+                studentsKeys.ToList().ForEach(x => studentSettingTasks.Add(context.Setting.GetStudentSetting(x)));
                 await Task.WhenAll(studentSettingTasks);
 
                 var studentSettings = new List<StudentSetting>();
