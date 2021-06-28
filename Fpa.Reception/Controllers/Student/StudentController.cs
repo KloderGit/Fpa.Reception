@@ -370,7 +370,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var programs = await context.Education.GetProgramsByKeys(programsKeys.Distinct());
 
-                return programs;
+                return programs.Where(x=>x != default);
             }
 
             async Task<IEnumerable<BaseInfo>> GetGroups(IEnumerable<Domain.Model.Education.Contract> contracts)
@@ -379,7 +379,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var groups = await context.Education.GetGroupsByKeys(groupKeys);
 
-                return groups;
+                return groups.Where(x=>x != default);
             }
 
             async Task<IEnumerable<Domain.Model.Education.ControlType>> GetControlTypes(IEnumerable<Domain.Reception> receptions, IEnumerable<Guid> studentsKeys, IEnumerable<Domain.Education.Program> programs)
@@ -406,7 +406,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var controlTypes = await context.Education.GetControlTypesByKeys(controlKeys.Distinct());
 
-                return controlTypes;
+                return controlTypes.Where(x=>x != default);
             }
 
             async Task<IEnumerable<BaseInfo>> GetDisciplines(IEnumerable<Domain.Reception> receptions, IEnumerable<Guid> studentsKeys)
@@ -423,7 +423,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var disciplines = await context.Education.GetDisciplinesByKeys(disciplinesKeys.Distinct());
 
-                return disciplines;
+                return disciplines.Where(x=>x != default);
             }
 
             async Task<IEnumerable<Contract>> GetContract(IEnumerable<Guid> studentsKeys)
@@ -441,7 +441,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var result = contracts.Distinct(new KeyEqualityComparer<Contract>());
 
-                return contracts;
+                return contracts.Where(x=>x != default);
             }
 
             async Task<IEnumerable<Domain.Reception>> GetReceptions(IEnumerable<Guid> studentsKeys)
@@ -460,7 +460,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var receptions = receptionTasksResult.SelectMany(x => x.Select(y => y)).ToList().Distinct(new KeyEqualityComparer<Domain.Reception>());
 
-                return receptions;
+                return receptions.Where(x=>x != default);
             }
 
             async Task<IEnumerable<StudentSetting>> GetStudentSettings(IEnumerable<Guid> studentsKeys)
@@ -476,7 +476,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
                     studentSettings.Add(studentSetting);
                 }
 
-                return studentSettings;
+                return studentSettings.Where(x=>x!=default);
             }
         }
 
