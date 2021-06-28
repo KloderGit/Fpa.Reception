@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Domain.Model;
 using System.Collections;
 using Domain.Infrastructure;
+using Application.Extensions;
 
 namespace reception.fitnesspro.ru.Controllers.Student
 {
@@ -234,7 +235,10 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                         if (constraints != default)
                         {
-                            studentSetting.AddDiscipline(constraints.DisciplineKey, constraints.SignUpBeforeMinutes, constraints.SignOutBeforeMinutes, null);
+                            studentSetting.AddDiscipline(constraints.DisciplineKey,
+                                constraints.AllowedAttempts == 0 ? 5 : constraints.AllowedAttempts,
+                                constraints.AllowedAttempts == 0 ? 5 : constraints.AllowedAttempts,
+                                null);
                         }
                         else
                         {
@@ -476,6 +480,32 @@ namespace reception.fitnesspro.ru.Controllers.Student
             }
         }
 
+        [HttpGet]
+        [Route("FindPerson")]
+        public async Task<ActionResult> FindStudentsPerson(Guid studentKey)
+        {
+            var result = new List<Domain.Education.Person>();
+
+            var studentArguments = new Guid[] { studentKey };
+            var person = (await context.Person.GetByStudent(studentArguments)).FirstOrDefault();
+
+            if (person == default) return NoContent();
+
+            var emailArgument = person.Contacts?.Emails;
+            var phoneArgument = person.Contacts?.Phones;
+
+            if (emailArgument.IsNullOrEmpty() && phoneArgument.IsNullOrEmpty())
+            {
+                result.Add(person);
+            }
+            else
+            {
+                var persons = await context.Person.FindByContacts(phoneArgument, emailArgument);
+                result.AddRange(persons);
+            }
+
+            return Ok(result);
+        }
 
         #region OLD
 

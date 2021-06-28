@@ -61,11 +61,24 @@ namespace Application.Component
             return result;
         }
 
+        public async Task<IEnumerable<Domain.Education.Person>> FindByContacts(IEnumerable<string> phones, IEnumerable<string> emails)
+        {
+            var personsQuery = await lcService.Person.FindByContacts(phones, emails);
+            var persons = personsQuery.ToList();
+
+            return await GetPersonsInfo(persons);
+        }
+
         public async Task<IEnumerable<Domain.Education.Person>> FindByQuery(string queryString)
         {
             var personsQuery = await lcService.Person.FindByQuery(queryString);
             var persons = personsQuery.ToList();
 
+            return await GetPersonsInfo(persons);
+        }
+
+        private async Task<IEnumerable<Domain.Education.Person>> GetPersonsInfo(IEnumerable<Service.lC.Model.Person> persons)
+        {
             await lcService.Person.IncludeStudents(persons);
             await lcService.Student.IncludeContracts(persons.ToList().SelectMany(x => x.Students));
 

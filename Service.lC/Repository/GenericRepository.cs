@@ -115,7 +115,7 @@ namespace Service.lC.Repository
             {
                 var dto = await request.GetResultAsync<IEnumerable<TDto>>();
 
-                var domain = dto.Select(x => x.ConvertTo<TDomen>(converter));
+                var domain = dto?.Select(x => x.ConvertTo<TDomen>(converter));
 
                 result = domain ?? result;
             }

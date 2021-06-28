@@ -10,5 +10,6 @@ namespace Domain.Interface
         Task<IEnumerable<Person>> GetByStudent(IEnumerable<Guid> studentsKeys);
         Task<IEnumerable<Person>> GetInfo(IEnumerable<Guid> personKeys);
         Task<IEnumerable<Domain.Education.Person>> FindByQuery(string queryString);
+        Task<IEnumerable<Person>> FindByContacts(IEnumerable<string> phones, IEnumerable<string> emails);
     }
 }
