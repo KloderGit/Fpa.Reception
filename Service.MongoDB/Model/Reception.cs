@@ -8,7 +8,7 @@ using System.Text;
 namespace Service.MongoDB.Model
 {
     [BsonIgnoreExtraElements]
-    [BsonCollection("Receptions")]
+    [BsonCollection("ReceptionsV2")]
     public class Reception : IDocument
     {
         private DateTime date;

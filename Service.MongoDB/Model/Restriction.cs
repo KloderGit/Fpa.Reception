@@ -4,9 +4,9 @@ namespace Service.MongoDB.Model
 {
     public class Restriction
     {
-        public Guid Program { get; set; }
-        public Guid Group { get; set; }
-        public Guid SubGroup { get; set; }
+        public BaseInfo Program { get; set; }
+        public BaseInfo Group { get; set; }
+        public BaseInfo SubGroup { get; set; }
         public Option Option { get; set; }
     }
 }

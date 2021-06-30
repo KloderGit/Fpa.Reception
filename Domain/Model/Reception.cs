@@ -18,21 +18,21 @@ namespace Domain
 
         public bool IsForProgram(Guid programKey)
         {
-            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.Program == programKey || p.Program == default)).ToList();
+            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.Program.Key == programKey || p.Program == default)).ToList();
 
             return result != default && result.Any();
         }
 
         public bool IsForGroup(Guid groupKey)
         {
-            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.Group == groupKey || p.Group == default));
+            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.Group.Key == groupKey || p.Group == default));
 
             return result != default && result.Any();
         }
 
         public bool IsForSubGroup(Guid subGroupKey)
         {
-            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.SubGroup == subGroupKey || p.SubGroup == default));
+            var result = Events.Where(x => x.Restrictions.Any() == false || x.Restrictions.Any(p => p.SubGroup.Key == subGroupKey || p.SubGroup == default));
 
             return result != default && result.Any();
         }
@@ -145,9 +145,9 @@ namespace Domain
             if (Restrictions == default) return null;
 
             var restriction = Restrictions
-                .Where(x => x.Program == programKey || x.Program == default)
-                .Where(x => x.Group == groupKey || x.Group == default)
-                .Where(x => x.SubGroup == subgroupKey || x.SubGroup == default)
+                .Where(x => x.Program.Key == programKey || x.Program == default)
+                .Where(x => x.Group.Key == groupKey || x.Group == default)
+                .Where(x => x.SubGroup.Key == subgroupKey || x.SubGroup == default)
                 .FirstOrDefault();
 
             return restriction;
@@ -159,15 +159,15 @@ namespace Domain
         public DateTime SubscribeBefore { get; set; } = default;
         public DateTime UnsubscribeBefore { get; set; } = default;
 
-        public IEnumerable<Guid> DependsOnOtherDisciplines { get; set; } = new List<Guid>();
+        public IEnumerable<BaseInfo> DependsOnOtherDisciplines { get; set; } = new List<BaseInfo>();
         public int AllowedAttemptCount { get; set; }
     }
 
     public class PayloadRestriction
     {
-        public Guid Program { get; set; }
-        public Guid Group { get; set; }
-        public Guid SubGroup { get; set; }
+        public BaseInfo Program { get; set; }
+        public BaseInfo Group { get; set; }
+        public BaseInfo SubGroup { get; set; }
 
         public PayloadOption Option { get; set; }
 

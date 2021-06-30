@@ -68,6 +68,7 @@ namespace reception.fitnesspro.ru.Controllers.Person
                 if (token == default) return BadRequest("Token is null");
 
                 var user = await identityHttpClient.GetUserInfo(token);
+                if(user == default) return NoContent();
 
                 if (String.IsNullOrEmpty(user?.Email) && String.IsNullOrEmpty(user?.Phone)) return NotFound("Не заполнены контакты пользователя");
 

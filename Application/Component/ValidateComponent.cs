@@ -108,13 +108,13 @@ namespace Application.Component
             var resrtictions = @event.Restrictions?.Where(x => x.Program == default);
             if (resrtictions.Count() == 1) return resrtictions.FirstOrDefault();
 
-            resrtictions = @event.Restrictions?.Where(x => x.Program == programKey);
+            resrtictions = @event.Restrictions?.Where(x => x.Program.Key == programKey);
             if (resrtictions.Count() == 1) return @event.Restrictions.FirstOrDefault();
 
-            resrtictions = resrtictions.Where(x => x.Group == groupKey);
+            resrtictions = resrtictions.Where(x => x.Group.Key == groupKey);
             if (resrtictions.Count() == 1) return @event.Restrictions.FirstOrDefault();
 
-            resrtictions = resrtictions.Where(x => x.SubGroup == subGroupKey);
+            resrtictions = resrtictions.Where(x => x.SubGroup.Key == subGroupKey);
             if (resrtictions.Count() == 1) return @event.Restrictions.FirstOrDefault();
 
             return null;

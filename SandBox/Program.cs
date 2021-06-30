@@ -49,9 +49,9 @@ namespace SandBox
                              Restrictions = new List<Domain.PayloadRestriction>{
                                  new Domain.PayloadRestriction
                                  {
-                                     Program = Guid.NewGuid(),
-                                     Group = Guid.NewGuid(),
-                                     SubGroup = Guid.NewGuid(),
+                                     Program = new Domain.BaseInfo{ Key = Guid.NewGuid() },
+                                     Group = new Domain.BaseInfo{ Key = Guid.NewGuid() },
+                                     SubGroup = new Domain.BaseInfo{ Key = Guid.NewGuid() },
                                      Option = new Domain.PayloadOption{
                                         CheckAttemps = true,
                                         CheckContractExpired = true,
@@ -64,7 +64,7 @@ namespace SandBox
                                 AllowedAttemptCount = 10,
                                 SubscribeBefore = DateTime.UtcNow,
                                 UnsubscribeBefore = DateTime.Now,
-                                DependsOnOtherDisciplines = new List<Guid>{ Guid.NewGuid() }
+                                DependsOnOtherDisciplines = new List<Domain.BaseInfo>{ new Domain.BaseInfo{ Key = Guid.NewGuid() }, }
                             }
                          }
                      },

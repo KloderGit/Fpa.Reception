@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Domain;
 using reception.fitnesspro.ru.ViewModel;
+using Mapster;
 
 namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 {
@@ -100,13 +101,13 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             public EventViewModel(Domain.Event @event)
             {
                 this.@event = @event;
-                DisciplineKey = @event.Discipline.Key;
+                Discipline = @event.Discipline.Adapt<BaseInfoViewModel>();
                 Teachers = @event.Teachers;
             }
 
             public List<string> EventRejectReasons { get; set; } = new List<string>();
 
-            public Guid DisciplineKey { get; set; }
+            public BaseInfoViewModel Discipline { get; set; }
 
             public IEnumerable<BaseInfo> Teachers { get; set; }
 

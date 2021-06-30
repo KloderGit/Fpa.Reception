@@ -157,7 +157,10 @@ namespace Test
                          new Event {
                           Teachers = new List<BaseInfo>{ new BaseInfo { Key = Guid.NewGuid(), Title = "���������" }, new BaseInfo { Key = Guid.NewGuid(), Title = "����������" } },
                            Discipline =  new BaseInfo { Key = Guid.NewGuid(), Title = "Anatomy" },
-                             Restrictions = new List<PayloadRestriction>{ new PayloadRestriction { Program = Guid.NewGuid(), Group = Guid.NewGuid(), SubGroup = Guid.NewGuid(),
+                             Restrictions = new List<PayloadRestriction>{ new PayloadRestriction { 
+                                 Program = new BaseInfo{ Key = Guid.NewGuid() }, 
+                                 Group = new BaseInfo{ Key = Guid.NewGuid() }, 
+                                 SubGroup = new BaseInfo{ Key = Guid.NewGuid() },
                                  Option = new PayloadOption{
                                      CheckAttemps = true,
                                       CheckContractExpired = true,
@@ -168,8 +171,8 @@ namespace Test
                                AllowedAttemptCount = 10,
                                 SubscribeBefore = DateTime.UtcNow,
                                  UnsubscribeBefore = DateTime.Now,
-                                  DependsOnOtherDisciplines = new List<Guid>{
-                                   Guid.NewGuid()
+                                  DependsOnOtherDisciplines = new List<BaseInfo>{
+                                   new BaseInfo{ Key = Guid.NewGuid() }
                                   }
                               }
                          }
