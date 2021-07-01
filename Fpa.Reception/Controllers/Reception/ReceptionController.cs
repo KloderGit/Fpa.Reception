@@ -169,7 +169,7 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
 
         [HttpGet]
-        [Route("GetReceptionsForPeriod")]
+        [Route("GetReceptionsForPeriodOLD")]
         public async Task<ActionResult<IEnumerable<Domain.Reception>>> GetReceptionsForPeriod(Guid? employeeKey,
             Guid? disciplineKey, DateTime fromDate, DateTime toDate)
         {
@@ -198,7 +198,62 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
+        }
 
+        [HttpGet]
+        [Route("GetReceptionsForPeriod")]
+        public async Task<ActionResult> GetReceptionsForPeriodNew(Guid? employeeKey,
+            Guid? disciplineKey, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                var currentYear = DateTime.Now.Year;
+                var currentMonth = DateTime.Now.Month;
+
+                if (fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+                if (toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear, currentMonth));
+                if (toDate < fromDate)
+                {
+                    var temp = toDate;
+                    toDate = fromDate;
+                    fromDate = temp;
+                }
+
+                var receptions = await context.Reception.GetForPeriod(employeeKey, disciplineKey, fromDate, toDate);
+
+                if (receptions.IsNullOrEmpty()) return NoContent();
+
+                receptions.ToList();
+
+                var viewmodels = receptions.Select(x=> new FilledReceptionViewModel(x)).ToList();
+
+                var programKeys = viewmodels.SelectMany(x=>x.GetUsedProgramKeys());
+                var getProgramsTask = context.Education.GetProgramsByKeys(programKeys);
+
+                var groupKeys = viewmodels.SelectMany(x=>x.GetUsedGroupKeys());
+                var getGroupsTask = context.Education.GetGroupsByKeys(groupKeys);
+
+                var disciplineKeys =  viewmodels.SelectMany(x=>x.GetUsedDisciplineKeys());
+                //var getDisciplinesTask = context.Education.GetDisciplinesByKeys(disciplineKeys);
+
+                await Task.WhenAll(getProgramsTask, getGroupsTask);
+
+                var programs = (await getProgramsTask).ToList();
+                var groups = (await getGroupsTask).ToList();
+                //var disciplines = (await getDisciplinesTask).ToList();
+
+                viewmodels.ForEach(x=>x.Events.ToList().ForEach(e=>e.Restrictions.ForEach(r=>r.Program?.FillTitle(programs))));
+                viewmodels.ForEach(x=>x.Events.ToList().ForEach(e=>e.Restrictions.ForEach(r=>r.Group?.FillTitle(groups))));
+                //viewmodels.ForEach(x=>x.Events.ToList().ForEach(e=>e.Requirement.DependsOnOtherDisciplines.ForEach(r=>r.FillTitle(disciplines))));
+
+
+                return Ok(viewmodels);
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                return new StatusCodeResult(500);
+            }
         }
 
         [HttpDelete]
