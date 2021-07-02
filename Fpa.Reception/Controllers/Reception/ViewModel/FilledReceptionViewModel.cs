@@ -16,12 +16,14 @@ namespace reception.fitnesspro.ru.Controllers.Reception.ViewModel
         {
             this.reception = reception;
 
+            Key = reception.Key;
             IsActive = reception.IsActive;
             Date = reception.Date;
             PositionManager = new PositionManagerViewModel(reception.PositionManager);
             Events = reception.Events.ToList().Select(x=> new EventViewModel(x)).ToList();
         }
 
+        public Guid Key { get; set; }
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
         public PositionManagerViewModel PositionManager { get; set; }
