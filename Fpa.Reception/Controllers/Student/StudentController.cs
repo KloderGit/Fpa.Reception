@@ -117,7 +117,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
 
         [HttpGet]
-        [Route("GetSchedule")]
+        [Route("GetReceptions")]
         public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptions(Guid studentKey, Guid disciplineKey)
         {
             if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
@@ -131,7 +131,10 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 var studentSetting = await context.Setting.GetStudentSetting(studentKey);
                 var commonDisciplineSettings = context.Setting.FindCommonSettingsByDiscipline(disciplineKey);
 
-                var allDisciplineReceptions = await context.Student.GetReceptionsForSignUpStudent(studentKey, disciplineKey);
+                GroupSettings groupSettings = null;
+                if(contract != default && contract.Group != default) groupSettings = await context.Setting.FindGroupSettings(contract.Group.Key);
+
+                var allDisciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
                 var filteredReceptionsForContractEducation = allDisciplineReceptions
                     .Where(x => x.IsForProgram(contract.EducationProgram.Key))
                     .Where(x => x.IsForGroup(contract.Group.Key))
@@ -142,11 +145,13 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 viewModel.ForEach(x => x.CheckContractExpired(contract, commonDisciplineSettings));
                 viewModel.ForEach(x => x.CheckEmptyPlaces());
                 viewModel.ForEach(x => x.CheckIsNotInPast());
-                viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract)); // ToDo
-                viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student)); //Todo
-                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception)); // ToDo
+                viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, contract, studentSetting));
                 viewModel.ForEach(x => x.CheckSignUpBefore());
                 viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
+
+                viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(groupSettings.DisciplineLimits, contract));
+
+                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception)); // ToDo
 
                 if (viewModel == default) return NoContent();
 
@@ -370,7 +375,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var programs = await context.Education.GetProgramsByKeys(programsKeys.Distinct());
 
-                return programs.Where(x=>x != default);
+                return programs.Where(x => x != default);
             }
 
             async Task<IEnumerable<BaseInfo>> GetGroups(IEnumerable<Domain.Model.Education.Contract> contracts)
@@ -379,7 +384,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var groups = await context.Education.GetGroupsByKeys(groupKeys);
 
-                return groups.Where(x=>x != default);
+                return groups.Where(x => x != default);
             }
 
             async Task<IEnumerable<Domain.Model.Education.ControlType>> GetControlTypes(IEnumerable<Domain.Reception> receptions, IEnumerable<Guid> studentsKeys, IEnumerable<Domain.Education.Program> programs)
@@ -406,7 +411,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var controlTypes = await context.Education.GetControlTypesByKeys(controlKeys.Distinct());
 
-                return controlTypes.Where(x=>x != default);
+                return controlTypes.Where(x => x != default);
             }
 
             async Task<IEnumerable<BaseInfo>> GetDisciplines(IEnumerable<Domain.Reception> receptions, IEnumerable<Guid> studentsKeys)
@@ -423,7 +428,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var disciplines = await context.Education.GetDisciplinesByKeys(disciplinesKeys.Distinct());
 
-                return disciplines.Where(x=>x != default);
+                return disciplines.Where(x => x != default);
             }
 
             async Task<IEnumerable<Contract>> GetContract(IEnumerable<Guid> studentsKeys)
@@ -441,7 +446,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var result = contracts.Distinct(new KeyEqualityComparer<Contract>());
 
-                return contracts.Where(x=>x != default);
+                return contracts.Where(x => x != default);
             }
 
             async Task<IEnumerable<Domain.Reception>> GetReceptions(IEnumerable<Guid> studentsKeys)
@@ -460,7 +465,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
 
                 var receptions = receptionTasksResult.SelectMany(x => x.Select(y => y)).ToList().Distinct(new KeyEqualityComparer<Domain.Reception>());
 
-                return receptions.Where(x=>x != default);
+                return receptions.Where(x => x != default);
             }
 
             async Task<IEnumerable<StudentSetting>> GetStudentSettings(IEnumerable<Guid> studentsKeys)
@@ -476,7 +481,7 @@ namespace reception.fitnesspro.ru.Controllers.Student
                     studentSettings.Add(studentSetting);
                 }
 
-                return studentSettings.Where(x=>x!=default);
+                return studentSettings.Where(x => x != default);
             }
         }
 
@@ -507,58 +512,5 @@ namespace reception.fitnesspro.ru.Controllers.Student
             return Ok(result);
         }
 
-        #region OLD
-
-        [HttpGet]
-        [Route("GetReceptions")]
-        [Obsolete]
-        public async Task<ActionResult<IEnumerable<DisciplineReceptionViewModel>>> GetProgramReceptionsOld(Guid studentKey, Guid disciplineKey)
-        {
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ студента не указан");
-            if (studentKey == default) ModelState.AddModelError(nameof(studentKey), "Ключ дисциплины не указан");
-
-            if (ModelState.IsValid == false) return BadRequest(ModelState);
-
-            try
-            {
-                var contract = await GetStudentContract();
-
-                var disciplineReceptions = await context.Reception.GetByDisciplineKey(disciplineKey);
-
-                var filtered = disciplineReceptions
-                    .Where(x => x.IsForProgram(contract.EducationProgram.Key))
-                    .Where(x => x.IsForGroup(contract.Group.Key))
-                    .Where(x => x.IsForSubGroup(contract.SubGroup.Key));
-
-                var viewModel = filtered.Select(x => new DisciplineReceptionViewModel(x)).ToList();
-
-                viewModel.ForEach(x => x.CheckContractExpired(contract, null));
-                viewModel.ForEach(x => x.CheckEmptyPlaces());
-                viewModel.ForEach(x => x.CheckIsNotInPast());
-                viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(contract));
-                viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, studentKey, contract, context.Student));
-                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception));
-                viewModel.ForEach(x => x.CheckSignUpBefore());
-                viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
-
-                if (viewModel == default) return NoContent();
-
-                return viewModel;
-            }
-            catch (Exception e)
-            {
-                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
-                return new StatusCodeResult(500);
-            }
-
-            async Task<Contract> GetStudentContract()
-            {
-                var contract = await context.Student.GetContract(studentKey);
-
-                return contract;
-            }
-        }
-
-        #endregion
     }
 }

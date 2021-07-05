@@ -213,6 +213,8 @@ namespace Application.Component
 
         public async Task<GroupSettings> FindGroupSettings(Guid serviceGroupKey)
         {
+            if(serviceGroupKey == default) return null;
+
             var setting = await database.Settings.Group.FindOneAsync(x => x.Group.Key == serviceGroupKey);
 
             var model = setting.Adapt<GroupSettings>();
