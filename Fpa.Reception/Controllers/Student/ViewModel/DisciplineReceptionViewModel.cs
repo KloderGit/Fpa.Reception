@@ -81,9 +81,9 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
             Events.ForEach(async x => await x.CheckSignUpDoubles(disciplineKey, studentKey, logic));
         }
 
-        public void CheckDependencies(Guid disciplineKey, Guid studentKey, IReceptionComponent logic)
+        public void CheckDependencies(Guid disciplineKey, Contract contract, IEnumerable<BaseConstraint> constraints, IEnumerable<Position> positions)
         {
-            //Events.ForEach(async x => await x.CheckDependencies(disciplineKey, studentKey, logic));
+            Events.ForEach(x => x.CheckDependencies(disciplineKey, contract, constraints, positions));
         }
 
         public class PositionViewModel
@@ -157,11 +157,11 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                 }
 
                 var startPeriodDate = disciplineSetting.StartPeriod == default ? contract.StartEducationDate : disciplineSetting.StartPeriod;
-                var finishPeriodDate =  disciplineSetting.FinishPeriod == default ? contract.FinishEducationhDate : disciplineSetting.FinishPeriod;
+                var finishPeriodDate = disciplineSetting.FinishPeriod == default ? contract.FinishEducationhDate : disciplineSetting.FinishPeriod;
 
                 if (startPeriodDate < finishPeriodDate) SwapDate(ref startPeriodDate, ref finishPeriodDate);
 
-                if ( (date > startPeriodDate && date < finishPeriodDate) == false ) EventRejectReasons.Add("The registration period for the discipline has expired");
+                if ((date > startPeriodDate && date < finishPeriodDate) == false) EventRejectReasons.Add("The registration period for the discipline has expired");
 
                 void SwapDate(ref DateTime start, ref DateTime finish)
                 {
@@ -199,9 +199,41 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                 if (filledByStudent.Count() > 0) EventRejectReasons.Add("There is already one record on appropriate discipline");
             }
 
-            public void CheckDependencies()
+            public void CheckDependencies(Guid disciplineKey, Contract contract, IEnumerable<BaseConstraint> constraints, IEnumerable<Position> positions)
             {
+                var restriction = @event.GetRestriction(contract.EducationProgram.Key, contract.Group.Key, contract.SubGroup.Key);
+                if (restriction != default && restriction.CheckDependings() == false) return;
 
+                var dependings = @event.Requirement.DependsOnOtherDisciplines;
+
+                if (dependings == default)
+                {
+                    if (contract == default || contract.EducationProgram == default || contract.EducationProgram.Key == default)
+                        EventRejectReasons.Add("The student contract was not defined or the education program was'nt specified");
+
+                    var constraint = constraints.FirstOrDefault(x => x.ProgramKey == contract.EducationProgram.Key);
+                    if (constraint == default) constraint = constraints.FirstOrDefault();
+
+                    if (constraint != default) dependings = constraint.DependsOn?.Select(x => x.Key);
+                }
+
+                if (dependings == default) return;
+
+                var sucsesfullRates = new List<Guid>()
+                {
+                    new Guid("6367ef35-ed62-4b18-981e-10f749f5caeb"), // Зачтено
+                    new Guid("fb0a2324-061d-11e6-ab08-c8600054f636"), // Отлично
+                    new Guid("fb0a2325-061d-11e6-ab08-c8600054f636"), // Хорошо
+                    new Guid("fb0a2326-061d-11e6-ab08-c8600054f636"), // Удовл.
+                };
+
+                var results = positions.Where(x => x.Record != default)
+                    .Where(x => x.Record.Result != default)
+                    .Where(x => x.Record.DisciplineKey == disciplineKey)
+                    .Where(x => x.Record.Result.RateKey != default)
+                    .Select(x => x.Record.Result.RateKey);
+
+                if(results.Intersect(sucsesfullRates).Count() == 0) EventRejectReasons.Add("That discipline is depended on other discipline results");
             }
 
         }

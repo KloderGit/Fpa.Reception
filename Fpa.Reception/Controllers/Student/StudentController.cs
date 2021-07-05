@@ -128,8 +128,14 @@ namespace reception.fitnesspro.ru.Controllers.Student
             try
             {
                 var contract = await context.Student.GetContract(studentKey);
+
                 var studentSetting = await context.Setting.GetStudentSetting(studentKey);
+
                 var commonDisciplineSettings = context.Setting.FindCommonSettingsByDiscipline(disciplineKey);
+
+                var studentReceptions = (await context.Student.GetReceptionsWithSignedUpStudent(studentKey))
+                    .SelectMany(x=>x.PositionManager.GetSignedUpStudentPosition(studentKey))
+                    .Where(x=>x.Record.DisciplineKey == disciplineKey && x.Record.Result != default);
 
                 GroupSettings groupSettings = null;
                 if(contract != default && contract.Group != default) groupSettings = await context.Setting.FindGroupSettings(contract.Group.Key);
@@ -148,10 +154,12 @@ namespace reception.fitnesspro.ru.Controllers.Student
                 viewModel.ForEach(x => x.CheckAttemptsCount(disciplineKey, contract, studentSetting));
                 viewModel.ForEach(x => x.CheckSignUpBefore());
                 viewModel.ForEach(x => x.CheckSignUpDoubles(disciplineKey, studentKey, context.Student));
-
                 viewModel.ForEach(x => x.CheckAllowedDisciplinePeriod(groupSettings.DisciplineLimits, contract));
 
-                viewModel.ForEach(x => x.CheckDependencies(disciplineKey, studentKey, context.Reception)); // ToDo
+                if(studentReceptions != default)
+                {
+                    viewModel.ForEach(x => x.CheckDependencies(disciplineKey, contract, commonDisciplineSettings, studentReceptions));
+                }                
 
                 if (viewModel == default) return NoContent();
 
