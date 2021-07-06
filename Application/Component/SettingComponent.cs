@@ -109,7 +109,7 @@ namespace Application.Component
 
         public async Task<IEnumerable<TeacherSetting>> GetAllTeacherSettings()
         {
-            var settings = await Task.FromResult(database.Settings.Teacher.AsQueryable());
+            var settings = (await Task.FromResult(database.Settings.Teacher.AsQueryable())).ToList();
 
             var result = settings.Adapt<IEnumerable<TeacherSetting>>();
 

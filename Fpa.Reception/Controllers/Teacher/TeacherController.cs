@@ -57,7 +57,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
 
@@ -82,10 +82,10 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
                 var currentYear = DateTime.Now.Year;
                 var currentMonth = DateTime.Now.Month;
 
-                if(fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
-                if(toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear,currentMonth));
-                if(toDate < fromDate)
-                { 
+                if (fromDate == default) fromDate = new DateTime(currentYear, currentMonth, 1);
+                if (toDate == default) toDate = new DateTime(currentYear, currentMonth, DateTime.DaysInMonth(currentYear, currentMonth));
+                if (toDate < fromDate)
+                {
                     var temp = toDate;
                     toDate = fromDate;
                     fromDate = temp;
@@ -93,13 +93,13 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
                 var receptions = await context.Teacher.GetReceptions(employeeKey, disciplineKey, fromDate, toDate);
 
-                if (receptions.IsNullOrEmpty()) return NoContent();
+                if(receptions.IsNullOrEmpty()) return NoContent();
 
                 return receptions.ToList();
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
 
@@ -126,7 +126,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
                 var disciplineKeys = reception.PositionManager?.Positions?
                     .Where(x => x.Record != default && x.Record.StudentKey != default)
-                    .Select(x=>x.Record.DisciplineKey); // Select keys from all signed up students for cases manually signed up students
+                    .Select(x => x.Record.DisciplineKey); // Select keys from all signed up students for cases manually signed up students
 
                 var discipline = (await context.Education.GetDisciplinesByKeys(disciplineKeys)).ToList();
 
@@ -144,13 +144,13 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
 
                 var programs = (await context.Education.GetProgramsByKeys(programsKeys)).ToList();
 
-                var controlTypeKeys = programs.SelectMany(x=>x.Educations.Select(c=>c.ControlType.Key)).Where(x=>x != default).Distinct();
+                var controlTypeKeys = programs.SelectMany(x => x.Educations.Select(c => c.ControlType.Key)).Where(x => x != default).Distinct();
 
                 var controlTypes = await context.Education.GetControlTypesByKeys(controlTypeKeys);
 
                 var rates = await context.Education.GetRates();
 
-                var viewModel = new TableViewModel(reception).IncludePositions(students,programs,discipline,controlTypes,rates);
+                var viewModel = new TableViewModel(reception).IncludePositions(students, programs, discipline, controlTypes, rates);
 
                 if (viewModel == default) return NoContent();
 
@@ -158,10 +158,10 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
-            
+
         }
 
 
@@ -173,7 +173,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             {
                 var setting = await context.Setting.GetTeacherSettings(teacherKey);
 
-                if(setting == default) return NoContent();
+                if (setting == default) return NoContent();
 
                 var result = await schedule.TeacherSchedule(setting.ScheduleTeacherId);
 
@@ -181,7 +181,7 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             }
             catch (Exception e)
             {
-                logger.LogWarning(e,"При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
+                logger.LogWarning(e, "При выполнении запроса произошла ошибка - {@Error}", e.Message, e);
                 return new StatusCodeResult(500);
             }
         }

@@ -221,19 +221,24 @@ namespace reception.fitnesspro.ru.Controllers.Reception
 
                 var receptions = await context.Reception.GetForPeriod(employeeKey, disciplineKey, fromDate, toDate);
 
+                if (receptions.IsNullOrEmpty())
+                {
+                    receptions = await context.Reception.GetForPeriod(null, disciplineKey, fromDate, toDate);
+                }
+
                 if (receptions.IsNullOrEmpty()) return NoContent();
 
                 receptions.ToList();
 
-                var viewmodels = receptions.Select(x=> new FilledReceptionViewModel(x)).ToList();
+                var viewmodels = receptions.Select(x => new FilledReceptionViewModel(x)).ToList();
 
-                var programKeys = viewmodels.SelectMany(x=>x.GetUsedProgramKeys());
+                var programKeys = viewmodels.SelectMany(x => x.GetUsedProgramKeys());
                 var getProgramsTask = context.Education.GetProgramsByKeys(programKeys);
 
-                var groupKeys = viewmodels.SelectMany(x=>x.GetUsedGroupKeys());
+                var groupKeys = viewmodels.SelectMany(x => x.GetUsedGroupKeys());
                 var getGroupsTask = context.Education.GetGroupsByKeys(groupKeys);
 
-                var disciplineKeys =  viewmodels.SelectMany(x=>x.GetUsedDisciplineKeys());
+                var disciplineKeys = viewmodels.SelectMany(x => x.GetUsedDisciplineKeys());
                 //var getDisciplinesTask = context.Education.GetDisciplinesByKeys(disciplineKeys);
 
                 await Task.WhenAll(getProgramsTask, getGroupsTask);
@@ -242,8 +247,8 @@ namespace reception.fitnesspro.ru.Controllers.Reception
                 var groups = (await getGroupsTask).ToList();
                 //var disciplines = (await getDisciplinesTask).ToList();
 
-                viewmodels.ForEach(x=>x.Events.ToList().ForEach(e=>e.Restrictions.ForEach(r=>r.Program?.FillTitle(programs))));
-                viewmodels.ForEach(x=>x.Events.ToList().ForEach(e=>e.Restrictions.ForEach(r=>r.Group?.FillTitle(groups))));
+                viewmodels.ForEach(x => x.Events.ToList().ForEach(e => e.Restrictions.ForEach(r => r.Program?.FillTitle(programs))));
+                viewmodels.ForEach(x => x.Events.ToList().ForEach(e => e.Restrictions.ForEach(r => r.Group?.FillTitle(groups))));
                 //viewmodels.ForEach(x=>x.Events.ToList().ForEach(e=>e.Requirement.DependsOnOtherDisciplines.ForEach(r=>r.FillTitle(disciplines))));
 
 
