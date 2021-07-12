@@ -51,9 +51,11 @@ namespace reception.fitnesspro.ru.Controllers.Teacher
             {
                 var programs = await context.Teacher.GetEducation(key);
 
-                if (programs.IsNullOrEmpty()) return NoContent();
+                var result = programs.Where(x=>x.Educations.Any(e=>e.ControlType != default)).ToList();
 
-                return programs.ToList();
+                if (result.IsNullOrEmpty()) return NoContent();
+
+                return result;
             }
             catch (Exception e)
             {
