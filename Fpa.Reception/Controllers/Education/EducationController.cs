@@ -127,7 +127,9 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
                 var client2 = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-                var teacherProgramSource = await client2.Find(teacherProgramKeys).ConfigureAwait(false);
+                var queryPrograms = await client2.Find(teacherProgramKeys.ToList()).ConfigureAwait(false);
+
+                var teacherProgramSource = queryPrograms.ToList().Where(x=>x.Disciplines.Any(d=>d.ControlTypeKey != default));
 
                 var teacherPrograms = teacherProgramSource.Select(x =>
                     new ProgramDto
