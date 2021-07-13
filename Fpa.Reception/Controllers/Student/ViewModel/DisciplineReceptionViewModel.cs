@@ -176,15 +176,13 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                 var restriction = @event.GetRestriction(contract.EducationProgram.Key, contract.Group.Key, contract.SubGroup.Key);
                 if (restriction == default || restriction.CheckAttemps() == false) return;
 
-                if (studentSetting.IsDisciplineSettingExists(disciplineKey))
+                if (studentSetting != default && studentSetting.IsDisciplineSettingExists(disciplineKey))
                 {
                     var signUpCount = studentSetting.GetRestSignUpCount(disciplineKey);
                     if (signUpCount.HasValue)
                     {
                         if (signUpCount.Value <= 0) EventRejectReasons.Add("The number of attempts for the discipline is over");
                     }
-
-                    return;
                 }
             }
 
