@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Domain;
 using reception.fitnesspro.ru.ViewModel;
 using Domain.Model;
+using Application.Extensions;
 
 namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
 {
@@ -202,20 +203,19 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                 var restriction = @event.GetRestriction(contract.EducationProgram.Key, contract.Group.Key, contract.SubGroup.Key);
                 if (restriction != default && restriction.CheckDependings() == false) return;
 
+                if (@event.Requirement == default || @event.Requirement.DependsOnOtherDisciplines.IsNullOrEmpty()) return;
+
                 var dependings = @event.Requirement.DependsOnOtherDisciplines;
 
-                if (dependings == default)
-                {
-                    if (contract == default || contract.EducationProgram == default || contract.EducationProgram.Key == default)
-                        EventRejectReasons.Add("The student contract was not defined or the education program was'nt specified");
+                //if (contract == default || contract.EducationProgram == default || contract.EducationProgram.Key == default)
+                //    EventRejectReasons.Add("The student contract was not defined or the education program was'nt specified");
 
-                    var constraint = constraints.FirstOrDefault(x => x.ProgramKey == contract.EducationProgram.Key);
-                    if (constraint == default) constraint = constraints.FirstOrDefault();
+                //var constraint = constraints.FirstOrDefault(x => x.ProgramKey == contract.EducationProgram.Key);
+                //if (constraint == default) constraint = constraints.FirstOrDefault();
 
-                    if (constraint != default) dependings = constraint.DependsOn?.Select(x => x.Key);
-                }
+                //if (constraint != default) dependings = constraint.DependsOn?.Select(x => x.Key);
 
-                if (dependings == default) return;
+                //if (dependings == default) return;
 
                 var sucsesfullRates = new List<Guid>()
                 {
@@ -225,13 +225,16 @@ namespace reception.fitnesspro.ru.Controllers.Student.ViewModel
                     new Guid("fb0a2326-061d-11e6-ab08-c8600054f636"), // Удовл.
                 };
 
-                var results = positions.Where(x => x.Record != default)
+                var gottedRates = positions
+                    .Where(x => x.Record != default)
+                    .Where(x => dependings.Contains(x.Record.DisciplineKey))
                     .Where(x => x.Record.Result != default)
-                    .Where(x => x.Record.DisciplineKey == disciplineKey)
                     .Where(x => x.Record.Result.RateKey != default)
                     .Select(x => x.Record.Result.RateKey);
 
-                if(results.Intersect(sucsesfullRates).Count() == 0) EventRejectReasons.Add("That discipline is depended on other discipline results");
+                var result = sucsesfullRates.Intersect(gottedRates);
+
+                if (result.Count() == 0) EventRejectReasons.Add("That discipline is depended on other discipline results");
             }
 
         }
