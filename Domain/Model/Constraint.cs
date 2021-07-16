@@ -21,6 +21,7 @@ namespace Domain
     public class BaseConstraint : Constraint
     {
         public int AllowedAttempts { get; set; }
+        public int AllowedSignOuts { get; set; }
         public IEnumerable<BaseInfo> DependsOn { get; set; }
         public bool CheckContract { get; set; }
         public int SignUpBeforeMinutes { get; set; }

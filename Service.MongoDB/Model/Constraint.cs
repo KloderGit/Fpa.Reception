@@ -15,6 +15,7 @@ namespace Service.MongoDB.Model
         public Guid ProgramKey { get; set; }
         public Guid DisciplineKey { get; set; }
         public int AllowedAttempts { get; set; }
+        public int AllowedSignOuts { get; set; }
         public IEnumerable<BaseInfo> DependsOn { get; set; }
         public bool CheckContract { get; set; }
         public int SignUpBeforeMinutes { get; set; }
@@ -33,7 +34,7 @@ namespace Service.MongoDB.Model
 
     [BsonIgnoreExtraElements]
     [BsonCollection("GroupSettings")]
-    public class GroupSettings: IDocument
+    public class GroupSettings : IDocument
     {
         public ObjectId Id { get; set; }
         public DateTime CreatedAt { get; } = DateTime.Now;
