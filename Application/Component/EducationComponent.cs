@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using lcService = Service.lC;
+using Application.Extensions;
 
 namespace Application.Component
 {
@@ -105,7 +106,8 @@ namespace Application.Component
             {
                 programs = await lcService.Program.FilterByTeacher(teacherKey.Value);
             }
-            else
+            
+            if(programs.IsNullOrEmpty())
             {
                 programs = await lcService.Program.GetAll();
             }
