@@ -45,7 +45,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
             return this;
         }
 
-        public EducationInfoViewModel AddDisciplines(IEnumerable<Domain.BaseInfo> disciplines, IEnumerable<BaseInfoDto> controltypes)
+        public EducationInfoViewModel AddDisciplines(IEnumerable<Domain.BaseInfo> disciplines, IEnumerable<Domain.BaseInfo> controltypes)
         {
             if (disciplines == null || disciplines.Any() == false) return this;
 
@@ -61,7 +61,7 @@ namespace reception.fitnesspro.ru.Controllers.Education
 
             return this;
 
-            BaseInfoViewModel GetControlType(Guid key, IEnumerable<BaseInfoDto> controltypes)
+            BaseInfoViewModel GetControlType(Guid key, IEnumerable<Domain.BaseInfo> controltypes)
             {
                 var item = controltypes?.FirstOrDefault(ct => ct.Key == key);
                 if (item == null) return null;

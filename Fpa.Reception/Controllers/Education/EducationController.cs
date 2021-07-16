@@ -123,13 +123,13 @@ namespace reception.fitnesspro.ru.Controllers.Education
             {
                 var client = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-                var teacherProgramKeys = await client.GetProgramGuidByTeacher(key).ConfigureAwait(false);
+                var teacherProgramKeys = (await client.GetProgramGuidByTeacher(key).ConfigureAwait(false)).ToList();
 
                 var client2 = new EducationProgram(new Manager("Kloder", "Kaligula2"));
 
-                var queryPrograms = await client2.Find(teacherProgramKeys.ToList()).ConfigureAwait(false);
+                var queryPrograms = (await client2.Find(teacherProgramKeys).ConfigureAwait(false)).ToList();
 
-                var teacherProgramSource = queryPrograms.ToList().Where(x=>x.Disciplines.Any(d=>d.ControlTypeKey != default));
+                var teacherProgramSource = queryPrograms.Where(x=>x.Disciplines.Any(d=>d.ControlTypeKey != default)).ToList();
 
                 var teacherPrograms = teacherProgramSource.Select(x =>
                     new ProgramDto
@@ -144,23 +144,23 @@ namespace reception.fitnesspro.ru.Controllers.Education
                             ControlTypeKey = d.ControlTypeKey
                         })
                     }
-                );
+                ).ToList();
 
                 // get program disciplines
-                var disciplineInfo = await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d => d.DisciplineKey));
+                var disciplineInfo = (await disciplineHttpClient.Find(teacherPrograms.SelectMany(x => x.Disciplines).Select(d => d.DisciplineKey))).ToList();
 
                 // get teachers
-                var teacherKeys = teacherPrograms.SelectMany(x => x.Teachers);
-                var teachers = await employeeAction.GetByKeys(teacherKeys);
+                var teacherKeys = teacherPrograms.SelectMany(x => x.Teachers).Distinct().ToList();
+                var teachers = (await employeeAction.GetByKeys(teacherKeys)).ToList();
 
                 // get controltypes
-                var controlTypeKeys = teacherPrograms.SelectMany(x => x.Disciplines).Select(x => x.ControlTypeKey).Where(x => x != default);
-                var controlTypes = await controlTypeHttpClient.GetByKeys(controlTypeKeys);
+                var controlTypeKeys = teacherPrograms.SelectMany(x => x.Disciplines).Select(x => x.ControlTypeKey).Where(x => x != default).Distinct().ToList();
+                //var controlTypes = (await controlTypeHttpClient.GetByKeys(controlTypeKeys)).ToList();
+                var controlTypes = (await context.Education.GetControlTypesByKeys(controlTypeKeys)).ToList();
 
                 // get program education forms
-                var educationFormKeys = teacherPrograms.Select(x => x.EducationFormKey).Where(e => e != default);
-                var educationForms = await educationFormHttpClient.GetByKeys(educationFormKeys);
-
+                var educationFormKeys = teacherPrograms.Select(x => x.EducationFormKey).Where(e => e != default).Distinct().ToList();
+                var educationForms = (await educationFormHttpClient.GetByKeys(educationFormKeys)).ToList();
 
                 var result = teacherPrograms?.Select(x =>
                     new EducationInfoViewModel(x)
