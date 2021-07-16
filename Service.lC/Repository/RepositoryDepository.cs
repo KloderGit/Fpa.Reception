@@ -21,6 +21,7 @@ namespace Service.lC.Repository
         private PersonRepository person;
         private IRepositoryAsync<Contract, ContractDto> contract;
         private IRepositoryAsync<ScoreType, ScoreTypeDto> scoreType;
+        private AttestationTableRepository attestationTable;
 
         public RepositoryDepository(BaseHttpClient client, IConfiguration configuration)
         {
@@ -39,6 +40,6 @@ namespace Service.lC.Repository
         public PersonRepository Person => person ??= new PersonRepository(client, "lc/Person");
         public IRepositoryAsync<Contract, ContractDto> Contract => contract ??= new GenericRepository<Contract, ContractDto>(client, "lc/v1/Contract");
         public IRepositoryAsync<ScoreType, ScoreTypeDto> ScoreType => scoreType ??= new GenericRepository<ScoreType, ScoreTypeDto>(client, "lc/v1/Rate");
-
+        public AttestationTableRepository AttestationTable => attestationTable ??= new AttestationTableRepository(client, "lc/AttestationTable");
     }
 }

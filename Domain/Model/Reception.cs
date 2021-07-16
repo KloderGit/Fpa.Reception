@@ -114,6 +114,15 @@ namespace Domain
 
             return positions;
         }
+
+        public IEnumerable<IGrouping<(Guid,Guid), Record>> GetGroupedRecords()
+        {
+            var groups = Positions.Where(x => x.Record != default)
+                .Select(x => x.Record)
+                .GroupBy(x => (x.ProgramKey, x.DisciplineKey));
+
+            return groups;
+        }
     }
 
     public enum PositionType

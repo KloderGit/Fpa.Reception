@@ -22,6 +22,7 @@ namespace Service.lC.Provider
         private PersonProvider person;
         private ContractProvider contract;
         private ScoreTypeProvider scoreType;
+        private AttestationTableProvider attestationTable;
 
         public ProviderDepository(RepositoryDepository repositories, IManager manager)
         {
@@ -40,5 +41,6 @@ namespace Service.lC.Provider
         public PersonProvider Person => person ??= new PersonProvider(repositories.Person, manager);
         public ContractProvider Contract => contract ??= new ContractProvider(repositories.Contract, manager);
         public ScoreTypeProvider ScoreType => scoreType ??= new ScoreTypeProvider(repositories.ScoreType, manager);
+        public AttestationTableProvider AttestationTable => attestationTable ??= new AttestationTableProvider(repositories.AttestationTable, manager);
     }
 }

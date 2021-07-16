@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Service.lC.Extensions;
 using Service.lC.Interface;
 using System;
@@ -12,14 +13,20 @@ namespace Service.lC.Repository
         protected readonly BaseHttpClient http;
         protected readonly string endpoint;
 
-        protected readonly Func<TDto, TDomen> converter = Converter.GetConverter<TDto,TDomen>();
+        protected JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore
+        };
+
+        protected readonly Func<TDto, TDomen> converter = Converter.GetConverter<TDto, TDomen>();
 
         public GenericRepository(BaseHttpClient httpClient, string endpoint)
         {
             this.http = httpClient;
             this.endpoint = endpoint;
         }
-    
+
         public async Task<IEnumerable<TDomen>> GetAsync()
         {
             var result = Enumerable.Empty<TDomen>();
@@ -65,7 +72,7 @@ namespace Service.lC.Repository
             var request = await http.Client.GetAsync(endpoint + "/" + key.ToString());
 
             if (!request.IsSuccessStatusCode) return result;
-            
+
             var dto = await request.GetResultAsync<TDto>();
 
             var domain = dto.ConvertTo<TDomen>(converter);
@@ -93,7 +100,7 @@ namespace Service.lC.Repository
                     result.AddRange(partData.ToList());
 
                     attempt = array.Count() - skip;
-                    skip += 50; 
+                    skip += 50;
                 }
             }
             else
@@ -121,6 +128,12 @@ namespace Service.lC.Repository
             }
 
             return result;
+        }
+
+        public async Task DeleteAsync(Guid key)
+        {
+            var request = await http.Client.DeleteAsync(endpoint + "/" + "Delete" + "/" + key.ToString()).ConfigureAwait(false);
+            request.EnsureSuccessStatusCode();
         }
     }
 }

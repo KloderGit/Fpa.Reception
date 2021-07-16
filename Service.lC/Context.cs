@@ -17,6 +17,7 @@ namespace Service.lC
         private ContractManager contract;
         private EducationManager education;
         private ControlTypeManager controlType;
+        private AttestationTableManager attestationTable;
 
         public Context(
             BaseHttpClient httpClient,
@@ -30,11 +31,11 @@ namespace Service.lC
         }
 
         public ProgramManager Program => program ??= new ProgramManager(
-            providers.Program, 
-            providers.Discipline, 
-            providers.ControlType, 
-            providers.EducationForm, 
-            providers.Employee, 
+            providers.Program,
+            providers.Discipline,
+            providers.ControlType,
+            providers.EducationForm,
+            providers.Employee,
             providers.Group);
 
         public GroupManager Group => @group ??= new GroupManager(
@@ -44,18 +45,21 @@ namespace Service.lC
         public ControlTypeManager ControlType => controlType ??= new ControlTypeManager(providers.ControlType, providers.ScoreType);
 
         public PersonManager Person => person ??= new PersonManager(
-            providers.Person, 
+            providers.Person,
             providers.Student);
 
         public StudentManager Student => student ??= new StudentManager(providers.Contract, providers.Student);
 
         public ContractManager Contract => contract ??= new ContractManager(
-            providers.Contract, 
-            providers.Program, 
-            providers.Group, 
+            providers.Contract,
+            providers.Program,
+            providers.Group,
             providers.SubGroup);
 
         public EducationManager Education => education ??= new EducationManager(providers.Discipline, providers.Employee);
+
+        public AttestationTableManager AttestationTable => attestationTable ??= new AttestationTableManager(providers.AttestationTable);
+
     }
 
 
